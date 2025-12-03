@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ auteur }} - Mon Blog{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Profil de l'auteur -->
+        <div class="card mb-4 bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 text-center">
+                        {% if auteur.photo %}
+                            <img src="{{ auteur.photo.url }}" class="rounded-circle img-fluid mb-3" alt="{{ auteur }}" style="max-width: 150px;">
+                        {% else %}
+                            <i class="fas fa-user-circle fa-5x text-muted mb-3"></i>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-10">
+                        <h1><i class="fas fa-user"></i> {{ auteur }}</h1>
+                        
+                        {% if auteur.bio %}
+                            <div class="mt-3">{{ auteur.bio|safe }}</div>
+                        {% endif %}
+
+                        <div class="mt-3">
+                            {% if auteur.site_web %}
+                                <a href="{{ auteur.site_web }}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-globe"></i> Site web
+                                </a>
+                            {% endif %}
+                            {% if auteur.twitter %}
+                                <a href="https://twitter.com/{{ auteur.twitter }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                    <i class="fab fa-twitter"></i> @{{ auteur.twitter }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'blog:article_list' %}">Accueil</a></li>
+                <li class="breadcrumb-item active">{{ auteur }}</li>
+            </ol>
+        </nav>
+
+        <h2 class="mb-4">Articles de cet auteur ({{ articles.count }})</h2>
+
+        {% if articles %}
+            <div class="row">
+                {% for article in articles %}
+                <div class="col-md-6 mb-4">
+                    <article class="card h-100 shadow-sm">
+                        {% if article.image %}
+                        <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}" style="max-height: 250px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h3 class="h5 card-title">
+                                <a href="{% url 'blog:article_detail' article.slug %}" class="text-decoration-none">
+                                    {{ article.title }}
+                                </a>
+                            </h3>
+                            
+                            <div class="text-muted mb-2">
+                                <small>
+                                    <i class="fas fa-calendar"></i> {{ article.published_at|date:"d F Y" }} | 
+                                    <i class="fas fa-eye"></i> {{ article.views }} vue{{ article.views|pluralize }}
+                                    {% if article.category %}
+                                        | <i class="fas fa-folder"></i> {{ article.category }}
+                                    {% endif %}
+                                </small>
+                            </div>
+
+                            {% if article.excerpt %}
+                                <p class="card-text">{{ article.excerpt }}</p>
+                            {% else %}
+                                <p class="card-text">{{ article.content|striptags|truncatewords:30 }}</p>
+                            {% endif %}
+
+                            <a href="{% url 'blog:article_detail' article.slug %}" class="btn btn-sm btn-primary">
+                                Lire la suite
+                            </a>
+
+                            {% if article.tags %}
+                            <div class="mt-2">
+                                {% for tag in article.get_tags_list %}
+                                    <span class="badge bg-secondary">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Cet auteur n'a pas encore publié d'articles.
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{% url 'blog:article_list' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Retour aux articles
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

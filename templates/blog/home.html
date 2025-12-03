@@ -1,0 +1,441 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Accueil - MYAROU{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-500 text-white overflow-hidden min-h-screen flex items-center">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden opacity-20">
+        <div class="absolute w-96 h-96 bg-white rounded-full -top-24 -left-24 animate-float"></div>
+        <div class="absolute w-96 h-96 bg-white rounded-full -bottom-24 -right-24 animate-float-delayed"></div>
+        <div class="absolute w-64 h-64 bg-purple-300 rounded-full top-1/2 left-1/3 animate-pulse"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 py-20 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left Content -->
+            <div class="text-left space-y-8 animate-fade-in-left">
+                <div class="inline-block">
+                    <span class="bg-white bg-opacity-20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-white border-opacity-30">
+                        Basketteur professionnel & MBA HEC Paris
+                    </span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
+                    Libérez votre <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300">
+                        potentiel
+                    </span>
+                </h1>
+                
+                <p class="text-xl md:text-2xl text-gray-100 leading-relaxed max-w-xl">
+                    Ancien joueur professionnel, diplômé MBA HEC Paris et fondateur de MY BARIKA. Je vous accompagne dans votre développement personnel et professionnel à travers des articles exclusives.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <a href="/blog/" 
+                       class="group px-8 py-4 bg-white text-blue-600 rounded-full font-bold text-lg hover:bg-gray-100 transform hover:scale-105 transition-all shadow-2xl flex items-center justify-center">
+                        Découvrir les articles
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
+                    <a href="#about" 
+                       class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-bold text-lg hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all backdrop-blur-sm flex items-center justify-center">
+                        Mon parcours
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-8 pt-8 border-t border-white border-opacity-20">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold mb-2">500+</div>
+                        <div class="text-sm text-gray-200">Jeunes accompagnés</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold mb-2">15+</div>
+                        <div class="text-sm text-gray-200">Années d'expérience</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold mb-2">3</div>
+                        <div class="text-sm text-gray-200">Continents</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Image -->
+            <div class="relative animate-fade-in-right">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-400 rounded-3xl transform rotate-6 scale-95 opacity-20"></div>
+                <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500">
+                    <img src="{% static 'images/profile.jpg' %}" 
+                         alt="MYAROU" 
+                         class="h-auto object-cover">
+                </div>
+                <!-- Floating Badge -->
+                <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-2xl p-4 transform hover:scale-110 transition-transform">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-900">MBA HEC Paris</div>
+                            <div class="text-xs text-gray-500">Excellence académique</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Wave SVG -->
+    <div class="absolute bottom-0 left-0 w-full">
+        <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" class="w-full">
+            <path fill="#ffffff" fill-opacity="1" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- Ma Mission Section -->
+<section id="about" class="py-24 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16 animate-fade-in">
+            <h2 class="text-5xl font-extrabold text-gray-900 mb-6">Ma mission</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Accompagner la nouvelle génération africaine vers l'excellence, en combinant sport, leadership et entrepreneuriat.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <!-- Leadership -->
+            <div class="group bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-blue-500">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Leadership</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Développer les compétences de leadership nécessaires pour transformer les communautés et inspirer le changement.
+                </p>
+            </div>
+            
+            <!-- Excellence -->
+            <div class="group bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-green-500">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Excellence</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Cultiver une mentalité d'excellence à travers la discipline, la persévérance et l'engagement total.
+                </p>
+            </div>
+            
+            <!-- Impact -->
+            <div class="group bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-purple-500">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Impact</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Créer un impact positif durable dans les communautés à travers l'éducation et l'entrepreneuriat social.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MY BARIKA Section -->
+<section class="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <!-- Left Content -->
+            <div class="space-y-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <img src="{% static 'images/logo-barika.png' %}" alt="MY BARIKA" class="h-12">
+                    <h2 class="text-4xl font-extrabold text-blue-900">MY BARIKA</h2>
+                </div>
+                
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    Le sport a cette capacité de fédérer, de réunir des personnes autour des mêmes passions, des mêmes valeurs. C'est vecteur d'émotions partagées, de rêves et d'espoir. Il peut prendre de multiples aspects et s'associer à de multiples messages : nous allons donc l'utiliser pour apprendre plus sur nos projets, devenir bénévole ou donateur.
+                </p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-lg">Éducation</h4>
+                            <p class="text-gray-600">Programmes de bourses et soutien scolaire</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-lg">Sport</h4>
+                            <p class="text-gray-600">Camps de basketball et formation sportive</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-lg">Entrepreneuriat</h4>
+                            <p class="text-gray-600">Incubation et accompagnement de projets</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 pt-6">
+                    <a href="/contact/" 
+                       class="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full font-bold hover:shadow-xl transform hover:scale-105 transition-all">
+                        Soutenir MY BARIKA
+                    </a>
+                    <a href="/contact/" 
+                       class="px-8 py-4 bg-white text-blue-600 border-2 border-blue-600 rounded-full font-bold hover:bg-blue-50 transition-all">
+                        Devenir bénévole
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Right Images Grid -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-4">
+                    <div class="relative overflow-hidden rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300 h-64">
+                        <img src="{% static 'images/grid-1.png' %}" alt="MY BARIKA Sport" class="w-full h-full object-cover">
+                    </div>
+                    <div class="relative overflow-hidden rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300 h-48">
+                        <img src="{% static 'images/grid-2.png' %}" alt="MY BARIKA Education" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="space-y-4 mt-8">
+                    <div class="relative overflow-hidden rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300 h-48">
+                        <img src="{% static 'images/grid-3.png' %}" alt="MY BARIKA Community" class="w-full h-full object-cover">
+                    </div>
+                    <div class="relative overflow-hidden rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300 h-64">
+                        <img src="{% static 'images/grid-4.png' %}" alt="MY BARIKA Team" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Section -->
+<section id="blog" class="py-24 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl font-extrabold text-gray-900 mb-6">Articles disponibles</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Des formations complètes pour développer vos compétences en leadership, entrepreneuriat et développement personnel.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <!-- Leadership & Management -->
+            <div class="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
+                <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                <div class="relative p-8 text-white h-full flex flex-col">
+                    <div class="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-bold mb-4">Leadership & Management</h3>
+                    <p class="text-blue-100 mb-6 flex-grow">
+                        Développez vos compétences de leader avec des méthodes éprouvées issues du sport de haut niveau.
+                    </p>
+                    <a href="/blog/?search=leadership+management" 
+                       class="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-600 rounded-full font-bold hover:bg-blue-50 transition-all group-hover:shadow-lg">
+                        En savoir plus
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Entrepreneuriat Social -->
+            <div class="group relative bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
+                <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                <div class="relative p-8 text-white h-full flex flex-col">
+                    <div class="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-bold mb-4">Entrepreneuriat Social</h3>
+                    <p class="text-green-100 mb-6 flex-grow">
+                        Apprenez à créer et développer des projets à impact social tout en Afrique et ailleurs.
+                    </p>
+                    <a href="/blog/?search=entrepreneuriat" 
+                       class="inline-flex items-center justify-center px-6 py-3 bg-white text-green-600 rounded-full font-bold hover:bg-green-50 transition-all group-hover:shadow-lg">
+                        En savoir plus
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Excellence & Performance -->
+            <div class="group relative bg-gradient-to-br from-purple-500 to-pink-600 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
+                <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                <div class="relative p-8 text-white h-full flex flex-col">
+                    <div class="w-16 h-16 bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-bold mb-4">Excellence & Performance</h3>
+                    <p class="text-purple-100 mb-6 flex-grow">
+                        Cultivez une mentalité de champion et atteignez vos objectifs les plus ambitieux.
+                    </p>
+                    <a href="/blog/?search=Excellence+Performance" 
+                       class="inline-flex items-center justify-center px-6 py-3 bg-white text-purple-600 rounded-full font-bold hover:bg-purple-50 transition-all group-hover:shadow-lg">
+                        En savoir plus
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="/blog/" 
+               class="inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-full font-bold text-lg hover:shadow-2xl transform hover:scale-105 transition-all">
+                Voir tous les articles
+                <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Community Section -->
+<section class="py-24 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white relative overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 overflow-hidden opacity-10">
+        <div class="absolute w-96 h-96 bg-white rounded-full -top-24 -left-24 animate-float"></div>
+        <div class="absolute w-96 h-96 bg-white rounded-full -bottom-24 -right-24 animate-float-delayed"></div>
+        <div class="absolute w-64 h-64 bg-purple-300 rounded-full top-1/2 left-1/2 animate-pulse"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center space-y-8">
+            <h2 class="text-5xl md:text-6xl font-extrabold mb-6">
+                Rejoignez la communauté
+            </h2>
+            <p class="text-2xl text-gray-100 mb-12 leading-relaxed">
+                Plus de 500 jeunes nous font déjà confiance pour leur développement. Commencez votre parcours d'excellence dès aujourd'hui!
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                <!-- <a href="#" 
+                   class="group px-10 py-5 bg-white text-blue-600 rounded-full font-bold text-lg hover:bg-gray-100 transform hover:scale-105 transition-all shadow-2xl flex items-center justify-center">
+                    S'inscrire gratuitement
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                    </svg>
+                </a> -->
+                <a href="#" 
+                   class="px-10 py-5 bg-transparent border-2 border-white text-white rounded-full font-bold text-lg hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all backdrop-blur-sm flex items-center justify-center">
+                    Nous contacter
+                </a>
+            </div>
+            
+            <!-- Trust Indicators -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 pt-16 border-t border-white border-opacity-20">
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2">500+</div>
+                    <div class="text-gray-200">Membres actifs</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2">15+</div>
+                    <div class="text-gray-200">Articles disponibles</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl font-bold mb-2">98%</div>
+                    <div class="text-gray-200">Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Animations -->
+<style>
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes float-delayed {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-30px); }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float-delayed 8s ease-in-out infinite;
+}
+
+@keyframes fade-in-left {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fade-in-right {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fade-in-left {
+    animation: fade-in-left 1s ease-out;
+}
+
+.animate-fade-in-right {
+    animation: fade-in-right 1s ease-out;
+}
+
+.animate-fade-in {
+    animation: fade-in-left 0.8s ease-out;
+}
+</style>
+{% endblock %}

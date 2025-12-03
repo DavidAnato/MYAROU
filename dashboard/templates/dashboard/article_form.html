@@ -1,0 +1,692 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} un article{% endblock %}
+{% block page_title %}{{ action }} un article{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-field {
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    .django-ckeditor-widget {
+        width: 100% !important;
+    }
+    
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s;
+    }
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-content {
+        background-color: white;
+        border-radius: 1rem;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: slideDown 0.3s;
+    }
+    
+    /* Drag & Drop styles */
+    .drop-zone {
+        border: 2px dashed #cbd5e0;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s;
+        cursor: pointer;
+        background-color: #f9fafb;
+    }
+    .drop-zone:hover {
+        border-color: #3b82f6;
+        background-color: #eff6ff;
+    }
+    .drop-zone.drag-over {
+        border-color: #3b82f6;
+        background-color: #dbeafe;
+        transform: scale(1.02);
+    }
+    .image-preview {
+        max-width: 300px;
+        max-height: 200px;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideDown {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
+<style>
+    .tag-input-wrapper {
+        position: relative;
+    }
+    
+    .tags-display {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        min-height: 45px;
+        background: #f9fafb;
+        margin-bottom: 8px;
+        cursor: text;
+    }
+    
+    .tag-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        animation: tagAppear 0.3s ease;
+    }
+    
+    @keyframes tagAppear {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .tag-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .tag-remove {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+    
+    .tag-remove:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+    }
+    
+    .tag-input {
+        flex: 1;
+        min-width: 150px;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 14px;
+        padding: 6px;
+    }
+    
+    .tags-placeholder {
+        color: #9ca3af;
+        font-size: 14px;
+        padding: 6px;
+    }
+    
+    .seo-tag-badge {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .seo-tag-badge:hover {
+        box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+        <form method="post" enctype="multipart/form-data" id="articleForm">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-6">
+                    <p class="text-sm text-red-800">{{ form.non_field_errors }}</p>
+                </div>
+            {% endif %}
+            
+            <!-- Informations principales -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-blue-500">
+                    📝 Informations principales
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-field md:col-span-2">
+                        <label class="form-label">Titre *</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-field">
+                        <label class="form-label">Slug (généré automatiquement)</label>
+                        {{ form.slug }}
+                        {% if form.slug.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.slug.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-field">
+                        <label class="form-label">Auteur</label>
+                        {{ form.author }}
+                    </div>
+                    
+                    <div class="form-field">
+                        <label class="form-label">Catégorie</label>
+                        <div class="flex gap-2">
+                            <div class="flex-1">
+                                {{ form.category }}
+                            </div>
+                            <button type="button" onclick="openCategoryModal()" 
+                                    class="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label class="form-label">Statut</label>
+                        {{ form.status }}
+                    </div>
+                    
+                    <div class="form-field">
+                        <label class="form-label">Date de publication</label>
+                        {{ form.published_at }}
+                        <p class="text-gray-500 text-sm mt-1">Laissez vide pour publication immédiate</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contenu -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-purple-500">
+                    ✍️ Contenu
+                </h3>
+                
+                <div class="form-field">
+                    <label class="form-label">Extrait (résumé court)</label>
+                    {{ form.excerpt }}
+                    {% if form.excerpt.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.excerpt.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-gray-500 text-sm mt-1">Court résumé affiché dans les listes d'articles (max 500 caractères)</p>
+                </div>
+                
+                <div class="form-field">
+                    <label class="form-label">Contenu complet *</label>
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.content.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-gray-500 text-sm mt-1">💡 Vous pouvez coller des images directement dans l'éditeur (Ctrl+V)</p>
+                </div>
+                
+                <div class="form-field">
+                    <label class="form-label">Image principale</label>
+                    
+                    {% if article and article.image %}
+                        <div class="mb-4" id="currentImagePreview">
+                            <img src="{{ article.image.url }}" alt="Image actuelle" class="image-preview">
+                            <p class="text-sm text-gray-500 mt-2">Image actuelle</p>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Zone de drop -->
+                    <div class="drop-zone" id="dropZone">
+                        <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <p class="text-gray-600 mb-2">
+                            <span class="font-semibold text-blue-600">Cliquez pour choisir</span> ou glissez-déposez une image
+                        </p>
+                        <p class="text-sm text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
+                    </div>
+                    
+                    <!-- Input caché -->
+                    {{ form.image }}
+                    
+                    <!-- Prévisualisation -->
+                    <div id="imagePreview" class="mt-4 hidden">
+                        <img id="previewImg" class="image-preview mx-auto" alt="Prévisualisation">
+                        <button type="button" onclick="removeImage()" 
+                                class="mt-2 text-red-600 hover:text-red-700 text-sm">
+                            ✕ Supprimer l'image
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Métadonnées -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-green-500">
+                    🏷️ Métadonnées
+                </h3>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Tags (séparés par des virgules)
+                    </label>
+                    <div class="tag-input-wrapper">
+                        <div class="tags-display" id="tagsDisplay">
+                        </div>
+                        {{ form.tags }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEO -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-pink-500">
+                    🔍 Optimisation SEO
+                </h3>
+                
+                <div class="form-field">
+                    <label class="form-label">Meta Description (max 160 caractères)</label>
+                    {{ form.meta_description }}
+                    <p class="text-gray-500 text-sm mt-1">Description affichée dans les résultats de recherche</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Mots-clés SEO (séparés par des virgules)
+                    </label>
+                    <div class="tag-input-wrapper">
+                        <div class="tags-display" id="seoTagsDisplay">
+                        </div>
+                        {{ form.meta_keywords }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="flex items-center justify-between pt-6 border-t">
+                <a href="{% url 'dashboard:article_list' %}" 
+                   class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Annuler
+                </a>
+                
+                <button type="submit" 
+                        class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{ action }} l'article
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal pour ajouter une catégorie -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">➕ Nouvelle catégorie</h3>
+                <button type="button" onclick="closeCategoryModal()" 
+                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="categoryForm">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">Nom de la catégorie *</label>
+                        <input type="text" name="name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Ex: Technologie">
+                    </div>
+                    
+                    <div>
+                        <label class="form-label">Description</label>
+                        <textarea name="description" rows="3"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Description de la catégorie..."></textarea>
+                    </div>
+                    
+                    <div id="categoryMessage" class="hidden"></div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeCategoryModal()"
+                                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Annuler
+                        </button>
+                        <button type="submit"
+                                class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                            Créer la catégorie
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ form.media }}
+
+<script>
+// Gestion du drag & drop pour l'image
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('id_image');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+// Cacher l'input file original
+fileInput.style.display = 'none';
+
+// Click sur la zone de drop
+dropZone.addEventListener('click', () => fileInput.click());
+
+// Drag & Drop
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+});
+
+dropZone.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0) {
+        fileInput.files = files;
+        handleFiles(files);
+    }
+}
+
+// Changement de fichier
+fileInput.addEventListener('change', function(e) {
+    handleFiles(this.files);
+});
+
+function handleFiles(files) {
+    if (files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                imagePreview.classList.remove('hidden');
+                dropZone.style.display = 'none';
+                const currentPreview = document.getElementById('currentImagePreview');
+                if (currentPreview) currentPreview.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+}
+
+function removeImage() {
+    fileInput.value = '';
+    imagePreview.classList.add('hidden');
+    dropZone.style.display = 'block';
+    const currentPreview = document.getElementById('currentImagePreview');
+    if (currentPreview) currentPreview.style.display = 'block';
+}
+
+// Copier-coller d'images
+document.addEventListener('paste', function(e) {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            const file = new File([blob], 'pasted-image.png', { type: blob.type });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+            handleFiles(dataTransfer.files);
+            e.preventDefault();
+        }
+    }
+});
+
+// Modal pour les catégories
+function openCategoryModal() {
+    document.getElementById('categoryModal').classList.add('active');
+}
+
+function closeCategoryModal() {
+    document.getElementById('categoryModal').classList.remove('active');
+    document.getElementById('categoryForm').reset();
+    const msg = document.getElementById('categoryMessage');
+    msg.classList.add('hidden');
+}
+
+// Fermer le modal en cliquant à l'extérieur
+document.getElementById('categoryModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCategoryModal();
+    }
+});
+
+// Soumettre le formulaire de catégorie via AJAX
+document.getElementById('categoryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const messageDiv = document.getElementById('categoryMessage');
+    
+    fetch('{% url "dashboard:category_create_ajax" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Ajouter la nouvelle catégorie au select
+            const categorySelect = document.getElementById('id_category');
+            const option = new Option(data.category.name, data.category.id, true, true);
+            categorySelect.add(option);
+            
+            // Message de succès
+            messageDiv.className = 'bg-green-50 border-l-4 border-green-500 p-4 rounded';
+            messageDiv.innerHTML = '<p class="text-sm text-green-800">✓ Catégorie créée avec succès !</p>';
+            messageDiv.classList.remove('hidden');
+            
+            // Fermer après 1 seconde
+            setTimeout(() => {
+                closeCategoryModal();
+            }, 1000);
+        } else {
+            messageDiv.className = 'bg-red-50 border-l-4 border-red-500 p-4 rounded';
+            messageDiv.innerHTML = '<p class="text-sm text-red-800">Erreur: ' + (data.error || 'Une erreur est survenue') + '</p>';
+            messageDiv.classList.remove('hidden');
+        }
+    })
+    .catch(error => {
+        messageDiv.className = 'bg-red-50 border-l-4 border-red-500 p-4 rounded';
+        messageDiv.innerHTML = '<p class="text-sm text-red-800">Erreur de connexion</p>';
+        messageDiv.classList.remove('hidden');
+    });
+});
+</script>
+<script>
+class TagInput {
+    constructor(inputId, displayId, badgeClass = 'tag-badge') {
+        this.input = document.getElementById(inputId);
+        this.display = document.getElementById(displayId);
+        this.badgeClass = badgeClass;
+        this.tags = [];
+        
+        if (!this.input || !this.display) return;
+        
+        this.input.style.display = 'none';
+        this.initializeTags();
+        this.createInput();
+        this.setupEventListeners();
+    }
+    
+    initializeTags() {
+        const value = this.input.value.trim();
+        if (value) {
+            this.tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
+            this.renderTags();
+        }
+    }
+    
+    createInput() {
+        this.inputElement = document.createElement('input');
+        this.inputElement.type = 'text';
+        this.inputElement.className = 'tag-input';
+        this.inputElement.placeholder = 'Ajouter un tag...';
+        this.display.appendChild(this.inputElement);
+    }
+    
+    setupEventListeners() {
+        this.inputElement.addEventListener('keydown', (e) => {
+            if (e.key === ',' || e.key === 'Enter') {
+                e.preventDefault();
+                this.addTag();
+            } else if (e.key === 'Backspace' && !this.inputElement.value) {
+                this.removeLastTag();
+            }
+        });
+        
+        this.inputElement.addEventListener('blur', () => {
+            setTimeout(() => this.addTag(), 100);
+        });
+        
+        this.display.addEventListener('click', (e) => {
+            if (e.target === this.display) {
+                this.inputElement.focus();
+            }
+        });
+    }
+    
+    addTag() {
+        const value = this.inputElement.value.trim();
+        if (value && !this.tags.includes(value)) {
+            this.tags.push(value);
+            this.updateInput();
+            this.renderTags();
+        }
+        this.inputElement.value = '';
+    }
+    
+    removeTag(tag) {
+        this.tags = this.tags.filter(t => t !== tag);
+        this.updateInput();
+        this.renderTags();
+    }
+    
+    removeLastTag() {
+        if (this.tags.length > 0) {
+            this.tags.pop();
+            this.updateInput();
+            this.renderTags();
+        }
+    }
+    
+    updateInput() {
+        this.input.value = this.tags.join(', ');
+    }
+    
+    renderTags() {
+        Array.from(this.display.children).forEach(child => {
+            if (child !== this.inputElement) {
+                child.remove();
+            }
+        });
+        
+        const placeholder = this.display.querySelector('.tags-placeholder');
+        if (placeholder) placeholder.remove();
+        
+        this.tags.forEach(tag => {
+            const badge = document.createElement('span');
+            badge.className = this.badgeClass;
+            badge.innerHTML = `
+                ${tag}
+                <span class="tag-remove">×</span>
+            `;
+            
+            const removeBtn = badge.querySelector('.tag-remove');
+            removeBtn.addEventListener('click', () => this.removeTag(tag));
+            
+            this.display.insertBefore(badge, this.inputElement);
+        });
+        
+        if (this.tags.length === 0 && !this.inputElement.value) {
+            const placeholder = document.createElement('span');
+            placeholder.className = 'tags-placeholder';
+            placeholder.textContent = this.inputElement.placeholder;
+            this.display.insertBefore(placeholder, this.inputElement);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    new TagInput('{{ form.tags.id_for_label }}', 'tagsDisplay', 'tag-badge');
+    new TagInput('{{ form.meta_keywords.id_for_label }}', 'seoTagsDisplay', 'tag-badge seo-tag-badge');
+});
+</script>
+
+{% endblock %}

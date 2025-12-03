@@ -1,0 +1,293 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} une catégorie{% endblock %}
+{% block page_title %}{{ action }} une catégorie{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-field {
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Drop zone styles */
+    .drop-zone {
+        border: 2px dashed #cbd5e0;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s;
+        cursor: pointer;
+        background-color: #f9fafb;
+    }
+    .drop-zone:hover {
+        border-color: #8b5cf6;
+        background-color: #faf5ff;
+    }
+    .drop-zone.drag-over {
+        border-color: #8b5cf6;
+        background-color: #f3e8ff;
+        transform: scale(1.02);
+    }
+    .image-preview {
+        max-width: 400px;
+        max-height: 250px;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+        <form method="post" enctype="multipart/form-data" id="categoryForm">
+            {% csrf_token %}
+            
+            <!-- Erreurs générales -->
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-6">
+                    <p class="text-sm text-red-800">{{ form.non_field_errors }}</p>
+                </div>
+            {% endif %}
+            
+            <!-- Informations principales -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-purple-500">
+                    📁 Informations de la catégorie
+                </h3>
+                
+                <div class="space-y-6">
+                    <div class="form-field">
+                        <label class="form-label">Nom de la catégorie *</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.name.errors.0 }}</p>
+                        {% endif %}
+                        <p class="text-gray-500 text-sm mt-1">Le nom de votre catégorie</p>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label class="form-label">Slug (généré automatiquement)</label>
+                        {{ form.slug }}
+                        {% if form.slug.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.slug.errors.0 }}</p>
+                        {% endif %}
+                        <p class="text-gray-500 text-sm mt-1">URL-friendly version du nom (laissez vide pour génération automatique)</p>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label class="form-label">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.description.errors.0 }}</p>
+                        {% endif %}
+                        <p class="text-gray-500 text-sm mt-1">Description détaillée de la catégorie (optionnel)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Image -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-pink-500">
+                    🖼️ Image de la catégorie
+                </h3>
+                
+                <div class="form-field">
+                    {% if category and category.image %}
+                        <div class="mb-4" id="currentImagePreview">
+                            <img src="{{ category.image.url }}" alt="Image actuelle" class="image-preview mx-auto">
+                            <p class="text-sm text-gray-500 mt-2 text-center">Image actuelle</p>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Zone de drop -->
+                    <div class="drop-zone" id="dropZone">
+                        <svg class="w-12 h-12 mx-auto text-purple-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p class="text-gray-600 mb-2">
+                            <span class="font-semibold text-purple-600">Cliquez pour choisir</span> ou glissez-déposez une image
+                        </p>
+                        <p class="text-sm text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
+                        <p class="text-xs text-gray-400 mt-2">💡 Vous pouvez aussi coller une image (Ctrl+V)</p>
+                    </div>
+                    
+                    <!-- Input caché -->
+                    {{ form.image }}
+                    
+                    <!-- Prévisualisation -->
+                    <div id="imagePreview" class="mt-4 hidden text-center">
+                        <img id="previewImg" class="image-preview mx-auto" alt="Prévisualisation">
+                        <button type="button" onclick="removeImage()" 
+                                class="mt-3 inline-flex items-center px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors text-sm">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Supprimer l'image
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="flex items-center justify-between pt-6 border-t">
+                <a href="{% url 'dashboard:category_list' %}" 
+                   class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Annuler
+                </a>
+                
+                <button type="submit" 
+                        class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold shadow-lg transform hover:scale-105 transition-all">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {{ action }} la catégorie
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Gestion du drag & drop pour l'image
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('id_image');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+// Cacher l'input file original
+if (fileInput) {
+    fileInput.style.display = 'none';
+}
+
+// Click sur la zone de drop
+if (dropZone && fileInput) {
+    dropZone.addEventListener('click', () => fileInput.click());
+}
+
+// Drag & Drop
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    if (dropZone) {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    }
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    if (dropZone) {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+    }
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    if (dropZone) {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+    }
+});
+
+if (dropZone) {
+    dropZone.addEventListener('drop', handleDrop, false);
+}
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0) {
+        fileInput.files = files;
+        handleFiles(files);
+    }
+}
+
+// Changement de fichier
+if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(this.files);
+    });
+}
+
+function handleFiles(files) {
+    if (files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                imagePreview.classList.remove('hidden');
+                dropZone.style.display = 'none';
+                const currentPreview = document.getElementById('currentImagePreview');
+                if (currentPreview) currentPreview.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Veuillez sélectionner une image valide (PNG, JPG, GIF)');
+        }
+    }
+}
+
+function removeImage() {
+    fileInput.value = '';
+    imagePreview.classList.add('hidden');
+    dropZone.style.display = 'block';
+    const currentPreview = document.getElementById('currentImagePreview');
+    if (currentPreview) currentPreview.style.display = 'block';
+}
+
+// Copier-coller d'images
+document.addEventListener('paste', function(e) {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            const blob = items[i].getAsFile();
+            const file = new File([blob], 'pasted-image.png', { type: blob.type });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+            handleFiles(dataTransfer.files);
+            e.preventDefault();
+        }
+    }
+});
+
+// Auto-génération du slug
+const nameInput = document.getElementById('id_name');
+const slugInput = document.getElementById('id_slug');
+
+if (nameInput && slugInput) {
+    nameInput.addEventListener('input', function() {
+        if (!slugInput.value || slugInput.dataset.autoGenerated === 'true') {
+            const slug = this.value
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            slugInput.value = slug;
+            slugInput.dataset.autoGenerated = 'true';
+        }
+    });
+    
+    slugInput.addEventListener('input', function() {
+        if (this.value) {
+            this.dataset.autoGenerated = 'false';
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Auteurs{% endblock %}
+{% block page_title %}Gestion des Auteurs{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for auteur in auteurs %}
+    <div class="bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-shadow">
+        <div class="flex items-center mb-4">
+            {% if auteur.photo %}
+            <img src="{{ auteur.photo.url }}" alt="{{ auteur }}" class="w-16 h-16 rounded-full">
+            {% else %}
+            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
+                {{ auteur.user.username|first|upper }}
+            </div>
+            {% endif %}
+            <div class="ml-4">
+                <h3 class="text-xl font-bold text-gray-900">{{ auteur }}</h3>
+                <p class="text-gray-600">{{ auteur.article_count }} article{{ auteur.article_count|pluralize }}</p>
+            </div>
+        </div>
+        <a href="/admin/blog/auteur/{{ auteur.pk }}/change/" class="text-blue-600 hover:text-blue-700">Modifier →</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

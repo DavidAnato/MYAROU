@@ -1,0 +1,153 @@
+/* Styles personnalisés pour le blog */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.jumbotron {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    transition: opacity 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    opacity: 0.9;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+footer {
+    margin-top: auto;
+}
+
+footer a {
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #667eea !important;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+    color: #333;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.article-content p {
+    margin-bottom: 1rem;
+}
+
+.article-content ul,
+.article-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.article-content blockquote {
+    border-left: 4px solid #667eea;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #666;
+}
+
+.article-content code {
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+.article-content pre {
+    background-color: #f4f4f4;
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.article-content table {
+    width: 100%;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+}
+
+.article-content table th,
+.article-content table td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+}
+
+.article-content table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.pagination .page-link {
+    color: #667eea;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.btn-primary {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.btn-primary:hover {
+    background-color: #5568d3;
+    border-color: #5568d3;
+}
+
+.bg-primary {
+    background-color: #667eea !important;
+}
+
+.text-primary {
+    color: #667eea !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .jumbotron {
+        padding: 2rem 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+
+#cke_notifications_area_id_content {
+    display: none !important;
+}
