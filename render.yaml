@@ -3,5 +3,9 @@ services:
     name: MYAROU-BLOG
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn blog_project.wsgi
+
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+
+    startCommand: gunicorn blog_project.wsgi:application
