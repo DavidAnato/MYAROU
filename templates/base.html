@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MYAROU - Libérez votre potentiel{% endblock %}</title>
-    
+    <link rel="shortcut icon" href="static/images/logo.png" type="image/x-icon">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -124,12 +125,30 @@
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, #2563EB 0%, #7C3AED 100%);
         }
+
+        /* Modal scrollbar */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-white font-sans" x-data="{ mobileMenuOpen: false, scrolled: false }" 
-      @scroll.window="scrolled = window.pageYOffset > 50">
+<body class="bg-white font-sans" x-data="{ 
+    mobileMenuOpen: false, 
+    scrolled: false,
+    showCGU: false,
+    showPrivacy: false,
+    showCookies: false,
+    showLegal: false
+}" 
+      @scroll.window="scrolled = window.pageYOffset > 50"
+      @keydown.escape="showCGU = false; showPrivacy = false; showCookies = false; showLegal = false">
     
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
@@ -170,35 +189,26 @@
                         Contact
                     </a>
                     
-                    
                     {% if user.is_authenticated %}
                         {% if user.is_staff %}
                     <div class="h-6 w-px bg-gray-300 mr-4"></div>
-
-                            <!-- Icône Dashboard -->
                             <a href="{% url 'dashboard:index' %}" 
                             class="ml-4 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold hover:shadow-xl transform hover:scale-105 transition-all flex items-center gap-2">
-                                
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 12h7V3H3v9zm0 9h7v-7H3v7zm11 0h7V12h-7v9zm0-18v7h7V3h-7z" />
                                 </svg>
-
                                 Dashboard
                             </a>
                         {% endif %}
                     {% else %}
                     <div class="h-6 w-px bg-gray-300 mr-4"></div>
-
-                        <!-- Icône Connexion -->
                         <a href="{% url 'dashboard:index' %}" 
                         class="ml-4 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold hover:shadow-xl transform hover:scale-105 transition-all flex items-center gap-2">
-                            
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
-
                             Connexion
                         </a>
                     {% endif %}
@@ -236,10 +246,6 @@
                 <a href="{% url 'blog:article_list' %}" 
                    class="block px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-semibold">
                     📚 Blog
-                </a>
-                <a href="#" 
-                   class="block px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-semibold">
-                    🏀 MY BARIKA
                 </a>
                 <a href="{% url 'blog:contact' %}" 
                    class="block px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-semibold">
@@ -358,7 +364,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                            <a href="{% url 'blog:contact' %}" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
@@ -366,7 +372,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                            <a href="{% url 'blog:contact' %}" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
@@ -381,36 +387,36 @@
                     <h3 class="text-xl font-bold mb-6 text-white">Légal</h3>
                     <ul class="space-y-3">
                         <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                            <button @click="showCGU = true" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                                 CGU
-                            </a>
+                            </button>
                         </li>
                         <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                            <button @click="showPrivacy = true" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                                 Politique de confidentialité
-                            </a>
+                            </button>
                         </li>
                         <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                            <button @click="showCookies = true" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                                 Cookies
-                            </a>
+                            </button>
                         </li>
                         <li>
-                            <a href="#" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+                            <button @click="showLegal = true" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                                 Mentions légales
-                            </a>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -420,12 +426,449 @@
             <div class="border-t border-gray-800 mt-12 pt-8">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                     <p class="text-gray-400 text-center md:text-left">
-                        &copy; 2025 MY BARIKA. - Tous droits réservés.
+                        &copy; 2025 MYAROU. - Tous droits réservés.
                     </p>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- Modal CGU -->
+    <div x-show="showCGU" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" @click="showCGU = false"></div>
+
+            <!-- Modal panel -->
+            <div x-show="showCGU"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-3xl font-extrabold text-white">
+                            Conditions Générales d'Utilisation
+                        </h3>
+                        <button @click="showCGU = false" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="modal-content px-8 py-6 max-h-96 overflow-y-auto">
+                    <p class="text-sm text-gray-500 mb-6">Dernière mise à jour : 3 décembre 2024</p>
+                    
+                    <div class="space-y-6 text-gray-700">
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">1. Acceptation des conditions</h4>
+                            <p class="leading-relaxed">
+                                En accédant et en utilisant le site MYAROU, vous acceptez d'être lié par les présentes Conditions Générales d'Utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre site.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">2. Utilisation du site</h4>
+                            <p class="leading-relaxed mb-3">
+                                Vous vous engagez à utiliser le site uniquement à des fins légales et d'une manière qui ne porte pas atteinte aux droits d'autrui. Il est notamment interdit de :
+                            </p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Publier du contenu offensant, diffamatoire ou illégal</li>
+                                <li>Tenter d'accéder de manière non autorisée au site ou aux systèmes</li>
+                                <li>Utiliser le site pour transmettre des virus ou codes malveillants</li>
+                                <li>Collecter des données personnelles d'autres utilisateurs</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">3. Propriété intellectuelle</h4>
+                            <p class="leading-relaxed">
+                                Tout le contenu présent sur le site (textes, images, logos, vidéos) est protégé par les droits d'auteur et appartient à MYAROU ou à ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation préalable est strictement interdite.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">4. Limitation de responsabilité</h4>
+                            <p class="leading-relaxed">
+                                MYAROU s'efforce de fournir des informations exactes et à jour, mais ne garantit pas l'exactitude, l'exhaustivité ou la pertinence du contenu. Nous ne saurions être tenus responsables des dommages directs ou indirects résultant de l'utilisation du site.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">5. Modifications</h4>
+                            <p class="leading-relaxed">
+                                Nous nous réservons le droit de modifier ces CGU à tout moment. Les modifications entreront en vigueur dès leur publication sur le site. Il est de votre responsabilité de consulter régulièrement ces conditions.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">6. Droit applicable</h4>
+                            <p class="leading-relaxed">
+                                Les présentes CGU sont régies par le droit français. Tout litige relatif à leur interprétation ou leur exécution relève de la compétence des tribunaux français.
+                            </p>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="bg-gray-50 px-8 py-4 flex justify-end">
+                    <button @click="showCGU = false" 
+                            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg transition-all">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Politique de confidentialité -->
+    <div x-show="showPrivacy" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" @click="showPrivacy = false"></div>
+
+            <div x-show="showPrivacy"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 px-8 py-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-3xl font-extrabold text-white">
+                            Politique de Confidentialité
+                        </h3>
+                        <button @click="showPrivacy = false" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-content px-8 py-6 max-h-96 overflow-y-auto">
+                    <p class="text-sm text-gray-500 mb-6">Dernière mise à jour : 3 décembre 2024</p>
+                    
+                    <div class="space-y-6 text-gray-700">
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">1. Collecte des données</h4>
+                            <p class="leading-relaxed mb-3">
+                                Nous collectons les types de données personnelles suivants :
+                            </p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Données d'identification (nom, prénom, email)</li>
+                                <li>Données de connexion (adresse IP, logs de navigation)</li>
+                                <li>Données de navigation (pages visitées, durée de visite)</li>
+                                <li>Données fournies via les formulaires de contact</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">2. Utilisation des données</h4>
+                            <p class="leading-relaxed mb-3">
+                                Vos données personnelles sont utilisées pour :
+                            </p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Fournir et améliorer nos services</li>
+                                <li>Répondre à vos demandes et questions</li>
+                                <li>Vous envoyer des informations sur nos activités (avec votre consentement)</li>
+                                <li>Analyser l'utilisation du site pour l'améliorer</li>
+                                <li>Assurer la sécurité et prévenir la fraude</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">3. Protection des données</h4>
+                            <p class="leading-relaxed">
+                                Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données contre tout accès non autorisé, modification, divulgation ou destruction. Nos serveurs sont sécurisés et les données sensibles sont chiffrées.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">4. Partage des données</h4>
+                            <p class="leading-relaxed">
+                                Nous ne vendons ni ne louons vos données personnelles à des tiers. Nous pouvons partager vos données uniquement avec des prestataires de services qui nous aident à exploiter notre site, dans le respect de la confidentialité.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">5. Vos droits</h4>
+                            <p class="leading-relaxed mb-3">
+                                Conformément au RGPD, vous disposez des droits suivants :
+                            </p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Droit d'accès à vos données</li>
+                                <li>Droit de rectification</li>
+                                <li>Droit à l'effacement</li>
+                                <li>Droit à la limitation du traitement</li>
+                                <li>Droit à la portabilité des données</li>
+                                <li>Droit d'opposition</li>
+                            </ul>
+                            <p class="mt-3 leading-relaxed">
+                                Pour exercer ces droits, contactez-nous à : contact@myarou.com
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">6. Conservation des données</h4>
+                            <p class="leading-relaxed">
+                                Nous conservons vos données personnelles aussi longtemps que nécessaire pour fournir nos services et respecter nos obligations légales. Les données de contact sont conservées jusqu'à 3 ans après votre dernière interaction avec nous.
+                            </p>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-8 py-4 flex justify-end">
+                    <button @click="showPrivacy = false" 
+                            class="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl font-bold hover:shadow-lg transition-all">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cookies -->
+    <div x-show="showCookies" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" @click="showCookies = false"></div>
+
+            <div x-show="showCookies"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                
+                <div class="bg-gradient-to-r from-orange-600 to-amber-600 px-8 py-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-3xl font-extrabold text-white">
+                            Politique relative aux Cookies
+                        </h3>
+                        <button @click="showCookies = false" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-content px-8 py-6 max-h-96 overflow-y-auto">
+                    <p class="text-sm text-gray-500 mb-6">Dernière mise à jour : 3 décembre 2024</p>
+                    
+                    <div class="space-y-6 text-gray-700">
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Qu'est-ce qu'un cookie ?</h4>
+                            <p class="leading-relaxed">
+                                Un cookie est un petit fichier texte déposé sur votre ordinateur lors de votre visite sur un site web. Il permet de mémoriser des informations sur votre navigation et d'améliorer votre expérience utilisateur.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Types de cookies utilisés</h4>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-blue-50 p-4 rounded-xl">
+                                    <h5 class="font-bold text-gray-900 mb-2">🍪 Cookies essentiels</h5>
+                                    <p class="text-sm">
+                                        Ces cookies sont nécessaires au fonctionnement du site. Ils permettent l'utilisation de fonctionnalités de base comme la navigation sécurisée. Ils ne peuvent pas être désactivés.
+                                    </p>
+                                </div>
+
+                                <div class="bg-purple-50 p-4 rounded-xl">
+                                    <h5 class="font-bold text-gray-900 mb-2">📊 Cookies analytiques</h5>
+                                    <p class="text-sm">
+                                        Ces cookies nous aident à comprendre comment les visiteurs interagissent avec notre site en collectant et en rapportant des informations de manière anonyme (Google Analytics).
+                                    </p>
+                                </div>
+
+                                <div class="bg-green-50 p-4 rounded-xl">
+                                    <h5 class="font-bold text-gray-900 mb-2">⚙️ Cookies fonctionnels</h5>
+                                    <p class="text-sm">
+                                        Ces cookies permettent au site de se souvenir des choix que vous faites (comme votre langue ou votre région) et fournissent des fonctionnalités améliorées.
+                                    </p>
+                                </div>
+
+                                <div class="bg-pink-50 p-4 rounded-xl">
+                                    <h5 class="font-bold text-gray-900 mb-2">🎯 Cookies publicitaires</h5>
+                                    <p class="text-sm">
+                                        Nous n'utilisons actuellement pas de cookies publicitaires sur notre site.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Durée de conservation</h4>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Cookies de session : supprimés à la fermeture du navigateur</li>
+                                <li>Cookies persistants : conservés jusqu'à 13 mois maximum</li>
+                            </ul>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Gérer vos cookies</h4>
+                            <p class="leading-relaxed mb-3">
+                                Vous pouvez à tout moment gérer vos préférences en matière de cookies :
+                            </p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Via les paramètres de votre navigateur</li>
+                                <li>En supprimant les cookies existants</li>
+                                <li>En bloquant les cookies tiers</li>
+                            </ul>
+                            <p class="mt-3 text-sm text-gray-600 bg-yellow-50 p-4 rounded-lg">
+                                ⚠️ Attention : La désactivation de certains cookies peut affecter le fonctionnement du site.
+                            </p>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-8 py-4 flex justify-end">
+                    <button @click="showCookies = false" 
+                            class="px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-bold hover:shadow-lg transition-all">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Mentions légales -->
+    <div x-show="showLegal" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" @click="showLegal = false"></div>
+
+            <div x-show="showLegal"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="relative inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-3xl font-extrabold text-white">
+                            Mentions Légales
+                        </h3>
+                        <button @click="showLegal = false" class="text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-content px-8 py-6 max-h-96 overflow-y-auto">
+                    <p class="text-sm text-gray-500 mb-6">Dernière mise à jour : 3 décembre 2024</p>
+                    
+                    <div class="space-y-6 text-gray-700">
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Éditeur du site</h4>
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <p class="mb-2"><strong>Nom :</strong> MYAROU</p>
+                                <p class="mb-2"><strong>Forme juridique :</strong> Association loi 1901</p>
+                                <p class="mb-2"><strong>Siège social :</strong> Paris, France</p>
+                                <p class="mb-2"><strong>Email :</strong> contact@myarou.com</p>
+                                <p><strong>Responsable de publication :</strong> Mvingalakani Yércia</p>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Hébergement</h4>
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <p class="mb-2"><strong>Hébergeur :</strong> [Nom de l'hébergeur]</p>
+                                <p class="mb-2"><strong>Adresse :</strong> [Adresse de l'hébergeur]</p>
+                                <p><strong>Téléphone :</strong> [Numéro de téléphone]</p>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Propriété intellectuelle</h4>
+                            <p class="leading-relaxed">
+                                L'ensemble du contenu de ce site (textes, images, vidéos, logos) est la propriété exclusive de MYAROU ou de ses partenaires. Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site est interdite, sauf autorisation écrite préalable de MYAROU.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Données personnelles</h4>
+                            <p class="leading-relaxed">
+                                Conformément à la loi Informatique et Libertés du 6 janvier 1978 modifiée et au Règlement Général sur la Protection des Données (RGPD), vous disposez d'un droit d'accès, de rectification, de suppression et d'opposition aux données personnelles vous concernant. Pour exercer ces droits, contactez-nous à : contact@myarou.com
+                            </p>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Crédits</h4>
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <p class="mb-2"><strong>Conception et développement :</strong> MYAROU</p>
+                                <p class="mb-2"><strong>Photos :</strong> Unsplash (sous licence libre)</p>
+                                <p><strong>Icônes :</strong> Heroicons</p>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h4 class="text-xl font-bold text-gray-900 mb-3">Droit applicable</h4>
+                            <p class="leading-relaxed">
+                                Les présentes mentions légales sont soumises au droit français. En cas de litige et à défaut d'accord amiable, le litige sera porté devant les tribunaux français conformément aux règles de compétence en vigueur.
+                            </p>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 px-8 py-4 flex justify-end">
+                    <button @click="showLegal = false" 
+                            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg transition-all">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Back to Top Button -->
     <button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
