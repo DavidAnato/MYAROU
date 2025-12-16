@@ -60,7 +60,7 @@ class ArticleDetailView(DetailView):
 
 def home(request):
     """Page d'accueil"""
-    recent_articles = Article.objects.filter(status='published')[:6]
+    recent_articles = Article.objects.filter(status='published').order_by('-published_at')[:3]
     categories = Category.objects.all()[:6]
     popular_articles = Article.objects.filter(status='published').order_by('-views')[:3]
     
