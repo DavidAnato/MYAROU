@@ -109,11 +109,11 @@
     showLegal: false
 }" 
       @scroll.window="scrolled = window.pageYOffset > 50"
-      @keydown.escape="showCGU = false; showPrivacy = false; showCookies = false; showLegal = false">
+      @keydown.escape="mobileMenuOpen = false; showCGU = false; showPrivacy = false; showCookies = false; showLegal = false">
     
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-         :class="scrolled ? 'bg-white shadow-lg' : 'bg-transparent'">
+         :class="[mobileMenuOpen ? 'bg-white shadow-lg' : 'bg-transparent', scrolled ? 'lg:bg-white lg:shadow-lg' : 'lg:bg-transparent lg:shadow-none']">
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
@@ -124,7 +124,7 @@
                         </div>
                     </div>
                     <div>
-                        <span class="text-2xl font-extrabold" :class="scrolled ? 'text-gray-900' : 'text-white'">
+                        <span class="text-2xl font-extrabold" :class="[mobileMenuOpen ? 'text-gray-900' : 'text-white', scrolled ? 'lg:text-gray-900' : 'lg:text-white']">
                             MYAROU
                         </span>
                     </div>
@@ -179,7 +179,7 @@
                 <!-- Mobile Menu Button -->
                 <button @click="mobileMenuOpen = !mobileMenuOpen" 
                         class="lg:hidden p-2 rounded-lg transition-colors"
-                        :class="scrolled ? 'text-gray-700 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                        :class="[mobileMenuOpen ? 'text-gray-700 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20', scrolled ? 'lg:text-gray-700 lg:hover:bg-purple-50' : 'lg:text-white lg:hover:bg-white lg:hover:bg-opacity-20']">
                     <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
@@ -197,25 +197,29 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 transform scale-100"
                  x-transition:leave-end="opacity-0 transform scale-95"
-                 class="lg:hidden pb-4 space-y-2">
+                 class="lg:hidden pb-4 space-y-2" @click.outside="mobileMenuOpen = false">
                 <a href="{% url 'blog:home' %}" 
-                   class="block px-4 py-3 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all font-semibold">
-                    🏠 Accueil
+                   class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-house w-5 h-5"></i>
+                    Accueil
                 </a>
                 <a href="{% url 'blog:about' %}" 
-                   class="block px-4 py-3 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all font-semibold">
-                    ℹ️ À propos
+                   class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-circle-info w-5 h-5"></i>
+                    À propos
                 </a>
                 <a href="{% url 'blog:article_list' %}" 
-                   class="block px-4 py-3 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all font-semibold">
-                    📚 Blog
+                   class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-blog w-5 h-5"></i>
+                    Blog
                 </a>
                 <a href="{% url 'blog:contact' %}" 
-                   class="block px-4 py-3 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all font-semibold">
-                    📧 Contact
+                   class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                    <i class="fa-solid fa-envelope w-5 h-5"></i>
+                    Contact
                 </a>
                 <a href="{% url 'dashboard:index' %}" 
-                   class="block px-4 py-3 bg-white text-purple-600 rounded-lg font-bold text-center">
+                   class="block px-4 py-3 bg-white text-purple-600 rounded-lg font-bold text-center" @click="mobileMenuOpen = false">
                     Connexion
                 </a>
             </div>

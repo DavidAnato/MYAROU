@@ -9,7 +9,7 @@ class ArticleForm(forms.ModelForm):
         model = Article
         fields = [
             'title', 'slug', 'author', 'category',
-            'content', 'excerpt', 'image', 'tags', 'status', 'published_at',
+            'content', 'excerpt', 'image', 'tags', 'status',
             'meta_description', 'meta_keywords'
         ]
         widgets = {
@@ -43,10 +43,6 @@ class ArticleForm(forms.ModelForm):
             'image': forms.FileInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
                 'accept': 'image/*'
-            }),
-            'published_at': forms.DateTimeInput(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-                'type': 'datetime-local'
             }),
             'meta_description': forms.Textarea(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',

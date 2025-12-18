@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils import timezone
 from .models import Category, Article
 
 
@@ -37,6 +38,7 @@ class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     date_hierarchy = 'published_at'
     readonly_fields = ['created_at', 'updated_at', 'views', 'image_preview']
+    exclude = ('published_at',)
     
     fieldsets = (
         ('Informations principales', {
@@ -54,7 +56,7 @@ class ArticleAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Dates', {
-            'fields': ('published_at', 'created_at', 'updated_at'),
+            'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
@@ -73,8 +75,12 @@ class ArticleAdmin(admin.ModelAdmin):
         return "Aucune image uploadée"
     image_preview.short_description = "Aperçu"
     
+    def save_model(self, request, obj, form, change):
+        if obj.status == 'published' and not obj.published_at:
+            obj.published_at = timezone.now()
+        super().save_model(request, obj, form, change)
+
     def publish_articles(self, request, queryset):
-        from django.utils import timezone
         updated = queryset.update(status='published', published_at=timezone.now())
         self.message_user(request, f'{updated} article(s) ont été publiés.')
     publish_articles.short_description = "Publier les articles sélectionnés"
