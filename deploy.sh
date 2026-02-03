@@ -25,7 +25,13 @@ fi
 git fetch --all
 git reset --hard origin/main
 
-# 4️⃣ Activer l'environnement virtuel
+# 4️⃣ Corriger les permissions critiques
+# SQLite et deploy.sh
+sudo chown david:david db.sqlite3
+chmod 664 db.sqlite3
+chmod +x deploy.sh
+
+# 5️⃣ Activer l'environnement virtuel
 if [ -d "$VENV_DIR" ]; then
     source "$VENV_DIR/bin/activate"
 else
@@ -35,21 +41,15 @@ else
     pip install --upgrade pip
 fi
 
-# 5️⃣ Installer les dépendances
+# 6️⃣ Installer les dépendances
 pip install -r requirements.txt
 
-# 6️⃣ Appliquer les migrations Django
+# 7️⃣ Créer les migrations si nécessaire et appliquer
 python manage.py makemigrations
 python manage.py migrate
 
-# 7️⃣ Collecter les fichiers statiques
+# 8️⃣ Collecter les fichiers statiques
 python manage.py collectstatic --noinput
 
-# 8️⃣ Redémarrer le service systemd
-sudo systemctl restart $SERVICE_NAME
-sudo systemctl status $SERVICE_NAME --no-pager
-
-# 9️⃣ Recharger Nginx
-sudo nginx -t && sudo systemctl reload nginx
-
-echo "✅ Déploiement terminé !"
+# 9️⃣ Redémarrer le service Gunicorn
+sudo systemctl restart $
