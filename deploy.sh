@@ -39,6 +39,7 @@ fi
 pip install -r requirements.txt
 
 # 6️⃣ Appliquer les migrations Django
+python manage.py makemigrations
 python manage.py migrate
 
 # 7️⃣ Collecter les fichiers statiques
