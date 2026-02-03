@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load json_i18n %}
 {% load static %}
+{% load blog_extras %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}" class="scroll-smooth">
@@ -159,7 +160,7 @@
     
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-         :class="[mobileMenuOpen ? 'bg-white dark:bg-gray-900 shadow-lg' : 'bg-transparent', scrolled ? 'lg:bg-white dark:lg:bg-gray-900 lg:shadow-lg' : 'lg:bg-transparent lg:shadow-none']">
+         :class="[mobileMenuOpen ? 'bg-white dark:bg-gray-900 shadow-lg' : 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md lg:bg-transparent', scrolled ? 'lg:bg-white dark:lg:bg-gray-900 lg:shadow-lg' : 'lg:bg-transparent lg:shadow-none']">
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
@@ -170,7 +171,7 @@
                         </div>
                     </div>
                     <div>
-                        <span class="text-2xl font-extrabold" :class="[mobileMenuOpen ? 'text-gray-900' : 'text-white', scrolled ? 'lg:text-gray-900' : 'lg:text-white']">
+                        <span class="text-2xl font-extrabold" :class="[mobileMenuOpen ? 'text-gray-900 dark:text-white' : 'text-white', scrolled ? 'lg:text-gray-900 dark:lg:text-white' : 'lg:text-white']">
                             MYAROU
                         </span>
                     </div>
@@ -178,24 +179,43 @@
                 
                 <!-- Desktop Menu -->
                 <div class="hidden lg:flex items-center space-x-1">
+                    {% is_active request 'blog:home' as home_active %}
                     <a href="{% url 'blog:home' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
-                       :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                       :class="[
+                           scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20',
+                           {{ home_active|yesno:'true,false' }} ? (scrolled ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-gray-800' : 'bg-white bg-opacity-20') : ''
+                       ]">
                         {% t "site.menu.home" %}
                     </a>
+
+                    {% is_active request 'blog:about' as about_active %}
                     <a href="{% url 'blog:about' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
-                       :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                       :class="[
+                           scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20',
+                           {{ about_active|yesno:'true,false' }} ? (scrolled ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-gray-800' : 'bg-white bg-opacity-20') : ''
+                       ]">
                         {% t "site.menu.about" %}
                     </a>
+
+                    {% is_active request 'blog:article_list' 'blog:article_detail' as blog_active %}
                     <a href="{% url 'blog:article_list' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
-                       :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                       :class="[
+                           scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20',
+                           {{ blog_active|yesno:'true,false' }} ? (scrolled ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-gray-800' : 'bg-white bg-opacity-20') : ''
+                       ]">
                         {% t "site.menu.blog" %}
                     </a>
+
+                    {% is_active request 'blog:contact' as contact_active %}
                     <a href="{% url 'blog:contact' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
-                       :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                       :class="[
+                           scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20',
+                           {{ contact_active|yesno:'true,false' }} ? (scrolled ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-gray-800' : 'bg-white bg-opacity-20') : ''
+                       ]">
                         {% t "site.menu.contact" %}
                     </a>
                     
@@ -211,7 +231,7 @@
                         {% get_current_language as LANGUAGE_CODE %}
                         <button @click="open = !open" @click.outside="open = false" 
                                 class="flex items-center gap-2 font-semibold transition-colors px-3 py-2 rounded-lg"
-                                :class="scrolled ? 'text-gray-700 hover:bg-purple-50 hover:text-purple-600' : 'text-white hover:bg-white/20'">
+                                :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 hover:text-purple-600' : 'text-white hover:bg-white/20'">
                             <i class="fas fa-globe"></i>
                             <span>{{ LANGUAGE_CODE|upper }}</span>
                             <i class="fas fa-chevron-down text-xs transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
@@ -295,22 +315,30 @@
                  x-transition:leave-end="opacity-0 transform scale-95"
                  class="lg:hidden pb-4 space-y-2 dark:bg-gray-900" @click.outside="mobileMenuOpen = false">
                 <a href="{% url 'blog:home' %}" 
-                   class="block px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-2"
+                   :class="{{ home_active|yesno:'true,false' }} ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-gray-800' : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800'"
+                   @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-house w-5 h-5"></i>
                     {% t "site.menu.home" %}
                 </a>
                 <a href="{% url 'blog:about' %}" 
-                   class="block px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-2"
+                   :class="{{ about_active|yesno:'true,false' }} ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-gray-800' : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800'"
+                   @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-circle-info w-5 h-5"></i>
                     {% t "site.menu.about" %}
                 </a>
                 <a href="{% url 'blog:article_list' %}" 
-                   class="block px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-2"
+                   :class="{{ blog_active|yesno:'true,false' }} ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-gray-800' : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800'"
+                   @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-blog w-5 h-5"></i>
                     {% t "site.menu.blog" %}
                 </a>
                 <a href="{% url 'blog:contact' %}" 
-                   class="block px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-2"
+                   :class="{{ contact_active|yesno:'true,false' }} ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-gray-800' : 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800'"
+                   @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-envelope w-5 h-5"></i>
                     {% t "site.menu.contact" %}
                 </a>
