@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static json_i18n %}
 
 {% block title %}Articles de blog - MYAROU{% endblock %}
 
@@ -24,10 +24,10 @@
     <div class="container mx-auto px-4 py-32 relative z-20">
         <div class="max-w-4xl mx-auto text-center space-y-6">
             <div class="inline-block">
-                <span class="bg-white/10 px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider border border-white/20">📚 Blog & Ressources</span>
+                <span class="bg-white/10 px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider border border-white/20">📚 {% t "site.blog.badge" %}</span>
             </div>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold">Découvrez nos <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">articles</span></h1>
-            <p class="text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">Leadership, développement personnel, entrepreneuriat et bien plus encore. Explorez nos contenus pour vous inspirer et progresser.</p>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold">{% t "site.blog.hero.title_prefix" %} <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">{% t "site.blog.hero.title_highlight" %}</span></h1>
+            <p class="text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">{% t "site.blog.hero.description" %}</p>
         </div>
     </div>
     <div class="absolute bottom-0 left-0 w-full leading-none">
@@ -53,7 +53,7 @@
                     <input type="text" 
                            name="search" 
                            value="{{ search_query }}"
-                           placeholder="Rechercher un article, un mot-clé..." 
+                           placeholder="{% t 'site.blog.search.placeholder' %}" 
                            class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-400">
                 </div>
                 
@@ -61,7 +61,7 @@
                 <div class="relative">
                     <select name="category" 
                             class="w-full lg:w-64 px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all appearance-none bg-white text-gray-900 font-medium cursor-pointer">
-                        <option value="">📁 Toutes les catégories</option>
+                        <option value="">📁 {% t "site.blog.filter.all_categories" %}</option>
                         {% for cat in categories %}
                         <option value="{{ cat.slug }}" {% if category_filter == cat.slug %}selected{% endif %}>
                             {{ cat.name }}
@@ -81,14 +81,14 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                     </svg>
-                    Filtrer
+                    {% t "site.blog.filter.button" %}
                 </button>
             </div>
             
             <!-- Active Filters Display -->
             {% if search_query or category_filter %}
             <div class="mt-4 flex items-center gap-3 flex-wrap">
-                <span class="text-sm text-gray-600 font-medium">Filtres actifs :</span>
+                <span class="text-sm text-gray-600 font-medium">{% t "site.blog.filter.active_label" %}</span>
                 
                 {% if search_query %}
                 <span class="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
@@ -104,7 +104,7 @@
                 
                 {% if category_filter %}
                 <span class="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                    📁 Catégorie
+                    📁 {% t "site.blog.filter.category_label" %}
                     <a href="?{% if search_query %}search={{ search_query }}{% endif %}" 
                        class="hover:text-purple-900">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +116,7 @@
                 
                 <a href="{% url 'blog:article_list' %}" 
                    class="text-sm text-gray-600 hover:text-gray-900 underline font-medium">
-                    Réinitialiser tous les filtres
+                    {% t "site.blog.filter.reset" %}
                 </a>
             </div>
             {% endif %}
@@ -130,7 +130,12 @@
         <!-- Results Count -->
         <div class="max-w-6xl mx-auto mb-8">
             <p class="text-gray-600">
-                <span class="font-bold text-gray-900">{{ articles|length }}</span> article{{ articles|length|pluralize }} trouvé{{ articles|length|pluralize }}
+                <span class="font-bold text-gray-900">{{ articles|length }}</span>
+                {% if articles|length <= 1 %}
+                    {% t "site.blog.results.singular" %}
+                {% else %}
+                    {% t "site.blog.results.plural" %}
+                {% endif %}
             </p>
         </div>
         
@@ -191,7 +196,7 @@
                     <!-- Read More Link -->
                     <a href="{% url 'blog:article_detail' article.slug %}" 
                        class="inline-flex items-center gap-2 text-blue-600 font-bold hover:text-blue-700 group-hover:gap-3 transition-all">
-                        Lire l'article
+                        {% t "site.blog.article.read_more" %}
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                         </svg>
@@ -208,14 +213,14 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Aucun article trouvé</h3>
-                        <p class="text-gray-600 mb-6">Essayez de modifier vos critères de recherche ou explorez d'autres catégories.</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">{% t "site.blog.results.empty.title" %}</h3>
+                        <p class="text-gray-600 mb-6">{% t "site.blog.results.empty.description" %}</p>
                         <a href="{% url 'blog:article_list' %}" 
                            class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-xl transform hover:scale-105 transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                             </svg>
-                            Réinitialiser les filtres
+                            {% t "site.blog.results.empty.button" %}
                         </a>
                     </div>
                 </div>
@@ -239,20 +244,20 @@
                 <!-- Previous Page -->
                 <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
                    class="px-5 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:text-blue-600 transition-all font-bold">
-                    Précédent
+                    {% t "site.blog.pagination.previous" %}
                 </a>
                 {% endif %}
                 
                 <!-- Current Page -->
                 <span class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold shadow-lg">
-                    Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    {% t "site.blog.pagination.page" %} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
                 </span>
                 
                 {% if page_obj.has_next %}
                 <!-- Next Page -->
                 <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
                    class="px-5 py-3 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:text-blue-600 transition-all font-bold">
-                    Suivant
+                    {% t "site.blog.pagination.next" %}
                 </a>
                 
                 <!-- Last Page -->
@@ -280,14 +285,14 @@
     <div class="container mx-auto px-4 relative z-10">
         <div class="max-w-4xl mx-auto text-center space-y-6">
             <h2 class="text-4xl md:text-5xl font-extrabold">
-                Vous n'avez pas trouvé ce que vous cherchez ?
+                {% t "site.blog.cta.title" %}
             </h2>
             <p class="text-xl text-gray-100 leading-relaxed">
-                Contactez-nous pour des questions spécifiques ou proposez-nous des sujets que vous aimeriez voir traités.
+                {% t "site.blog.cta.description" %}
             </p>
             <a href="{% url 'blog:contact' %}" 
                class="inline-flex items-center gap-2 px-10 py-5 bg-white text-blue-600 rounded-full font-bold text-lg hover:bg-gray-100 transform hover:scale-105 transition-all shadow-2xl">
-                Nous contacter
+                {% t "site.blog.cta.button" %}
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                 </svg>

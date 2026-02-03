@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}Catégories{% endblock %}
-{% block page_title %}Gestion des Catégories{% endblock %}
+{% block page_title %}Catégories{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -54,7 +54,7 @@
 <div class="mb-6 flex justify-between items-center">
     <div>
         <p class="text-gray-600">
-            <span class="font-semibold text-gray-900">{{ categories.count }}</span> catégorie{{ categories.count|pluralize }} au total
+            <span class="font-semibold text-gray-900">{{ categories.count }}</span> Catégories
         </p>
     </div>
     <a href="{% url 'dashboard:category_create' %}" 
@@ -101,78 +101,77 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    {{ category.get_article_count }} article{{ category.get_article_count|pluralize }}
-                </span>
-            </div>
-        </div>
-        
-        <!-- Actions -->
-        <div class="flex gap-2 pt-4 border-t border-gray-100">
-            <a href="{% url 'dashboard:category_edit' category.pk %}" 
-               class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                Modifier
-            </a>
-            <button onclick="confirmDelete('{{ category.name }}', '{% url 'dashboard:category_delete' category.pk %}')"
-                    class="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-            </button>
+                {{ category.get_article_count }} articles
+            </span>
         </div>
     </div>
-    {% endfor %}
+    
+    <!-- Actions -->
+    <div class="flex gap-2 pt-4 border-t border-gray-100">
+        <a href="{% url 'dashboard:category_edit' category.pk %}" 
+           class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Modifier
+        </a>
+        <button onclick="confirmDelete('{{ category.name }}', '{% url 'dashboard:category_delete' category.pk %}')"
+                class="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+{% endfor %}
 </div>
 {% else %}
 <div class="text-center py-12">
-    <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
-        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-        </svg>
-    </div>
-    <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucune catégorie</h3>
-    <p class="text-gray-600 mb-6">Commencez par créer votre première catégorie</p>
-    <a href="{% url 'dashboard:category_create' %}" 
-       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Créer une catégorie
-    </a>
+<div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-4">
+    <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+    </svg>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-2">Aucune catégorie</h3>
+<p class="text-gray-600 mb-6">Commencez par créer votre première catégorie</p>
+<a href="{% url 'dashboard:category_create' %}" 
+   class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg">
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    Nouvelle catégorie
+</a>
 </div>
 {% endif %}
 
 <!-- Modal de confirmation de suppression -->
 <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-    <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 transform transition-all">
-        <div class="text-center">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Supprimer la catégorie</h3>
-            <p class="text-gray-600 mb-6">
-                Êtes-vous sûr de vouloir supprimer la catégorie <span id="categoryName" class="font-semibold"></span> ?
-                Cette action est irréversible.
-            </p>
-            <div class="flex gap-3">
-                <button onclick="closeDeleteModal()" 
-                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    Annuler
+<div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 transform transition-all">
+    <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Supprimer la catégorie</h3>
+        <p class="text-gray-600 mb-6">
+            Êtes-vous sûr de vouloir supprimer la catégorie <span id="categoryName" class="font-semibold"></span> ?
+        </p>
+        <div class="flex gap-3">
+            <button onclick="closeDeleteModal()" 
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                Annuler
+            </button>
+            <form id="deleteForm" method="post" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+                    Supprimer
                 </button>
-                <form id="deleteForm" method="post" class="flex-1">
-                    {% csrf_token %}
-                    <button type="submit" 
-                            class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
-                        Supprimer
-                    </button>
-                </form>
-            </div>
+            </form>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
 

@@ -88,6 +88,20 @@ class Article(models.Model):
         help_text="Image principale (optionnel)."
     )
     
+    # Vidéo
+    video_file = models.FileField(
+        upload_to='articles/videos/',
+        blank=True,
+        null=True,
+        verbose_name="Fichier vidéo",
+        help_text="Télécharger une vidéo (MP4, WebM, etc.)."
+    )
+    video_url = models.URLField(
+        blank=True,
+        verbose_name="Lien vidéo",
+        help_text="Lien vers une vidéo (YouTube, Vimeo, etc.). Si une vidéo est téléchargée, ce lien sera ignoré."
+    )
+    
     # Auteur en texte simple
     author = models.CharField(
         max_length=100,
@@ -177,3 +191,27 @@ class Article(models.Model):
     def get_tags_list(self):
         """Retourne les tags sous forme de liste"""
         return [tag.strip() for tag in self.tags.split(',') if tag.strip()]
+
+    def get_video_embed_url(self):
+        """Transforme l'URL de la vidéo en URL d'intégration (embed)"""
+        if not self.video_url:
+            return None
+            
+        # YouTube
+        if 'youtube.com' in self.video_url or 'youtu.be' in self.video_url:
+            video_id = None
+            if 'youtube.com/watch?v=' in self.video_url:
+                video_id = self.video_url.split('v=')[1].split('&')[0]
+            elif 'youtu.be/' in self.video_url:
+                video_id = self.video_url.split('youtu.be/')[1].split('?')[0]
+            
+            if video_id:
+                return f"https://www.youtube.com/embed/{video_id}"
+                
+        # Vimeo
+        elif 'vimeo.com' in self.video_url:
+            video_id = self.video_url.split('/')[-1]
+            if video_id.isdigit():
+                return f"https://player.vimeo.com/video/{video_id}"
+                
+        return self.video_url

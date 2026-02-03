@@ -9,7 +9,7 @@ class ArticleForm(forms.ModelForm):
         model = Article
         fields = [
             'title', 'slug', 'author', 'category',
-            'content', 'excerpt', 'image', 'tags', 'status',
+            'content', 'excerpt', 'image', 'video_file', 'video_url', 'tags', 'status',
             'meta_description', 'meta_keywords'
         ]
         widgets = {
@@ -43,6 +43,14 @@ class ArticleForm(forms.ModelForm):
             'image': forms.FileInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
                 'accept': 'image/*'
+            }),
+            'video_file': forms.FileInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'accept': 'video/*'
+            }),
+            'video_url': forms.URLInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                'placeholder': 'https://www.youtube.com/watch?v=...'
             }),
             'meta_description': forms.Textarea(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',

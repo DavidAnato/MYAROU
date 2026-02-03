@@ -1,0 +1,97 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-10 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Accueil - MYAROU"
+msgstr "Home - MYAROU"
+
+msgid "Basketteur Pro & MBA HEC Paris"
+msgstr "Pro Basketball Player & MBA HEC Paris"
+
+msgid "Libérez votre"
+msgstr "Unleash your"
+
+msgid "potentiel."
+msgstr "potential."
+
+msgid "Ancien joueur professionnel, diplômé MBA HEC Paris et fondateur de MY BARIKA. Je vous accompagne dans votre développement personnel et professionnel à travers des articles exclusifs."
+msgstr "Former professional player, MBA HEC Paris graduate and founder of MY BARIKA. I support you in your personal and professional development through exclusive articles."
+
+msgid "Découvrir les articles"
+msgstr "Discover articles"
+
+msgid "Mon parcours"
+msgstr "My journey"
+
+msgid "Disponible"
+msgstr "Available"
+
+msgid "Mentoring 1:1"
+msgstr "1:1 Mentoring"
+
+msgid "Le sport a cette capacité de fédérer, de réunir des personnes autour des mêmes passions."
+msgstr "Sport has this ability to unite, to bring people together around the same passions."
+
+msgid "Vecteur d'émotions, de rêves et d'espoir."
+msgstr "Vector of emotions, dreams and hope."
+
+msgid "Fondateur de MY BARIKA"
+msgstr "Founder of MY BARIKA"
+
+msgid "Lire mon histoire"
+msgstr "Read my story"
+
+msgid "VISION"
+msgstr "VISION"
+
+msgid "Ma Mission"
+msgstr "My Mission"
+
+msgid "Accompagner la nouvelle génération africaine vers l'excellence, en combinant sport, leadership et entrepreneuriat."
+msgstr "Supporting the new African generation towards excellence, by combining sport, leadership and entrepreneurship."
+
+msgid "Leadership"
+msgstr "Leadership"
+
+msgid "Développer les compétences de leadership nécessaires pour transformer les communautés et inspirer le changement."
+msgstr "Develop the leadership skills needed to transform communities and inspire change."
+
+msgid "Accueil"
+msgstr "Home"
+
+msgid "À propos"
+msgstr "About"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Mon parcours - MYAROU"
+msgstr "My journey - MYAROU"
+
+msgid "Contactez"
+msgstr "Contact"
+
+msgid "Une question sur les articles de blog ? Envie de collaborer ? Intéressé par MY BARIKA ? N'hésitez pas à nous écrire."
+msgstr "A question about blog articles? Want to collaborate? Interested in MY BARIKA? Do not hesitate to write to us."
+
+msgid "Réponse sous 24h"
+msgstr "Response within 24h"
+
+msgid "French"
+msgstr "French"
+
+msgid "English"
+msgstr "English"

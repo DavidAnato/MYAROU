@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static json_i18n %}
 
 {% block title %}Contact - MYAROU{% endblock %}
 
 {% block hero %}
 <section class="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden">
-        <div class="absolute inset-0 overflow-hidden opacity-15">
+    <div class="absolute inset-0 overflow-hidden opacity-15">
         <div class="absolute w-[500px] h-[500px] bg-white rounded-full -top-64 -left-64 animate-float"></div>
         <div class="absolute w-72 h-72 bg-yellow-300 rounded-full -top-36 right-20 animate-pulse-slow"></div>
         <div class="absolute w-40 h-40 bg-pink-300 rounded-full top-32 right-1/4 animate-float-delayed"></div>
@@ -19,12 +19,12 @@
 
     <div class="container mx-auto px-4 py-32 md:py-40 relative z-20">
         <div class="max-w-4xl mx-auto text-center space-y-6">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold">Contactez <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">Mouphtaou</span></h1>
-            <p class="text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">Une question sur les articles de blog ? Envie de collaborer ? Intéressé par MY BARIKA ? N'hésitez pas à nous écrire.</p>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold">{% t "site.contact.hero.title_prefix" %} <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">Mouphtaou</span></h1>
+            <p class="text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">{% t "site.contact.hero.description" %}</p>
             <div class="flex flex-wrap justify-center gap-6 pt-6">
                 <div class="flex items-center gap-2 bg-white/10 px-6 py-3 rounded-full border border-white/20">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="font-semibold">Réponse sous 24h</span>
+                    <span class="font-semibold">{% t "site.contact.hero.response_time" %}</span>
                 </div>
             </div>
         </div>
@@ -50,11 +50,11 @@
                         <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
-                        <h2 class="text-3xl font-extrabold text-gray-900">Envoyez-nous un message</h2>
+                        <h2 class="text-3xl font-extrabold text-gray-900">{% t "site.contact.form.title" %}</h2>
                     </div>
                     
                     <p class="text-gray-600 mb-8">
-                        Remplissez le formulaire ci-dessous et nous vous répondrons rapidement.
+                        {% t "site.contact.form.description" %}
                     </p>
                     
                     <form method="post" class="space-y-6">
@@ -64,19 +64,19 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-2">
-                                    Nom complet <span class="text-red-500">*</span>
+                                    {% t "site.contact.form.label.name" %} <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="name" required
-                                       placeholder="Votre nom complet"
+                                       placeholder="{% t 'site.contact.form.placeholder.name' %}"
                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-bold text-gray-700 mb-2">
-                                    Email <span class="text-red-500">*</span>
+                                    {% t "site.contact.form.label.email" %} <span class="text-red-500">*</span>
                                 </label>
                                 <input type="email" name="email" required
-                                       placeholder="votre@email.com"
+                                       placeholder="{% t 'site.contact.form.placeholder.email' %}"
                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                             </div>
                         </div>
@@ -84,44 +84,44 @@
                         <!-- Type de demande -->
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">
-                                Type de demande
+                                {% t "site.contact.form.label.request_type" %}
                             </label>
                             <select name="request_type"
                                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all bg-white">
-                                <option value="">Sélectionnez le type de votre demande</option>
-                                <option value="blog">Question sur un article de blog</option>
-                                <option value="collaboration">Proposition de collaboration</option>
-                                <option value="barika">MY BARIKA - Bénévolat</option>
-                                <option value="barika_don">MY BARIKA - Faire un don</option>
-                                <option value="coaching">Coaching personnalisé</option>
-                                <option value="autre">Autre demande</option>
+                                <option value="">{% t "site.contact.form.option.default" %}</option>
+                                <option value="blog">{% t "site.contact.form.option.blog" %}</option>
+                                <option value="collaboration">{% t "site.contact.form.option.collaboration" %}</option>
+                                <option value="barika">{% t "site.contact.form.option.barika" %}</option>
+                                <option value="barika_don">{% t "site.contact.form.option.barika_don" %}</option>
+                                <option value="coaching">{% t "site.contact.form.option.coaching" %}</option>
+                                <option value="autre">{% t "site.contact.form.option.other" %}</option>
                             </select>
                         </div>
                         
                         <!-- Sujet -->
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">
-                                Sujet <span class="text-red-500">*</span>
+                                {% t "site.contact.form.label.subject" %} <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="subject" required
-                                   placeholder="Résumez votre demande en quelques mots"
+                                   placeholder="{% t 'site.contact.form.placeholder.subject' %}"
                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
                         </div>
                         
                         <!-- Message -->
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">
-                                Message <span class="text-red-500">*</span>
+                                {% t "site.contact.form.label.message" %} <span class="text-red-500">*</span>
                             </label>
                             <textarea name="message" rows="6" required
-                                      placeholder="Décrivez votre demande en détail..."
+                                      placeholder="{% t 'site.contact.form.placeholder.message' %}"
                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"></textarea>
                         </div>
                         
                         <!-- Submit Button -->
                         <button type="submit" 
                                 class="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold text-lg hover:shadow-2xl transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 group">
-                            Envoyer le message
+                            {% t "site.contact.form.submit" %}
                             <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                             </svg>
@@ -134,7 +134,7 @@
             <div class="lg:col-span-2 space-y-6">
                 <!-- Informations de contact -->
                 <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 border border-blue-100">
-                    <h3 class="text-2xl font-extrabold text-gray-900 mb-6">Informations de contact</h3>
+                    <h3 class="text-2xl font-extrabold text-gray-900 mb-6">{% t "site.contact.info.title" %}</h3>
                     
                     <div class="space-y-6">
                         <!-- Email -->
@@ -145,7 +145,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h4 class="font-bold text-gray-900 mb-1">Email</h4>
+                                <h4 class="font-bold text-gray-900 mb-1">{% t "site.contact.info.email" %}</h4>
                                 <a href="mailto:contact@myarou.com" class="text-blue-600 hover:text-blue-700 font-medium">
                                     contact@myarou.com
                                 </a>
@@ -161,7 +161,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h4 class="font-bold text-gray-900 mb-1">Localisation</h4>
+                                <h4 class="font-bold text-gray-900 mb-1">{% t "site.contact.info.location" %}</h4>
                                 <p class="text-gray-700">Paris, France</p>
                             </div>
                         </div>
@@ -170,7 +170,7 @@
                 
                 <!-- Actions rapides -->
                 <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-                    <h3 class="text-2xl font-extrabold text-gray-900 mb-6">Actions rapides</h3>
+                    <h3 class="text-2xl font-extrabold text-gray-900 mb-6">{% t "site.contact.actions.title" %}</h3>
                     
                     <div class="space-y-4">
                         <a href="{% url 'blog:article_list' %}" 
@@ -181,7 +181,7 @@
                                 </svg>
                             </div>
                             <span class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                Découvrir les articles
+                                {% t "site.contact.actions.discover" %}
                             </span>
                         </a>
                         
@@ -193,7 +193,7 @@
                                 </svg>
                             </div>
                             <span class="font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
-                                Soutenir MY BARIKA
+                                {% t "site.contact.actions.support" %}
                             </span>
                         </a>
                     </div>
@@ -201,7 +201,7 @@
                 
                 <!-- Réseaux sociaux -->
                 <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-                    <h3 class="text-2xl font-extrabold text-gray-900 mb-6">Suivez-nous</h3>
+                    <h3 class="text-2xl font-extrabold text-gray-900 mb-6">{% t "site.contact.social.title" %}</h3>
                     
                     <div class="flex flex-wrap gap-3">
                         <a href="#" class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-700 transform hover:scale-110 transition-all shadow-lg">
@@ -237,10 +237,10 @@
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
-                    Questions fréquentes
+                    {% t "site.contact.faq.title" %}
                 </h2>
                 <p class="text-xl text-gray-600">
-                    Trouvez rapidement les réponses aux questions les plus courantes
+                    {% t "site.contact.faq.description" %}
                 </p>
             </div>
             
@@ -249,7 +249,7 @@
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                     <button @click="activeItem = activeItem === 1 ? null : 1"
                             class="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors">
-                        <span class="font-bold text-gray-900 text-lg">Les articles de blog sont-ils vraiment gratuits ?</span>
+                        <span class="font-bold text-gray-900 text-lg">{% t "site.contact.faq.q1" %}</span>
                         <svg class="w-6 h-6 text-blue-600 transform transition-transform" 
                              :class="{ 'rotate-180': activeItem === 1 }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,7 +262,7 @@
                          x-transition:enter-end="opacity-100 transform scale-100"
                          class="px-8 pb-6">
                         <p class="text-gray-700 leading-relaxed">
-                            Oui ! Tous nos articles de blog sont accessibles gratuitement. Nous croyons au partage des connaissances et souhaitons rendre l'information accessible à tous. Certains contenus premium ou programmes d'accompagnement personnalisés peuvent être payants.
+                            {% t "site.contact.faq.q1.answer" %}
                         </p>
                     </div>
                 </div>
@@ -271,7 +271,7 @@
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                     <button @click="activeItem = activeItem === 2 ? null : 2"
                             class="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors">
-                        <span class="font-bold text-gray-900 text-lg">Comment obtenir un certificat ?</span>
+                        <span class="font-bold text-gray-900 text-lg">{% t "site.contact.faq.q2" %}</span>
                         <svg class="w-6 h-6 text-blue-600 transform transition-transform" 
                              :class="{ 'rotate-180': activeItem === 2 }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +284,7 @@
                          x-transition:enter-end="opacity-100 transform scale-100"
                          class="px-8 pb-6">
                         <p class="text-gray-700 leading-relaxed">
-                            Les certificats sont disponibles pour nos programmes d'accompagnement personnalisés et certains ateliers spécifiques. Contactez-nous pour plus d'informations sur nos programmes certifiants.
+                            {% t "site.contact.faq.q2.answer" %}
                         </p>
                     </div>
                 </div>
@@ -293,7 +293,7 @@
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                     <button @click="activeItem = activeItem === 3 ? null : 3"
                             class="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors">
-                        <span class="font-bold text-gray-900 text-lg">Puis-je devenir bénévole pour MY BARIKA ?</span>
+                        <span class="font-bold text-gray-900 text-lg">{% t "site.contact.faq.q3" %}</span>
                         <svg class="w-6 h-6 text-blue-600 transform transition-transform" 
                              :class="{ 'rotate-180': activeItem === 3 }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,7 +306,7 @@
                          x-transition:enter-end="opacity-100 transform scale-100"
                          class="px-8 pb-6">
                         <p class="text-gray-700 leading-relaxed">
-                            Absolument ! Nous recherchons toujours des bénévoles passionnés. Contactez-nous via le formulaire en précisant votre intérêt pour le bénévolat.
+                            {% t "site.contact.faq.q3.answer" %}
                         </p>
                     </div>
                 </div>
@@ -315,7 +315,7 @@
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                     <button @click="activeItem = activeItem === 4 ? null : 4"
                             class="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors">
-                        <span class="font-bold text-gray-900 text-lg">Organisez-vous des événements en présentiel ?</span>
+                        <span class="font-bold text-gray-900 text-lg">{% t "site.contact.faq.q4" %}</span>
                         <svg class="w-6 h-6 text-blue-600 transform transition-transform" 
                              :class="{ 'rotate-180': activeItem === 4 }"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,7 +328,7 @@
                          x-transition:enter-end="opacity-100 transform scale-100"
                          class="px-8 pb-6">
                         <p class="text-gray-700 leading-relaxed">
-                            Oui ! Nous organisons régulièrement des workshops, conférences et camps sportifs en Afrique et en Europe. Suivez-nous sur nos réseaux sociaux pour être informé des prochains événements.
+                            {% t "site.contact.faq.q4.answer" %}
                         </p>
                     </div>
                 </div>

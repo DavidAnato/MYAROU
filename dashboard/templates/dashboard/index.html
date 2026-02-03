@@ -1,9 +1,9 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Tableau de bord{% endblock %}
 {% block page_title %}
     <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-        Tableau de Bord
+        Tableau de bord
     </span>
 {% endblock %}
 
@@ -16,7 +16,7 @@
             <div>
                 <p class="text-blue-100 text-sm font-medium">Total Articles</p>
                 <h3 class="text-4xl font-bold mt-2">{{ total_articles }}</h3>
-                <p class="text-blue-100 text-xs mt-2">+{{ recent_count }} cette semaine</p>
+                <p class="text-blue-100 text-xs mt-2">+{{ recent_count }}</p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-2xl p-4">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@
             <div>
                 <p class="text-green-100 text-sm font-medium">Publiés</p>
                 <h3 class="text-4xl font-bold mt-2">{{ published_articles }}</h3>
-                <p class="text-green-100 text-xs mt-2">{{ published_articles|floatformat:0 }}% du total</p>
+                <p class="text-green-100 text-xs mt-2">{{ published_articles|floatformat:0 }}%</p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-2xl p-4">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +48,7 @@
             <div>
                 <p class="text-yellow-100 text-sm font-medium">Brouillons</p>
                 <h3 class="text-4xl font-bold mt-2">{{ draft_articles }}</h3>
-                <p class="text-yellow-100 text-xs mt-2">À publier</p>
+                <p class="text-yellow-100 text-xs mt-2"></p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-2xl p-4">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@
             <div>
                 <p class="text-purple-100 text-sm font-medium">Catégories</p>
                 <h3 class="text-4xl font-bold mt-2">{{ total_categories }}</h3>
-                <p class="text-purple-100 text-xs mt-2">d'articles</p>
+                <p class="text-purple-100 text-xs mt-2"></p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-2xl p-4">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,13 +79,13 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     <!-- Status Chart -->
     <div class="bg-white rounded-2xl shadow-xl p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Articles par Statut</h3>
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Distribution des statuts</h3>
         <canvas id="statusChart" class="max-h-80"></canvas>
     </div>
     
     <!-- Category Chart -->
     <div class="bg-white rounded-2xl shadow-xl p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Top 5 Catégories</h3>
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Top Catégories</h3>
         <canvas id="categoryChart" class="max-h-80"></canvas>
     </div>
 </div>
@@ -95,7 +95,7 @@
     <!-- Recent Articles -->
     <div class="bg-white rounded-2xl shadow-xl p-6">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-gray-800">Articles Récents</h3>
+            <h3 class="text-xl font-bold text-gray-800">Articles récents</h3>
             <a href="{% url 'dashboard:article_list' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
                 Voir tout →
             </a>

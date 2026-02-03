@@ -1,8 +1,8 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}{{ action }} un article{% endblock %}
-{% block page_title %}{{ action }} un article{% endblock %}
+{% block title %}{{ action }} article{% endblock %}
+{% block page_title %}{{ action }} article{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -202,7 +202,7 @@
                     </div>
                     
                     <div class="form-field">
-                        <label class="form-label">Slug (généré automatiquement)</label>
+                        <label class="form-label">Slug</label>
                         {{ form.slug }}
                         {% if form.slug.errors %}
                             <p class="text-red-500 text-sm mt-1">{{ form.slug.errors.0 }}</p>
@@ -245,12 +245,12 @@
                 </h3>
                 
                 <div class="form-field">
-                    <label class="form-label">Extrait (résumé court)</label>
+                    <label class="form-label">Extrait</label>
                     {{ form.excerpt }}
                     {% if form.excerpt.errors %}
                         <p class="text-red-500 text-sm mt-1">{{ form.excerpt.errors.0 }}</p>
                     {% endif %}
-                    <p class="text-gray-500 text-sm mt-1">Court résumé affiché dans les listes d'articles (max 500 caractères)</p>
+                    <p class="text-gray-500 text-sm mt-1">Court résumé affiché dans les listes</p>
                 </div>
                 
                 <div class="form-field">
@@ -259,7 +259,7 @@
                     {% if form.content.errors %}
                         <p class="text-red-500 text-sm mt-1">{{ form.content.errors.0 }}</p>
                     {% endif %}
-                    <p class="text-gray-500 text-sm mt-1">💡 Vous pouvez coller des images directement dans l'éditeur (Ctrl+V)</p>
+                    <p class="text-gray-500 text-sm mt-1">Le contenu principal de votre article</p>
                 </div>
                 
                 <div class="form-field">
@@ -275,7 +275,7 @@
                     <!-- Zone de drop -->
                     <div class="drop-zone" id="dropZone">
                         <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 111 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
                         <p class="text-gray-600 mb-2">
                             <span class="font-semibold text-blue-600">Cliquez pour choisir</span> ou glissez-déposez une image
@@ -284,15 +284,81 @@
                     </div>
                     
                     <!-- Input caché -->
-                    {{ form.image }}
+                    <div style="display: none;">
+                        {{ form.image }}
+                    </div>
                     
                     <!-- Prévisualisation -->
-                    <div id="imagePreview" class="mt-4 hidden">
-                        <img id="previewImg" class="image-preview mx-auto" alt="Prévisualisation">
+                    <div id="imagePreview" class="mt-4 hidden flex flex-col items-center">
+                        <img id="previewImg" class="image-preview" alt="Prévisualisation">
                         <button type="button" onclick="removeImage()" 
-                                class="mt-2 text-red-600 hover:text-red-700 text-sm">
-                            ✕ Supprimer l'image
+                                class="mt-2 text-red-600 hover:text-red-700 text-sm font-medium flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Supprimer l'image
                         </button>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label">Vidéo</label>
+                    <div class="space-y-4">
+                        <!-- File Upload -->
+                         <div class="drop-zone" id="videoDropZone">
+                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <p class="text-gray-600 mb-2">
+                                <span class="font-semibold text-blue-600">Cliquez pour choisir</span> ou glissez-déposez une vidéo
+                            </p>
+                            <p class="text-sm text-gray-500">MP4, WebM, Ogg (Max 100Mo)</p>
+                        </div>
+                        
+                        <div style="display: none;">
+                             {{ form.video_file }}
+                        </div>
+
+                        {% if article and article.video_file %}
+                        <div class="mb-4" id="currentVideoPreview">
+                            <video src="{{ article.video_file.url }}" controls class="w-full rounded-lg shadow-lg" style="max-height: 300px;"></video>
+                            <p class="text-sm text-gray-500 mt-2">Vidéo actuelle</p>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Video Preview -->
+                        <div id="videoPreview" class="mt-4 hidden flex flex-col items-center">
+                            <video id="previewVideo" class="max-w-full rounded-lg shadow-lg" controls style="max-height: 300px;">
+                                Votre navigateur ne supporte pas la lecture de vidéos.
+                            </video>
+                            <button type="button" onclick="removeVideo()" 
+                                    class="mt-2 text-red-600 hover:text-red-700 text-sm font-medium flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Supprimer la vidéo
+                            </button>
+                        </div>
+
+                        <!-- Separator -->
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                <div class="w-full border-t border-gray-300"></div>
+                            </div>
+                            <div class="relative flex justify-center">
+                                <span class="px-2 bg-white text-sm text-gray-500">OU</span>
+                            </div>
+                        </div>
+
+                        <!-- URL Input -->
+                        <div>
+                            <label class="text-sm text-gray-600 mb-1 block">Lien vidéo (YouTube/Vimeo)</label>
+                            {{ form.video_url }}
+                            {% if form.video_url.errors %}
+                                <p class="text-red-500 text-sm mt-1">{{ form.video_url.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-xs text-gray-500 mt-1">Si une vidéo est téléversée, ce lien sera ignoré.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -305,7 +371,7 @@
                 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Tags (séparés par des virgules)
+                        Tags
                     </label>
                     <div class="tag-input-wrapper">
                         <div class="tags-display" id="tagsDisplay">
@@ -318,18 +384,18 @@
             <!-- SEO -->
             <div class="mb-8">
                 <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-pink-500">
-                    🔍 Optimisation SEO
+                    🔍 SEO
                 </h3>
                 
                 <div class="form-field">
-                    <label class="form-label">Meta Description (max 160 caractères)</label>
+                    <label class="form-label">Meta Description</label>
                     {{ form.meta_description }}
-                    <p class="text-gray-500 text-sm mt-1">Description affichée dans les résultats de recherche</p>
+                    <p class="text-gray-500 text-sm mt-1">Description pour les moteurs de recherche</p>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Mots-clés SEO (séparés par des virgules)
+                        Mots-clés Meta
                     </label>
                     <div class="tag-input-wrapper">
                         <div class="tags-display" id="seoTagsDisplay">
@@ -354,7 +420,7 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
-                    {{ action }} l'article
+                    {{ action }} article
                 </button>
             </div>
         </form>
@@ -379,7 +445,7 @@
                 {% csrf_token %}
                 <div class="space-y-4">
                     <div>
-                        <label class="form-label">Nom de la catégorie *</label>
+                        <label class="form-label">Nom *</label>
                         <input type="text" name="name" required
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="Ex: Technologie">
@@ -389,7 +455,7 @@
                         <label class="form-label">Description</label>
                         <textarea name="description" rows="3"
                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Description de la catégorie..."></textarea>
+                                  placeholder="Description de la catégorie"></textarea>
                     </div>
                     
                     <div id="categoryMessage" class="hidden"></div>
@@ -401,7 +467,7 @@
                         </button>
                         <button type="submit"
                                 class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                            Créer la catégorie
+                            Créer
                         </button>
                     </div>
                 </div>
@@ -420,9 +486,6 @@ const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('id_image');
 const imagePreview = document.getElementById('imagePreview');
 const previewImg = document.getElementById('previewImg');
-
-// Cacher l'input file original
-fileInput.style.display = 'none';
 
 // Click sur la zone de drop
 dropZone.addEventListener('click', () => fileInput.click());
@@ -501,6 +564,68 @@ document.addEventListener('paste', function(e) {
         }
     }
 });
+
+// --- Gestion de la vidéo (Drag & Drop) ---
+const videoDropZone = document.getElementById('videoDropZone');
+const videoInput = document.getElementById('id_video_file');
+const videoPreview = document.getElementById('videoPreview');
+const previewVideo = document.getElementById('previewVideo');
+
+// Click sur la zone de drop
+videoDropZone.addEventListener('click', () => videoInput.click());
+
+// Drag & Drop events
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    videoDropZone.addEventListener(eventName, preventDefaults, false);
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+    videoDropZone.addEventListener(eventName, () => videoDropZone.classList.add('drag-over'), false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    videoDropZone.addEventListener(eventName, () => videoDropZone.classList.remove('drag-over'), false);
+});
+
+videoDropZone.addEventListener('drop', handleVideoDrop, false);
+
+function handleVideoDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0) {
+        videoInput.files = files;
+        handleVideoFiles(files);
+    }
+}
+
+// Changement de fichier vidéo
+videoInput.addEventListener('change', function(e) {
+    handleVideoFiles(this.files);
+});
+
+function handleVideoFiles(files) {
+    if (files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('video/')) {
+            const url = URL.createObjectURL(file);
+            previewVideo.src = url;
+            videoPreview.classList.remove('hidden');
+            videoDropZone.style.display = 'none';
+            const currentVideo = document.getElementById('currentVideoPreview');
+            if (currentVideo) currentVideo.style.display = 'none';
+        }
+    }
+}
+
+function removeVideo() {
+    videoInput.value = '';
+    previewVideo.src = '';
+    videoPreview.classList.add('hidden');
+    videoDropZone.style.display = 'block';
+    const currentVideo = document.getElementById('currentVideoPreview');
+    if (currentVideo) currentVideo.style.display = 'block';
+}
+
 
 // Modal pour les catégories
 function openCategoryModal() {

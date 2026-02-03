@@ -1,40 +1,40 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static json_i18n %}
 
-{% block title %}Mon parcours - MYAROU{% endblock %}
+{% block title %}{% t "site.about.title" %}{% endblock %}
 
 {% block hero %}
-<section class="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden">
-    <div class="absolute inset-0 overflow-hidden opacity-20">
-        <div class="absolute w-96 h-96 bg-white rounded-full -top-48 -left-48 animate-float"></div>
-        <div class="absolute w-64 h-64 bg-purple-300 rounded-full top-20 right-10 animate-float-delayed"></div>
-        <div class="absolute w-80 h-80 bg-blue-300 rounded-full top-1/3 left-1/4 animate-pulse-slow"></div>
-        <div class="absolute w-72 h-72 bg-white rounded-full bottom-20 right-1/4 animate-float"></div>
-        <div class="absolute w-56 h-56 bg-indigo-300 rounded-full -bottom-28 -right-28 animate-float-delayed"></div>
-        <div class="absolute w-40 h-40 bg-pink-300 rounded-full top-1/2 right-1/3 animate-pulse-slow"></div>
-        <div class="absolute w-48 h-48 bg-yellow-300 rounded-full bottom-1/3 left-10 animate-float"></div>
-    </div>
-    <div class="container mx-auto px-4 py-32 md:py-40 relative z-10"">
-        <div class="max-w-4xl mx-auto text-center space-y-8">
-            <div class="inline-block">
-                <span class="bg-white/10 px-4 py-2 rounded-full border border-white/20 font-semibold text-sm uppercase tracking-wider">À propos</span>
-            </div>
-            <h1 class="text-6xl md:text-7xl font-extrabold">
-                Mon <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">Histoire</span>
-            </h1>
-            <p class="text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-                Un parcours atypique, du terrain de basketball aux salles de formation, animé par une seule mission : libérer le potentiel de la jeunesse africaine.
-            </p>
+    <section class="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden opacity-20">
+            <div class="absolute w-96 h-96 bg-white rounded-full -top-48 -left-48 animate-float"></div>
+            <div class="absolute w-64 h-64 bg-purple-300 rounded-full top-20 right-10 animate-float-delayed"></div>
+            <div class="absolute w-80 h-80 bg-blue-300 rounded-full top-1/3 left-1/4 animate-pulse-slow"></div>
+            <div class="absolute w-72 h-72 bg-white rounded-full bottom-20 right-1/4 animate-float"></div>
+            <div class="absolute w-56 h-56 bg-indigo-300 rounded-full -bottom-28 -right-28 animate-float-delayed"></div>
+            <div class="absolute w-40 h-40 bg-pink-300 rounded-full top-1/2 right-1/3 animate-pulse-slow"></div>
+            <div class="absolute w-48 h-48 bg-yellow-300 rounded-full bottom-1/3 left-10 animate-float"></div>
         </div>
-    </div>
-    
-    <!-- Decorative wave -->
-    <div class="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="white"/>
-        </svg>
-    </div>
-</section>
+        <div class="container mx-auto px-4 py-32 md:py-40 relative z-10"">
+            <div class="max-w-4xl mx-auto text-center space-y-8">
+                <div class="inline-block">
+                    <span class="bg-white/10 px-4 py-2 rounded-full border border-white/20 font-semibold text-sm uppercase tracking-wider">{% t "site.about.hero.badge" %}</span>
+                </div>
+                <h1 class="text-6xl md:text-7xl font-extrabold">
+                    {% t "site.about.hero.title_prefix" %} <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">{% t "site.about.hero.title_suffix" %}</span>
+                </h1>
+                <p class="text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto">
+                    {% t "site.about.hero.description" %}
+                </p>
+            </div>
+        </div>
+        
+        <!-- Decorative wave -->
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="white"/>
+            </svg>
+        </div>
+    </section>
 {% endblock %}
 
 {% block content %}
@@ -53,7 +53,7 @@
                         </div>
                         <div class="absolute -bottom-6 -right-6 bg-gradient-to-br from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-2xl shadow-xl transform rotate-3">
                             <div class="font-bold text-2xl">15+</div>
-                            <div class="text-sm">Années d'expérience</div>
+                            <div class="text-sm">{% t "site.about.profile.years_experience" %}</div>
                         </div>
                     </div>
                 </div>
@@ -61,17 +61,17 @@
                 <!-- Content Column -->
                 <div class="lg:w-7/12 space-y-6">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900">
-                        De basketteur à <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">entrepreneur social</span>
+                        {% t "site.about.profile.title_prefix" %} <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">{% t "site.about.profile.title_suffix" %}</span>
                     </h2>
                     <div class="space-y-4 text-lg text-gray-700 leading-relaxed">
                         <p>
-                            Mon parcours commence sur les terrains de basketball au Bénin, où j'ai appris les valeurs du travail d'équipe, de la discipline et de la persévérance. Ces valeurs m'ont accompagné jusqu'à Villanova University aux États-Unis, où j'ai excellé tant sur le terrain qu'en classe.
+                            {% t "site.about.profile.p1" %}
                         </p>
                         <p>
-                            Ma carrière professionnelle en Europe m'a permis de découvrir différentes cultures et d'affiner ma vision du leadership. Mais c'est en observant les défis auxquels fait face la jeunesse africaine que j'ai trouvé ma véritable vocation : créer des opportunités de transformation.
+                            {% t "site.about.profile.p2" %}
                         </p>
                         <p>
-                            Aujourd'hui, à travers MY BARIKA, je mets mon expérience au service de ceux qui veulent faire la différence. Parce que l'excellence n'est pas un privilège, c'est un choix que nous pouvons tous faire.
+                            {% t "site.about.profile.p3" %}
                         </p>
                     </div>
                     
@@ -80,13 +80,13 @@
                             <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                             </svg>
-                            <span class="font-semibold text-blue-900">500+ Jeunes formés</span>
+                            <span class="font-semibold text-blue-900">{% t "site.about.profile.stats.youth" %}</span>
                         </div>
                         <div class="flex items-center gap-2 bg-purple-50 px-6 py-3 rounded-full">
                             <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
                             </svg>
-                            <span class="font-semibold text-purple-900">3 Continents</span>
+                            <span class="font-semibold text-purple-900">{% t "site.about.profile.stats.continents" %}</span>
                         </div>
                     </div>
                 </div>
@@ -100,10 +100,10 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-20">
             <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
-                Les étapes clés de mon parcours
+                {% t "site.about.journey.title" %}
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Un voyage marqué par la passion, l'apprentissage et l'engagement envers l'excellence.
+                {% t "site.about.journey.description" %}
             </p>
         </div>
         
@@ -116,9 +116,9 @@
                     <div class="relative flex flex-col md:flex-row items-center md:items-center gap-8">
                         <div class="w-full md:w-1/2 md:pr-12">
                             <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow md:text-right">
-                                <div class="text-blue-600 font-bold text-lg mb-2">Les débuts au Bénin</div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-3">Naissance d'une passion</h3>
-                                <p class="text-gray-600">Découverte du basketball et développement des valeurs fondamentales : discipline, travail d'équipe et dépassement de soi.</p>
+                                <div class="text-blue-600 font-bold text-lg mb-2">{% t "site.about.journey.item1.badge" %}</div>
+                                <h3 class="text-2xl font-bold text-gray-900 mb-3">{% t "site.about.journey.item1.title" %}</h3>
+                                <p class="text-gray-600">{% t "site.about.journey.item1.desc" %}</p>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full shadow-xl flex-shrink-0 z-10">
@@ -133,9 +133,9 @@
                     <div class="relative flex flex-col md:flex-row items-center md:items-center gap-8">
                         <div class="w-full md:w-1/2 md:order-2 md:pl-12">
                             <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow">
-                                <div class="text-purple-600 font-bold text-lg mb-2">Villanova University</div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-3">Excellence académique et sportive</h3>
-                                <p class="text-gray-600">Formation de haut niveau aux États-Unis, alliant performance sportive et réussite académique dans un environnement d'excellence.</p>
+                                <div class="text-purple-600 font-bold text-lg mb-2">{% t "site.about.journey.item2.badge" %}</div>
+                                <h3 class="text-2xl font-bold text-gray-900 mb-3">{% t "site.about.journey.item2.title" %}</h3>
+                                <p class="text-gray-600">{% t "site.about.journey.item2.desc" %}</p>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full shadow-xl flex-shrink-0 z-10 md:order-1">
@@ -150,9 +150,9 @@
                     <div class="relative flex flex-col md:flex-row items-center md:items-center gap-8">
                         <div class="w-full md:w-1/2 md:pr-12">
                             <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow md:text-right">
-                                <div class="text-indigo-600 font-bold text-lg mb-2">Carrière professionnelle</div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-3">Évolution en Europe</h3>
-                                <p class="text-gray-600">Expérience professionnelle enrichissante en Europe, découverte de nouvelles cultures et affirmation du leadership.</p>
+                                <div class="text-indigo-600 font-bold text-lg mb-2">{% t "site.about.journey.item3.badge" %}</div>
+                                <h3 class="text-2xl font-bold text-gray-900 mb-3">{% t "site.about.journey.item3.title" %}</h3>
+                                <p class="text-gray-600">{% t "site.about.journey.item3.desc" %}</p>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full shadow-xl flex-shrink-0 z-10">
@@ -167,9 +167,9 @@
                     <div class="relative flex flex-col md:flex-row items-center md:items-center gap-8">
                         <div class="w-full md:w-1/2 md:order-2 md:pl-12">
                             <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow border-2 border-green-500">
-                                <div class="text-green-600 font-bold text-lg mb-2">Aujourd'hui</div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-3">Fondateur de MY BARIKA</h3>
-                                <p class="text-gray-600">Création d'une plateforme de transformation pour accompagner la jeunesse africaine vers l'excellence et le leadership.</p>
+                                <div class="text-green-600 font-bold text-lg mb-2">{% t "site.about.journey.item4.badge" %}</div>
+                                <h3 class="text-2xl font-bold text-gray-900 mb-3">{% t "site.about.journey.item4.title" %}</h3>
+                                <p class="text-gray-600">{% t "site.about.journey.item4.desc" %}</p>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-700 rounded-full shadow-xl flex-shrink-0 z-10 md:order-1">
@@ -191,10 +191,10 @@
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
-                    Découvrez mon histoire en vidéo
+                    {% t "site.about.video.title" %}
                 </h2>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Un témoignage authentique de mon parcours, de mes défis et de ma vision pour l'Afrique.
+                    {% t "site.about.video.description" %}
                 </p>
             </div>
             
@@ -203,7 +203,7 @@
                     <iframe 
                         class="w-full h-full"
                         src="https://www.youtube.com/embed/MlCA-DC9WP8" 
-                        title="Mon parcours d'excellence" 
+                        title="{% t "site.about.video.iframe_title" %}" 
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                         allowfullscreen>
@@ -219,10 +219,10 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
-                Les valeurs qui me guident
+                {% t "site.about.values.title" %}
             </h2>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Forgées par l'expérience, ces principes sont au cœur de chaque action et décision.
+                {% t "site.about.values.description" %}
             </p>
         </div>
         
@@ -236,9 +236,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Excellence</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">{% t "site.about.values.excellence.title" %}</h3>
                     <p class="text-gray-600 leading-relaxed">
-                        Viser l'excellence dans tout ce que nous entreprennons, sans jamais accepter la médiocrité comme standard. C'est un engagement quotidien envers la qualité et l'amélioration continue.
+                        {% t "site.about.values.excellence.desc" %}
                     </p>
                 </div>
             </div>
@@ -252,9 +252,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Solidarité</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">{% t "site.about.values.solidarity.title" %}</h3>
                     <p class="text-gray-600 leading-relaxed">
-                        Croire au pouvoir du collectif et de l'entraide pour transformer les communautés et bâtir l'avenir. Ensemble, nous sommes plus forts et allons plus loin.
+                        {% t "site.about.values.solidarity.desc" %}
                     </p>
                 </div>
             </div>
@@ -268,9 +268,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Authenticité</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">{% t "site.about.values.authenticity.title" %}</h3>
                     <p class="text-gray-600 leading-relaxed">
-                        Rester fidèle à ses valeurs et à nos origines, tout en s'ouvrant au monde et à ses opportunités. L'authenticité est la base de la confiance et du respect mutuel.
+                        {% t "site.about.values.authenticity.desc" %}
                     </p>
                 </div>
             </div>
@@ -284,9 +284,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Impact durable</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">{% t "site.about.values.impact.title" %}</h3>
                     <p class="text-gray-600 leading-relaxed">
-                        Créer un changement profond et durable dans les communautés. Chaque action doit contribuer à une transformation positive et mesurable pour les générations futures.
+                        {% t "site.about.values.impact.desc" %}
                     </p>
                 </div>
             </div>
@@ -306,12 +306,12 @@
         <div class="max-w-4xl mx-auto text-center space-y-12">
             <div class="text-teal-300 text-6xl">"</div>
             <blockquote class="text-3xl md:text-4xl font-bold leading-relaxed">
-                Je rêve d'une Afrique où chaque jeune a les moyens de réaliser son potentiel, où l'excellence est la norme et non l'exception, où nos leaders sont formés pour transformer durablement nos communautés.
+                {% t "site.about.vision.quote" %}
             </blockquote>
             <div class="pt-8">
                 <div class="inline-block bg-white/10 px-8 py-4 rounded-2xl backdrop-blur-sm">
                     <p class="text-lg font-semibold">Mvingalakani Yércia</p>
-                    <p class="text-teal-200">Fondateur MY BARIKA</p>
+                    <p class="text-teal-200">{% t "site.about.vision.role" %}</p>
                 </div>
             </div>
         </div>
@@ -323,23 +323,23 @@
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto text-center space-y-10">
             <h2 class="text-4xl md:text-5xl font-extrabold">
-                Faisons équipe pour transformer l'Afrique
+                {% t "site.about.cta.title" %}
             </h2>
             <p class="text-xl md:text-2xl text-white/90 leading-relaxed">
-                Que vous soyez étudiant, professionnel ou entrepreneur, rejoignez un mouvement qui croit en votre potentiel et vous donne les outils pour réussir.
+                {% t "site.about.cta.description" %}
             </p>
             
             <div class="flex flex-col sm:flex-row justify-center gap-6 pt-6">
                 <a href="{% url 'blog:article_list' %}" 
                    class="group px-10 py-5 bg-white text-blue-600 rounded-full font-bold text-lg hover:bg-gray-100 transform hover:scale-105 transition-all shadow-2xl inline-flex items-center justify-center">
-                    Explorer le blog
+                    {% t "site.about.cta.blog_btn" %}
                     <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                     </svg>
                 </a>
                 <a href="{% url 'blog:contact' %}" 
                    class="px-10 py-5 bg-transparent border-2 border-white text-white rounded-full font-bold text-lg hover:bg-white hover:text-blue-600 transform hover:scale-105 transition-all inline-flex items-center justify-center">
-                    Contactez-nous
+                    {% t "site.about.cta.contact_btn" %}
                 </a>
             </div>
         </div>

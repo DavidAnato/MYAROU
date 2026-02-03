@@ -1,8 +1,7 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
 
 {% block title %}{{ article.title }}{% endblock %}
-{% block page_title %}Détail de l'article{% endblock %}
+{% block page_title %}Détails de l'article{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -87,7 +86,7 @@
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
-            Retour à la liste
+            Retour
         </a>
         
         <div class="flex gap-3">
@@ -183,7 +182,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                             </svg>
-                            {{ article.views }} vue{{ article.views|pluralize }}
+                            {{ article.views }} vues totales
                         </span>
                     </div>
                 </div>
@@ -260,7 +259,7 @@
                 </h3>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
-                        <span class="text-blue-100">Vues</span>
+                        <span class="text-blue-100">Vues totales</span>
                         <span class="text-2xl font-bold">{{ article.views }}</span>
                     </div>
                     <div class="flex justify-between items-center">
@@ -276,7 +275,7 @@
                     <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    Informations
+                    Détails
                 </h3>
                 
                 <div class="space-y-3">
@@ -295,7 +294,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                         </svg>
                         <div class="flex-1">
-                            <p class="text-xs text-gray-500">Modifié le</p>
+                            <p class="text-xs text-gray-500">Mis à jour le</p>
                             <p class="text-sm font-semibold text-gray-900">{{ article.updated_at|date:"d/m/Y à H:i" }}</p>
                         </div>
                     </div>
@@ -344,7 +343,7 @@
                 <div class="space-y-2">
                     <a href="{% url 'dashboard:article_edit' article.pk %}" 
                        class="block w-full px-4 py-3 bg-white hover:bg-gray-50 text-gray-700 rounded-lg transition-colors text-center font-medium">
-                        ✏️ Modifier l'article
+                        ✏️ Modifier
                     </a>
                     {% if article.status == 'draft' %}
                         <button class="block w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium">
@@ -370,7 +369,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Supprimer l'article</h3>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Confirmer la suppression</h3>
             <p class="text-gray-600 mb-6">
                 Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible.
             </p>

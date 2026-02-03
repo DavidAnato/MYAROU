@@ -1,3 +1,5 @@
+{% load i18n %}
+{% load json_i18n %}
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
 <head>
@@ -100,7 +102,7 @@
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-white font-sans antialiased" x-data="{ 
+<body class="bg-white font-sans antialiased transition-colors duration-300" x-data="{ 
     mobileMenuOpen: false, 
     scrolled: false,
     showCGU: false,
@@ -135,24 +137,67 @@
                     <a href="{% url 'blog:home' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
                        :class="scrolled ? 'text-gray-700 hover:text-purple-600 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
-                        Accueil
+                        {% t "site.menu.home" %}
                     </a>
                     <a href="{% url 'blog:about' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
                        :class="scrolled ? 'text-gray-700 hover:text-purple-600 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
-                        À propos
+                        {% t "site.menu.about" %}
                     </a>
                     <a href="{% url 'blog:article_list' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
                        :class="scrolled ? 'text-gray-700 hover:text-purple-600 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
-                        Blog
+                        {% t "site.menu.blog" %}
                     </a>
                     <a href="{% url 'blog:contact' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
                        :class="scrolled ? 'text-gray-700 hover:text-purple-600 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
-                        Contact
+                        {% t "site.menu.contact" %}
                     </a>
                     
+                    <!-- Language Switcher -->
+                    <div class="relative ml-2" x-data="{ open: false }">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        <button @click="open = !open" @click.outside="open = false" 
+                                class="flex items-center gap-2 font-semibold transition-colors px-3 py-2 rounded-lg"
+                                :class="scrolled ? 'text-gray-700 hover:bg-purple-50 hover:text-purple-600' : 'text-white hover:bg-white/20'">
+                            <i class="fas fa-globe"></i>
+                            <span>{{ LANGUAGE_CODE|upper }}</span>
+                            <i class="fas fa-chevron-down text-xs transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
+                        </button>
+                        
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-100"
+                             x-transition:enter-start="transform opacity-0 scale-95"
+                             x-transition:enter-end="transform opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="transform opacity-100 scale-100"
+                             x-transition:leave-end="transform opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl py-2 z-50 overflow-hidden ring-1 ring-black ring-opacity-5"
+                             style="display: none;">
+                            <form action="{% url 'set_language' %}" method="post">
+                                {% csrf_token %}
+                                <input name="next" type="hidden" value="{{ redirect_to }}">
+                                {% get_available_languages as LANGUAGES %}
+                                {% get_language_info_list for LANGUAGES as languages %}
+                                {% for language in languages %}
+                                    <button type="submit" 
+                                            name="language" 
+                                            value="{{ language.code }}"
+                                            class="w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 hover:text-purple-600 flex items-center justify-between group transition-colors"
+                                            :class="'{{ language.code }}' === '{{ LANGUAGE_CODE }}' ? 'text-purple-600 font-bold bg-purple-50/50' : 'text-gray-600'">
+                                        <span class="flex items-center gap-2">
+                                            {{ language.name_local|capfirst }}
+                                        </span>
+                                        {% if language.code == LANGUAGE_CODE %}
+                                            <i class="fas fa-check text-purple-600"></i>
+                                        {% endif %}
+                                    </button>
+                                {% endfor %}
+                            </form>
+                        </div>
+                    </div>
+
                     {% if user.is_authenticated %}
                         {% if user.is_staff %}
                     <div class="h-6 w-px bg-white bg-opacity-30 mx-4"></div>
@@ -201,26 +246,26 @@
                 <a href="{% url 'blog:home' %}" 
                    class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-house w-5 h-5"></i>
-                    Accueil
+                    {% t "site.menu.home" %}
                 </a>
                 <a href="{% url 'blog:about' %}" 
                    class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-circle-info w-5 h-5"></i>
-                    À propos
+                    {% t "site.menu.about" %}
                 </a>
                 <a href="{% url 'blog:article_list' %}" 
                    class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-blog w-5 h-5"></i>
-                    Blog
+                    {% t "site.menu.blog" %}
                 </a>
                 <a href="{% url 'blog:contact' %}" 
                    class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-envelope w-5 h-5"></i>
-                    Contact
+                    {% t "site.menu.contact" %}
                 </a>
                 <a href="{% url 'dashboard:index' %}" 
                    class="block px-4 py-3 bg-white text-purple-600 rounded-lg font-bold text-center" @click="mobileMenuOpen = false">
-                    Connexion
+                    {% t "site.menu.login" %}
                 </a>
             </div>
         </div>
@@ -252,7 +297,7 @@
                         <span class="text-2xl font-bold">MYAROU</span>
                     </div>
                     <p class="text-gray-400 leading-relaxed">
-                        Ancien joueur professionnel, diplômé MBA HEC Paris, fondateur de MY BARIKA.
+                        {% t "site.footer.bio" %}
                     </p>
                     <div class="flex gap-3 pt-4">
                         <a href="#" class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 transform hover:scale-110 transition-all">
@@ -280,14 +325,14 @@
                 
                 <!-- Navigation -->
                 <div>
-                    <h3 class="text-xl font-bold mb-6 text-white">Navigation</h3>
+                    <h3 class="text-xl font-bold mb-6 text-white">{% t "site.footer.nav.title" %}</h3>
                     <ul class="space-y-3">
                         <li>
                             <a href="{% url 'blog:home' %}" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Accueil
+                                {% t "site.footer.nav.home" %}
                             </a>
                         </li>
                         <li>
@@ -295,7 +340,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                À propos
+                                {% t "site.footer.nav.about" %}
                             </a>
                         </li>
                         <li>
@@ -303,7 +348,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Blog
+                                {% t "site.footer.nav.blog" %}
                             </a>
                         </li>
                         <li>
@@ -311,7 +356,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Contact
+                                {% t "site.footer.nav.contact" %}
                             </a>
                         </li>
                     </ul>
@@ -326,7 +371,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Nos programmes
+                                {% t "site.footer.nav.programs" %}
                             </a>
                         </li>
                         <li>
@@ -334,7 +379,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Soutiens
+                                {% t "site.footer.nav.support" %}
                             </a>
                         </li>
                         <li>
@@ -342,7 +387,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Devenir bénévole
+                                {% t "site.footer.nav.volunteer" %}
                             </a>
                         </li>
                     </ul>
@@ -350,14 +395,14 @@
                 
                 <!-- Legal -->
                 <div>
-                    <h3 class="text-xl font-bold mb-6 text-white">Légal</h3>
+                    <h3 class="text-xl font-bold mb-6 text-white">{% t "site.footer.legal.title" %}</h3>
                     <ul class="space-y-3">
                         <li>
                             <button @click="showCGU = true" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                CGU
+                                {% t "site.footer.legal.cgu" %}
                             </button>
                         </li>
                         <li>
@@ -365,7 +410,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Politique de confidentialité
+                                {% t "site.footer.legal.privacy" %}
                             </button>
                         </li>
                         <li>
@@ -373,7 +418,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Cookies
+                                {% t "site.footer.legal.cookies" %}
                             </button>
                         </li>
                         <li>
@@ -381,7 +426,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
-                                Mentions légales
+                                {% t "site.footer.legal.mentions" %}
                             </button>
                         </li>
                     </ul>
@@ -392,7 +437,7 @@
             <div class="border-t border-gray-800 mt-12 pt-8">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                     <p class="text-gray-400 text-center md:text-left">
-                        &copy; 2025 MYAROU. - Tous droits réservés.
+                        &copy; 2025 MYAROU. - {% t "site.footer.copyright" %}
                     </p>
                 </div>
             </div>
@@ -528,7 +573,7 @@
                 <div class="bg-gradient-to-r from-green-600 to-teal-600 px-8 py-6">
                     <div class="flex items-center justify-between">
                         <h3 class="text-3xl font-extrabold text-white">
-                            Politique de Confidentialité
+                            {% t "site.modal.privacy.title" %}
                         </h3>
                         <button @click="showPrivacy = false" class="text-white hover:text-gray-200 transition-colors">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -539,7 +584,7 @@
                 </div>
 
                 <div class="modal-content px-8 py-6 max-h-96 overflow-y-auto">
-                    <p class="text-sm text-gray-500 mb-6">Dernière mise à jour : 3 décembre 2024</p>
+                    <p class="text-sm text-gray-500 mb-6">{% t "site.modal.privacy.last_update" %}</p>
                     
                     <div class="space-y-6 text-gray-700">
                         <section>
@@ -613,7 +658,7 @@
                 <div class="bg-gray-50 px-8 py-4 flex justify-end">
                     <button @click="showPrivacy = false" 
                             class="px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl font-bold hover:shadow-lg transition-all">
-                        Fermer
+                        {% t "site.modal.close" %}
                     </button>
                 </div>
             </div>
@@ -645,7 +690,7 @@
                 <div class="bg-gradient-to-r from-orange-600 to-amber-600 px-8 py-6">
                     <div class="flex items-center justify-between">
                         <h3 class="text-3xl font-extrabold text-white">
-                            Politique relative aux Cookies
+                            {% t "site.modal.cookies.title" %}
                         </h3>
                         <button @click="showCookies = false" class="text-white hover:text-gray-200 transition-colors">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -656,7 +701,7 @@
                 </div>
 
                 <div class="modal-content px-8 py-6 max-h-96 overflow-y-auto">
-                    <p class="text-sm text-gray-500 mb-6">Dernière mise à jour : 3 décembre 2024</p>
+                    <p class="text-sm text-gray-500 mb-6">{% t "site.modal.privacy.last_update" %}</p>
                     
                     <div class="space-y-6 text-gray-700">
                         <section>
@@ -728,7 +773,7 @@
                 <div class="bg-gray-50 px-8 py-4 flex justify-end">
                     <button @click="showCookies = false" 
                             class="px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-bold hover:shadow-lg transition-all">
-                        Fermer
+                        {% t "site.modal.close" %}
                     </button>
                 </div>
             </div>
@@ -829,7 +874,7 @@
                 <div class="bg-gray-50 px-8 py-4 flex justify-end">
                     <button @click="showLegal = false" 
                             class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg transition-all">
-                        Fermer
+                        {% t "site.modal.close" %}
                     </button>
                 </div>
             </div>

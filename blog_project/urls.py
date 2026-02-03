@@ -18,13 +18,18 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('i18n/', include('django.conf.urls.i18n')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('dashboard/', include('dashboard.urls')),  # Admin personnalisé ultra stylé
-    path('', include('blog.urls')),
 ]
+
+urlpatterns += i18n_patterns(
+    path('', include('blog.urls')),
+)
 
 # Servir les fichiers media en développement
 if settings.DEBUG:
