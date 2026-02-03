@@ -11,12 +11,12 @@
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <!-- Total Articles -->
-    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
+    <div class="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-900 dark:to-blue-950 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-blue-100 text-sm font-medium">Total Articles</p>
+                <p class="text-blue-100 dark:text-blue-300 text-sm font-medium">Total Articles</p>
                 <h3 class="text-4xl font-bold mt-2">{{ total_articles }}</h3>
-                <p class="text-blue-100 text-xs mt-2">+{{ recent_count }}</p>
+                <p class="text-blue-100 dark:text-blue-300 text-xs mt-2">+{{ recent_count }}</p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-2xl p-4">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,12 +27,12 @@
     </div>
     
     <!-- Published -->
-    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
+    <div class="bg-gradient-to-br from-green-500 to-green-600 dark:from-green-900 dark:to-green-950 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-green-100 text-sm font-medium">Publiés</p>
+                <p class="text-green-100 dark:text-green-300 text-sm font-medium">Publiés</p>
                 <h3 class="text-4xl font-bold mt-2">{{ published_articles }}</h3>
-                <p class="text-green-100 text-xs mt-2">{{ published_articles|floatformat:0 }}%</p>
+                <p class="text-green-100 dark:text-green-300 text-xs mt-2">{{ published_articles|floatformat:0 }}%</p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-2xl p-4">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,12 +43,12 @@
     </div>
     
     <!-- Drafts -->
-    <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
+    <div class="bg-gradient-to-br from-yellow-500 to-orange-500 dark:from-yellow-900 dark:to-orange-950 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-yellow-100 text-sm font-medium">Brouillons</p>
+                <p class="text-yellow-100 dark:text-yellow-300 text-sm font-medium">Brouillons</p>
                 <h3 class="text-4xl font-bold mt-2">{{ draft_articles }}</h3>
-                <p class="text-yellow-100 text-xs mt-2"></p>
+                <p class="text-yellow-100 dark:text-yellow-300 text-xs mt-2"></p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-2xl p-4">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,12 +59,12 @@
     </div>
     
     <!-- Categories -->
-    <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
+    <div class="bg-gradient-to-br from-purple-500 to-pink-500 dark:from-purple-900 dark:to-pink-950 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-purple-100 text-sm font-medium">Catégories</p>
+                <p class="text-purple-100 dark:text-purple-300 text-sm font-medium">Catégories</p>
                 <h3 class="text-4xl font-bold mt-2">{{ total_categories }}</h3>
-                <p class="text-purple-100 text-xs mt-2"></p>
+                <p class="text-purple-100 dark:text-purple-300 text-xs mt-2"></p>
             </div>
             <div class="bg-white bg-opacity-20 rounded-2xl p-4">
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,14 +78,14 @@
 <!-- Charts Row -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     <!-- Status Chart -->
-    <div class="bg-white rounded-2xl shadow-xl p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Distribution des statuts</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Distribution des statuts</h3>
         <canvas id="statusChart" class="max-h-80"></canvas>
     </div>
     
     <!-- Category Chart -->
-    <div class="bg-white rounded-2xl shadow-xl p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Top Catégories</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Top Catégories</h3>
         <canvas id="categoryChart" class="max-h-80"></canvas>
     </div>
 </div>
@@ -93,9 +93,9 @@
 <!-- Recent Articles & Popular -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Recent Articles -->
-    <div class="bg-white rounded-2xl shadow-xl p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-gray-800">Articles récents</h3>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Articles récents</h3>
             <a href="{% url 'dashboard:article_list' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
                 Voir tout →
             </a>
@@ -103,21 +103,21 @@
         
         <div class="space-y-4">
             {% for article in recent_articles %}
-            <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+            <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 {% if article.image %}
                 <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
                 {% else %}
                 <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex-shrink-0"></div>
                 {% endif %}
                 <div class="flex-1 min-w-0">
-                    <a href="{% url 'dashboard:article_detail' article.pk %}" class="font-medium text-gray-900 hover:text-blue-600 block truncate">
+                    <a href="{% url 'dashboard:article_detail' article.pk %}" class="font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 block truncate">
                         {{ article.title }}
                     </a>
-                    <p class="text-sm text-gray-500 mt-1">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                            {% if article.status == 'published' %}bg-green-100 text-green-800
-                            {% elif article.status == 'draft' %}bg-yellow-100 text-yellow-800
-                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {% if article.status == 'published' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300
+                            {% elif article.status == 'draft' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300
+                            {% else %}bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300{% endif %}">
                             {{ article.get_status_display }}
                         </span>
                         <span class="ml-2">{{ article.created_at|date:"d/m/Y" }}</span>
@@ -125,29 +125,29 @@
                 </div>
             </div>
             {% empty %}
-            <p class="text-gray-500 text-center py-8">Aucun article pour le moment</p>
+            <p class="text-gray-500 dark:text-gray-400 text-center py-8">Aucun article pour le moment</p>
             {% endfor %}
         </div>
     </div>
     
     <!-- Popular Articles -->
-    <div class="bg-white rounded-2xl shadow-xl p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-gray-800">Articles Populaires</h3>
-            <span class="text-sm text-gray-500">Par vues</span>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white">Articles Populaires</h3>
+            <span class="text-sm text-gray-500 dark:text-gray-400">Par vues</span>
         </div>
         
         <div class="space-y-4">
             {% for article in popular_articles %}
-            <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-colors">
+            <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white font-bold">
                     {{ forloop.counter }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <a href="{% url 'dashboard:article_detail' article.pk %}" class="font-medium text-gray-900 hover:text-blue-600 block truncate">
+                    <a href="{% url 'dashboard:article_detail' article.pk %}" class="font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 block truncate">
                         {{ article.title }}
                     </a>
-                    <p class="text-sm text-gray-500 mt-1">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         <svg class="inline w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -157,7 +157,7 @@
                 </div>
             </div>
             {% empty %}
-            <p class="text-gray-500 text-center py-8">Aucun article publié</p>
+            <p class="text-gray-500 dark:text-gray-400 text-center py-8">Aucun article publié</p>
             {% endfor %}
         </div>
     </div>

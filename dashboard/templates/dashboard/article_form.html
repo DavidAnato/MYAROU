@@ -15,6 +15,10 @@
         font-weight: 500;
         color: #374151;
         margin-bottom: 0.5rem;
+        transition: color 0.2s;
+    }
+    .dark .form-label {
+        color: #d1d5db;
     }
     .django-ckeditor-widget {
         width: 100% !important;
@@ -31,6 +35,7 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
         animation: fadeIn 0.3s;
+        backdrop-filter: blur(4px);
     }
     .modal.active {
         display: flex;
@@ -45,6 +50,12 @@
         max-height: 90vh;
         overflow-y: auto;
         animation: slideDown 0.3s;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    .dark .modal-content {
+        background-color: #1f2937;
+        color: white;
+        border: 1px solid #374151;
     }
     
     /* Drag & Drop styles */
@@ -57,14 +68,26 @@
         cursor: pointer;
         background-color: #f9fafb;
     }
+    .dark .drop-zone {
+        background-color: #374151;
+        border-color: #4b5563;
+    }
     .drop-zone:hover {
         border-color: #3b82f6;
         background-color: #eff6ff;
+    }
+    .dark .drop-zone:hover {
+        background-color: #4b5563;
+        border-color: #60a5fa;
     }
     .drop-zone.drag-over {
         border-color: #3b82f6;
         background-color: #dbeafe;
         transform: scale(1.02);
+    }
+    .dark .drop-zone.drag-over {
+        background-color: #1e3a8a;
+        border-color: #60a5fa;
     }
     .image-preview {
         max-width: 300px;
@@ -98,6 +121,12 @@
         background: #f9fafb;
         margin-bottom: 8px;
         cursor: text;
+        transition: all 0.2s;
+    }
+    .dark .tags-display {
+        background-color: #374151;
+        border-color: #4b5563;
+        color: white;
     }
     
     .tag-badge {
@@ -155,12 +184,16 @@
         background: transparent;
         font-size: 14px;
         padding: 6px;
+        color: inherit;
     }
     
     .tags-placeholder {
         color: #9ca3af;
         font-size: 14px;
         padding: 6px;
+    }
+    .dark .tags-placeholder {
+        color: #9ca3af;
     }
     
     .seo-tag-badge {
@@ -176,19 +209,19 @@
 
 {% block content %}
 <div class="mx-auto">
-    <div class="bg-white rounded-2xl shadow-xl p-8">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 transition-colors">
         <form method="post" enctype="multipart/form-data" id="articleForm">
             {% csrf_token %}
             
             {% if form.non_field_errors %}
-                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-6">
-                    <p class="text-sm text-red-800">{{ form.non_field_errors }}</p>
+                <div class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-4 rounded mb-6">
+                    <p class="text-sm text-red-800 dark:text-red-300">{{ form.non_field_errors }}</p>
                 </div>
             {% endif %}
             
             <!-- Informations principales -->
             <div class="mb-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-blue-500">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 pb-3 border-b-2 border-blue-500">
                     📝 Informations principales
                 </h3>
                 
@@ -221,7 +254,7 @@
                                 {{ form.category }}
                             </div>
                             <button type="button" onclick="openCategoryModal()" 
-                                    class="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center">
+                                    class="px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center shadow-md">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
@@ -240,7 +273,7 @@
             
             <!-- Contenu -->
             <div class="mb-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-purple-500">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 pb-3 border-b-2 border-purple-500">
                     ✍️ Contenu
                 </h3>
                 
@@ -250,7 +283,7 @@
                     {% if form.excerpt.errors %}
                         <p class="text-red-500 text-sm mt-1">{{ form.excerpt.errors.0 }}</p>
                     {% endif %}
-                    <p class="text-gray-500 text-sm mt-1">Court résumé affiché dans les listes</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Court résumé affiché dans les listes</p>
                 </div>
                 
                 <div class="form-field">
@@ -259,7 +292,7 @@
                     {% if form.content.errors %}
                         <p class="text-red-500 text-sm mt-1">{{ form.content.errors.0 }}</p>
                     {% endif %}
-                    <p class="text-gray-500 text-sm mt-1">Le contenu principal de votre article</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Le contenu principal de votre article</p>
                 </div>
                 
                 <div class="form-field">
@@ -268,19 +301,19 @@
                     {% if article and article.image %}
                         <div class="mb-4" id="currentImagePreview">
                             <img src="{{ article.image.url }}" alt="Image actuelle" class="image-preview">
-                            <p class="text-sm text-gray-500 mt-2">Image actuelle</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Image actuelle</p>
                         </div>
                     {% endif %}
                     
                     <!-- Zone de drop -->
                     <div class="drop-zone" id="dropZone">
-                        <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 111 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
-                        <p class="text-gray-600 mb-2">
-                            <span class="font-semibold text-blue-600">Cliquez pour choisir</span> ou glissez-déposez une image
+                        <p class="text-gray-600 dark:text-gray-300 mb-2">
+                            <span class="font-semibold text-blue-600 dark:text-blue-400">Cliquez pour choisir</span> ou glissez-déposez une image
                         </p>
-                        <p class="text-sm text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">PNG, JPG, GIF jusqu'à 10MB</p>
                     </div>
                     
                     <!-- Input caché -->
@@ -292,7 +325,7 @@
                     <div id="imagePreview" class="mt-4 hidden flex flex-col items-center">
                         <img id="previewImg" class="image-preview" alt="Prévisualisation">
                         <button type="button" onclick="removeImage()" 
-                                class="mt-2 text-red-600 hover:text-red-700 text-sm font-medium flex items-center">
+                                class="mt-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium flex items-center">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -306,13 +339,13 @@
                     <div class="space-y-4">
                         <!-- File Upload -->
                          <div class="drop-zone" id="videoDropZone">
-                            <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                             </svg>
-                            <p class="text-gray-600 mb-2">
-                                <span class="font-semibold text-blue-600">Cliquez pour choisir</span> ou glissez-déposez une vidéo
+                            <p class="text-gray-600 dark:text-gray-300 mb-2">
+                                <span class="font-semibold text-blue-600 dark:text-blue-400">Cliquez pour choisir</span> ou glissez-déposez une vidéo
                             </p>
-                            <p class="text-sm text-gray-500">MP4, WebM, Ogg (Max 100Mo)</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">MP4, WebM, Ogg (Max 100Mo)</p>
                         </div>
                         
                         <div style="display: none;">
@@ -322,7 +355,7 @@
                         {% if article and article.video_file %}
                         <div class="mb-4" id="currentVideoPreview">
                             <video src="{{ article.video_file.url }}" controls class="w-full rounded-lg shadow-lg" style="max-height: 300px;"></video>
-                            <p class="text-sm text-gray-500 mt-2">Vidéo actuelle</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Vidéo actuelle</p>
                         </div>
                         {% endif %}
                         
@@ -332,7 +365,7 @@
                                 Votre navigateur ne supporte pas la lecture de vidéos.
                             </video>
                             <button type="button" onclick="removeVideo()" 
-                                    class="mt-2 text-red-600 hover:text-red-700 text-sm font-medium flex items-center">
+                                    class="mt-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -343,21 +376,21 @@
                         <!-- Separator -->
                         <div class="relative">
                             <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                                <div class="w-full border-t border-gray-300"></div>
+                                <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
                             </div>
                             <div class="relative flex justify-center">
-                                <span class="px-2 bg-white text-sm text-gray-500">OU</span>
+                                <span class="px-2 bg-white dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400">OU</span>
                             </div>
                         </div>
 
                         <!-- URL Input -->
                         <div>
-                            <label class="text-sm text-gray-600 mb-1 block">Lien vidéo (YouTube/Vimeo)</label>
+                            <label class="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Lien vidéo (YouTube/Vimeo)</label>
                             {{ form.video_url }}
                             {% if form.video_url.errors %}
                                 <p class="text-red-500 text-sm mt-1">{{ form.video_url.errors.0 }}</p>
                             {% endif %}
-                            <p class="text-xs text-gray-500 mt-1">Si une vidéo est téléversée, ce lien sera ignoré.</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Si une vidéo est téléversée, ce lien sera ignoré.</p>
                         </div>
                     </div>
                 </div>
@@ -365,12 +398,12 @@
             
             <!-- Métadonnées -->
             <div class="mb-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-green-500">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 pb-3 border-b-2 border-green-500">
                     🏷️ Métadonnées
                 </h3>
                 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Tags
                     </label>
                     <div class="tag-input-wrapper">
@@ -383,18 +416,18 @@
             
             <!-- SEO -->
             <div class="mb-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-pink-500">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 pb-3 border-b-2 border-pink-500">
                     🔍 SEO
                 </h3>
                 
                 <div class="form-field">
                     <label class="form-label">Meta Description</label>
                     {{ form.meta_description }}
-                    <p class="text-gray-500 text-sm mt-1">Description pour les moteurs de recherche</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Description pour les moteurs de recherche</p>
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Mots-clés Meta
                     </label>
                     <div class="tag-input-wrapper">
@@ -406,9 +439,9 @@
             </div>
             
             <!-- Boutons d'action -->
-            <div class="flex items-center justify-between pt-6 border-t">
+            <div class="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
                 <a href="{% url 'dashboard:article_list' %}" 
-                   class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                   class="inline-flex items-center px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
@@ -432,9 +465,9 @@
     <div class="modal-content">
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-2xl font-bold text-gray-800">➕ Nouvelle catégorie</h3>
+                <h3 class="text-2xl font-bold text-gray-800 dark:text-white">➕ Nouvelle catégorie</h3>
                 <button type="button" onclick="closeCategoryModal()" 
-                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -447,14 +480,14 @@
                     <div>
                         <label class="form-label">Nom *</label>
                         <input type="text" name="name" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors"
                                placeholder="Ex: Technologie">
                     </div>
                     
                     <div>
                         <label class="form-label">Description</label>
                         <textarea name="description" rows="3"
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors"
                                   placeholder="Description de la catégorie"></textarea>
                     </div>
                     
@@ -462,7 +495,7 @@
                     
                     <div class="flex gap-3 pt-4">
                         <button type="button" onclick="closeCategoryModal()"
-                                class="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors">
                             Annuler
                         </button>
                         <button type="submit"
@@ -501,26 +534,34 @@ function preventDefaults(e) {
 }
 
 ['dragenter', 'dragover'].forEach(eventName => {
-    dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+    dropZone.addEventListener(eventName, highlight, false);
 });
 
 ['dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+    dropZone.addEventListener(eventName, unhighlight, false);
 });
+
+function highlight(e) {
+    dropZone.classList.add('drag-over');
+}
+
+function unhighlight(e) {
+    dropZone.classList.remove('drag-over');
+}
 
 dropZone.addEventListener('drop', handleDrop, false);
 
 function handleDrop(e) {
     const dt = e.dataTransfer;
     const files = dt.files;
+    
     if (files.length > 0) {
         fileInput.files = files;
         handleFiles(files);
     }
 }
 
-// Changement de fichier
-fileInput.addEventListener('change', function(e) {
+fileInput.addEventListener('change', function() {
     handleFiles(this.files);
 });
 
@@ -532,10 +573,9 @@ function handleFiles(files) {
             reader.onload = function(e) {
                 previewImg.src = e.target.result;
                 imagePreview.classList.remove('hidden');
-                dropZone.style.display = 'none';
-                const currentPreview = document.getElementById('currentImagePreview');
-                if (currentPreview) currentPreview.style.display = 'none';
-            };
+                document.getElementById('currentImagePreview')?.classList.add('hidden');
+                dropZone.classList.add('hidden');
+            }
             reader.readAsDataURL(file);
         }
     }
@@ -544,28 +584,162 @@ function handleFiles(files) {
 function removeImage() {
     fileInput.value = '';
     imagePreview.classList.add('hidden');
-    dropZone.style.display = 'block';
-    const currentPreview = document.getElementById('currentImagePreview');
-    if (currentPreview) currentPreview.style.display = 'block';
+    dropZone.classList.remove('hidden');
+    document.getElementById('currentImagePreview')?.classList.remove('hidden');
 }
 
-// Copier-coller d'images
-document.addEventListener('paste', function(e) {
-    const items = e.clipboardData.items;
-    for (let i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf('image') !== -1) {
-            const blob = items[i].getAsFile();
-            const file = new File([blob], 'pasted-image.png', { type: blob.type });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            fileInput.files = dataTransfer.files;
-            handleFiles(dataTransfer.files);
-            e.preventDefault();
+// Gestion des tags
+class TagInput {
+    constructor(inputId, displayId, isSeo = false) {
+        this.input = document.getElementById(inputId);
+        this.display = document.getElementById(displayId);
+        this.tags = [];
+        this.isSeo = isSeo;
+        
+        this.init();
+    }
+    
+    init() {
+        // Cacher l'input original
+        this.input.style.display = 'none';
+        
+        // Créer l'input de saisie
+        this.tagInput = document.createElement('input');
+        this.tagInput.className = 'tag-input';
+        this.tagInput.placeholder = this.isSeo ? 'Ajouter un mot-clé...' : 'Ajouter un tag...';
+        this.tagInput.addEventListener('keydown', (e) => this.handleKeydown(e));
+        
+        this.display.appendChild(this.tagInput);
+        this.display.addEventListener('click', () => this.tagInput.focus());
+        
+        // Charger les tags existants
+        if (this.input.value) {
+            this.tags = this.input.value.split(',').map(t => t.trim()).filter(t => t);
+            this.renderTags();
         }
+    }
+    
+    handleKeydown(e) {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            const value = this.tagInput.value.trim();
+            
+            if (value && !this.tags.includes(value)) {
+                this.tags.push(value);
+                this.updateOriginalInput();
+                this.renderTags();
+                this.tagInput.value = '';
+            }
+        } else if (e.key === 'Backspace' && !this.tagInput.value && this.tags.length > 0) {
+            this.tags.pop();
+            this.updateOriginalInput();
+            this.renderTags();
+        }
+    }
+    
+    removeTag(index) {
+        this.tags.splice(index, 1);
+        this.updateOriginalInput();
+        this.renderTags();
+    }
+    
+    updateOriginalInput() {
+        this.input.value = this.tags.join(',');
+    }
+    
+    renderTags() {
+        // Garder l'input à la fin
+        this.display.innerHTML = '';
+        
+        this.tags.forEach((tag, index) => {
+            const badge = document.createElement('span');
+            badge.className = `tag-badge ${this.isSeo ? 'seo-tag-badge' : ''}`;
+            badge.innerHTML = `
+                ${tag}
+                <span class="tag-remove" onclick="window.tagManagers['${this.input.id}'].removeTag(${index})">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </span>
+            `;
+            this.display.appendChild(badge);
+        });
+        
+        this.display.appendChild(this.tagInput);
+    }
+}
+
+// Initialiser les gestionnaires de tags
+window.tagManagers = {};
+document.addEventListener('DOMContentLoaded', () => {
+    window.tagManagers['id_tags'] = new TagInput('id_tags', 'tagsDisplay');
+    window.tagManagers['id_meta_keywords'] = new TagInput('id_meta_keywords', 'seoTagsDisplay', true);
+});
+
+// Modal Catégorie
+const categoryModal = document.getElementById('categoryModal');
+const categoryForm = document.getElementById('categoryForm');
+
+function openCategoryModal() {
+    categoryModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCategoryModal() {
+    categoryModal.classList.remove('active');
+    document.body.style.overflow = '';
+    categoryForm.reset();
+    document.getElementById('categoryMessage').classList.add('hidden');
+}
+
+// Fermer le modal si on clique en dehors
+categoryModal.addEventListener('click', (e) => {
+    if (e.target === categoryModal) {
+        closeCategoryModal();
     }
 });
 
-// --- Gestion de la vidéo (Drag & Drop) ---
+// Soumission du formulaire catégorie via AJAX
+categoryForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(categoryForm);
+    const messageDiv = document.getElementById('categoryMessage');
+    
+    try {
+        const response = await fetch("{% url 'dashboard:category_create_ajax' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Ajouter la nouvelle catégorie au select
+            const select = document.getElementById('id_category');
+            const option = new Option(data.category.name, data.category.id);
+            select.add(option);
+            select.value = data.category.id;
+            
+            closeCategoryModal();
+            
+            // Notification de succès (optionnel)
+            // alert('Catégorie créée avec succès !');
+        } else {
+            messageDiv.innerHTML = `<p class="text-red-500 text-sm">${data.error || 'Une erreur est survenue'}</p>`;
+            messageDiv.classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        messageDiv.innerHTML = '<p class="text-red-500 text-sm">Erreur de connexion</p>';
+        messageDiv.classList.remove('hidden');
+    }
+});
+
+// Gestion Vidéo
 const videoDropZone = document.getElementById('videoDropZone');
 const videoInput = document.getElementById('id_video_file');
 const videoPreview = document.getElementById('videoPreview');
@@ -574,32 +748,40 @@ const previewVideo = document.getElementById('previewVideo');
 // Click sur la zone de drop
 videoDropZone.addEventListener('click', () => videoInput.click());
 
-// Drag & Drop events
+// Drag & Drop
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     videoDropZone.addEventListener(eventName, preventDefaults, false);
 });
 
 ['dragenter', 'dragover'].forEach(eventName => {
-    videoDropZone.addEventListener(eventName, () => videoDropZone.classList.add('drag-over'), false);
+    videoDropZone.addEventListener(eventName, highlightVideo, false);
 });
 
 ['dragleave', 'drop'].forEach(eventName => {
-    videoDropZone.addEventListener(eventName, () => videoDropZone.classList.remove('drag-over'), false);
+    videoDropZone.addEventListener(eventName, unhighlightVideo, false);
 });
+
+function highlightVideo(e) {
+    videoDropZone.classList.add('drag-over');
+}
+
+function unhighlightVideo(e) {
+    videoDropZone.classList.remove('drag-over');
+}
 
 videoDropZone.addEventListener('drop', handleVideoDrop, false);
 
 function handleVideoDrop(e) {
     const dt = e.dataTransfer;
     const files = dt.files;
+    
     if (files.length > 0) {
         videoInput.files = files;
         handleVideoFiles(files);
     }
 }
 
-// Changement de fichier vidéo
-videoInput.addEventListener('change', function(e) {
+videoInput.addEventListener('change', function() {
     handleVideoFiles(this.files);
 });
 
@@ -610,204 +792,18 @@ function handleVideoFiles(files) {
             const url = URL.createObjectURL(file);
             previewVideo.src = url;
             videoPreview.classList.remove('hidden');
-            videoDropZone.style.display = 'none';
-            const currentVideo = document.getElementById('currentVideoPreview');
-            if (currentVideo) currentVideo.style.display = 'none';
+            document.getElementById('currentVideoPreview')?.classList.add('hidden');
+            videoDropZone.classList.add('hidden');
         }
     }
 }
 
 function removeVideo() {
     videoInput.value = '';
-    previewVideo.src = '';
     videoPreview.classList.add('hidden');
-    videoDropZone.style.display = 'block';
-    const currentVideo = document.getElementById('currentVideoPreview');
-    if (currentVideo) currentVideo.style.display = 'block';
+    previewVideo.src = '';
+    videoDropZone.classList.remove('hidden');
+    document.getElementById('currentVideoPreview')?.classList.remove('hidden');
 }
-
-
-// Modal pour les catégories
-function openCategoryModal() {
-    document.getElementById('categoryModal').classList.add('active');
-}
-
-function closeCategoryModal() {
-    document.getElementById('categoryModal').classList.remove('active');
-    document.getElementById('categoryForm').reset();
-    const msg = document.getElementById('categoryMessage');
-    msg.classList.add('hidden');
-}
-
-// Fermer le modal en cliquant à l'extérieur
-document.getElementById('categoryModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeCategoryModal();
-    }
-});
-
-// Soumettre le formulaire de catégorie via AJAX
-document.getElementById('categoryForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const messageDiv = document.getElementById('categoryMessage');
-    
-    fetch('{% url "dashboard:category_create_ajax" %}', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Ajouter la nouvelle catégorie au select
-            const categorySelect = document.getElementById('id_category');
-            const option = new Option(data.category.name, data.category.id, true, true);
-            categorySelect.add(option);
-            
-            // Message de succès
-            messageDiv.className = 'bg-green-50 border-l-4 border-green-500 p-4 rounded';
-            messageDiv.innerHTML = '<p class="text-sm text-green-800">✓ Catégorie créée avec succès !</p>';
-            messageDiv.classList.remove('hidden');
-            
-            // Fermer après 1 seconde
-            setTimeout(() => {
-                closeCategoryModal();
-            }, 1000);
-        } else {
-            messageDiv.className = 'bg-red-50 border-l-4 border-red-500 p-4 rounded';
-            messageDiv.innerHTML = '<p class="text-sm text-red-800">Erreur: ' + (data.error || 'Une erreur est survenue') + '</p>';
-            messageDiv.classList.remove('hidden');
-        }
-    })
-    .catch(error => {
-        messageDiv.className = 'bg-red-50 border-l-4 border-red-500 p-4 rounded';
-        messageDiv.innerHTML = '<p class="text-sm text-red-800">Erreur de connexion</p>';
-        messageDiv.classList.remove('hidden');
-    });
-});
 </script>
-<script>
-class TagInput {
-    constructor(inputId, displayId, badgeClass = 'tag-badge') {
-        this.input = document.getElementById(inputId);
-        this.display = document.getElementById(displayId);
-        this.badgeClass = badgeClass;
-        this.tags = [];
-        
-        if (!this.input || !this.display) return;
-        
-        this.input.style.display = 'none';
-        this.initializeTags();
-        this.createInput();
-        this.setupEventListeners();
-    }
-    
-    initializeTags() {
-        const value = this.input.value.trim();
-        if (value) {
-            this.tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
-            this.renderTags();
-        }
-    }
-    
-    createInput() {
-        this.inputElement = document.createElement('input');
-        this.inputElement.type = 'text';
-        this.inputElement.className = 'tag-input';
-        this.inputElement.placeholder = 'Ajouter un tag...';
-        this.display.appendChild(this.inputElement);
-    }
-    
-    setupEventListeners() {
-        this.inputElement.addEventListener('keydown', (e) => {
-            if (e.key === ',' || e.key === 'Enter') {
-                e.preventDefault();
-                this.addTag();
-            } else if (e.key === 'Backspace' && !this.inputElement.value) {
-                this.removeLastTag();
-            }
-        });
-        
-        this.inputElement.addEventListener('blur', () => {
-            setTimeout(() => this.addTag(), 100);
-        });
-        
-        this.display.addEventListener('click', (e) => {
-            if (e.target === this.display) {
-                this.inputElement.focus();
-            }
-        });
-    }
-    
-    addTag() {
-        const value = this.inputElement.value.trim();
-        if (value && !this.tags.includes(value)) {
-            this.tags.push(value);
-            this.updateInput();
-            this.renderTags();
-        }
-        this.inputElement.value = '';
-    }
-    
-    removeTag(tag) {
-        this.tags = this.tags.filter(t => t !== tag);
-        this.updateInput();
-        this.renderTags();
-    }
-    
-    removeLastTag() {
-        if (this.tags.length > 0) {
-            this.tags.pop();
-            this.updateInput();
-            this.renderTags();
-        }
-    }
-    
-    updateInput() {
-        this.input.value = this.tags.join(', ');
-    }
-    
-    renderTags() {
-        Array.from(this.display.children).forEach(child => {
-            if (child !== this.inputElement) {
-                child.remove();
-            }
-        });
-        
-        const placeholder = this.display.querySelector('.tags-placeholder');
-        if (placeholder) placeholder.remove();
-        
-        this.tags.forEach(tag => {
-            const badge = document.createElement('span');
-            badge.className = this.badgeClass;
-            badge.innerHTML = `
-                ${tag}
-                <span class="tag-remove">×</span>
-            `;
-            
-            const removeBtn = badge.querySelector('.tag-remove');
-            removeBtn.addEventListener('click', () => this.removeTag(tag));
-            
-            this.display.insertBefore(badge, this.inputElement);
-        });
-        
-        if (this.tags.length === 0 && !this.inputElement.value) {
-            const placeholder = document.createElement('span');
-            placeholder.className = 'tags-placeholder';
-            placeholder.textContent = this.inputElement.placeholder;
-            this.display.insertBefore(placeholder, this.inputElement);
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    new TagInput('{{ form.tags.id_for_label }}', 'tagsDisplay', 'tag-badge');
-    new TagInput('{{ form.meta_keywords.id_for_label }}', 'seoTagsDisplay', 'tag-badge seo-tag-badge');
-});
-</script>
-
 {% endblock %}
