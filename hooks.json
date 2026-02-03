@@ -1,0 +1,8 @@
+[
+  {
+    "id": "myarou-deploy",
+    "execute-command": "/home/david/apps/MYAROU/webhook_listener.sh",
+    "command-working-directory": "/home/david/apps/MYAROU",
+    "response-message": "Déploiement déclenché"
+  }
+]
