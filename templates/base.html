@@ -160,7 +160,7 @@
     
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-         :class="[mobileMenuOpen ? 'bg-white dark:bg-gray-900 shadow-lg' : 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md lg:bg-transparent', scrolled ? 'lg:bg-white dark:lg:bg-gray-900 lg:shadow-lg' : 'lg:bg-transparent lg:shadow-none']">
+         :class="[mobileMenuOpen ? 'bg-white dark:bg-gray-900 shadow-lg' : 'bg-transparent', scrolled ? 'bg-white dark:bg-gray-900 shadow-lg' : 'bg-transparent shadow-none']">
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
@@ -171,7 +171,7 @@
                         </div>
                     </div>
                     <div>
-                        <span class="text-2xl font-extrabold" :class="[mobileMenuOpen ? 'text-gray-900 dark:text-white' : 'text-white', scrolled ? 'lg:text-gray-900 dark:lg:text-white' : 'lg:text-white']">
+                        <span class="text-2xl font-extrabold" :class="[mobileMenuOpen ? 'text-gray-900 dark:text-white' : (scrolled ? 'text-gray-900 dark:text-white' : 'text-white')]">
                             MYAROU
                         </span>
                     </div>
@@ -179,7 +179,7 @@
                 
                 <!-- Desktop Menu -->
                 <div class="hidden lg:flex items-center space-x-1">
-                    {% is_active request 'blog:home' as home_active %}
+                    {% is_active 'blog:home' as home_active %}
                     <a href="{% url 'blog:home' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
                        :class="[
@@ -189,7 +189,7 @@
                         {% t "site.menu.home" %}
                     </a>
 
-                    {% is_active request 'blog:about' as about_active %}
+                    {% is_active 'blog:about' as about_active %}
                     <a href="{% url 'blog:about' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
                        :class="[
@@ -199,7 +199,7 @@
                         {% t "site.menu.about" %}
                     </a>
 
-                    {% is_active request 'blog:article_list' 'blog:article_detail' as blog_active %}
+                    {% is_active 'blog:article_list' 'blog:article_detail' as blog_active %}
                     <a href="{% url 'blog:article_list' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
                        :class="[
@@ -209,7 +209,7 @@
                         {% t "site.menu.blog" %}
                     </a>
 
-                    {% is_active request 'blog:contact' as contact_active %}
+                    {% is_active 'blog:contact' as contact_active %}
                     <a href="{% url 'blog:contact' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
                        :class="[
@@ -294,8 +294,8 @@
                 
                 <!-- Mobile Menu Button -->
                 <button @click="mobileMenuOpen = !mobileMenuOpen" 
-                        class="lg:hidden p-2 rounded-lg transition-colors"
-                        :class="[mobileMenuOpen ? 'text-gray-700 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20', scrolled ? 'lg:text-gray-700 lg:hover:bg-purple-50' : 'lg:text-white lg:hover:bg-white lg:hover:bg-opacity-20']">
+                        class="lg:hidden p-2 rounded-lg transition-colors focus:outline-none"
+                        :class="[mobileMenuOpen ? 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800' : (scrolled ? 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white/20')]">
                     <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
