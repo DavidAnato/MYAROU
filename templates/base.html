@@ -1,12 +1,14 @@
 {% load i18n %}
 {% load json_i18n %}
+{% load static %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="fr" class="scroll-smooth">
+<html lang="{{ LANGUAGE_CODE }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}MYAROU - Libérez votre potentiel{% endblock %}</title>
-    <link rel="shortcut icon" href="static/images/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'images/logo.png' %}" type="image/x-icon">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,6 +23,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -34,6 +37,31 @@
                 }
             }
         }
+
+        // Initialize theme immediately to prevent flash
+        if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Language detection
+        (function() {
+            if (document.cookie.indexOf('django_language=') === -1) {
+                var userLang = (navigator.language || navigator.userLanguage).split('-')[0];
+                var currentLang = "{{ LANGUAGE_CODE }}";
+                var supportedLangs = ['fr', 'en'];
+                
+                if (supportedLangs.includes(userLang) && userLang !== currentLang) {
+                    var path = window.location.pathname;
+                    var prefix = '/' + currentLang;
+                    if (path.startsWith(prefix + '/') || path === prefix) {
+                        var newPath = path.replace(prefix, '/' + userLang);
+                        window.location.replace(newPath);
+                    }
+                }
+            }
+        })();
     </script>
     
     <style>
@@ -83,6 +111,10 @@
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
         
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #8B5CF6 0%, #EC4899 100%);
@@ -102,20 +134,32 @@
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-white font-sans antialiased transition-colors duration-300" x-data="{ 
-    mobileMenuOpen: false, 
-    scrolled: false,
-    showCGU: false,
-    showPrivacy: false,
-    showCookies: false,
-    showLegal: false
-}" 
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-300" 
+      x-data="{ 
+        darkMode: document.documentElement.classList.contains('dark'),
+        toggleTheme() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('darkMode', this.darkMode);
+            if (this.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        },
+        mobileMenuOpen: false, 
+        scrolled: false,
+        showCGU: false,
+        showPrivacy: false,
+        showCookies: false,
+        showLegal: false
+      }" 
+      x-init="$watch('darkMode', val => val ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark'))"
       @scroll.window="scrolled = window.pageYOffset > 50"
       @keydown.escape="mobileMenuOpen = false; showCGU = false; showPrivacy = false; showCookies = false; showLegal = false">
     
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-         :class="[mobileMenuOpen ? 'bg-white shadow-lg' : 'bg-transparent', scrolled ? 'lg:bg-white lg:shadow-lg' : 'lg:bg-transparent lg:shadow-none']">
+         :class="[mobileMenuOpen ? 'bg-white dark:bg-gray-900 shadow-lg' : 'bg-transparent', scrolled ? 'lg:bg-white dark:lg:bg-gray-900 lg:shadow-lg' : 'lg:bg-transparent lg:shadow-none']">
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
@@ -136,24 +180,31 @@
                 <div class="hidden lg:flex items-center space-x-1">
                     <a href="{% url 'blog:home' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
-                       :class="scrolled ? 'text-gray-700 hover:text-purple-600 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                       :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20'">
                         {% t "site.menu.home" %}
                     </a>
                     <a href="{% url 'blog:about' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
-                       :class="scrolled ? 'text-gray-700 hover:text-purple-600 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                       :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20'">
                         {% t "site.menu.about" %}
                     </a>
                     <a href="{% url 'blog:article_list' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
-                       :class="scrolled ? 'text-gray-700 hover:text-purple-600 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                       :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20'">
                         {% t "site.menu.blog" %}
                     </a>
                     <a href="{% url 'blog:contact' %}" 
                        class="px-4 py-2 transition-colors font-semibold rounded-lg"
-                       :class="scrolled ? 'text-gray-700 hover:text-purple-600 hover:bg-purple-50' : 'text-white hover:bg-white hover:bg-opacity-20'">
+                       :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20'">
                         {% t "site.menu.contact" %}
                     </a>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button @click="toggleTheme()" 
+                            class="p-2 rounded-lg transition-colors mr-2"
+                            :class="scrolled ? 'text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 hover:text-purple-600' : 'text-white hover:bg-white/20'">
+                        <i class="fas" :class="darkMode ? 'fa-sun' : 'fa-moon'"></i>
+                    </button>
                     
                     <!-- Language Switcher -->
                     <div class="relative ml-2" x-data="{ open: false }">
@@ -173,7 +224,7 @@
                              x-transition:leave="transition ease-in duration-75"
                              x-transition:leave-start="transform opacity-100 scale-100"
                              x-transition:leave-end="transform opacity-0 scale-95"
-                             class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl py-2 z-50 overflow-hidden ring-1 ring-black ring-opacity-5"
+                             class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-xl shadow-xl py-2 z-50 overflow-hidden ring-1 ring-black ring-opacity-5"
                              style="display: none;">
                             <form action="{% url 'set_language' %}" method="post">
                                 {% csrf_token %}
@@ -184,8 +235,8 @@
                                     <button type="submit" 
                                             name="language" 
                                             value="{{ language.code }}"
-                                            class="w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 hover:text-purple-600 flex items-center justify-between group transition-colors"
-                                            :class="'{{ language.code }}' === '{{ LANGUAGE_CODE }}' ? 'text-purple-600 font-bold bg-purple-50/50' : 'text-gray-600'">
+                                            class="w-full text-left px-4 py-2.5 text-sm hover:bg-purple-50 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 flex items-center justify-between group transition-colors"
+                                            :class="'{{ language.code }}' === '{{ LANGUAGE_CODE }}' ? 'text-purple-600 dark:text-purple-400 font-bold bg-purple-50/50 dark:bg-gray-700' : 'text-gray-600 dark:text-gray-300'">
                                         <span class="flex items-center gap-2">
                                             {{ language.name_local|capfirst }}
                                         </span>
@@ -242,29 +293,36 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 transform scale-100"
                  x-transition:leave-end="opacity-0 transform scale-95"
-                 class="lg:hidden pb-4 space-y-2" @click.outside="mobileMenuOpen = false">
+                 class="lg:hidden pb-4 space-y-2 dark:bg-gray-900" @click.outside="mobileMenuOpen = false">
                 <a href="{% url 'blog:home' %}" 
-                   class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-house w-5 h-5"></i>
                     {% t "site.menu.home" %}
                 </a>
                 <a href="{% url 'blog:about' %}" 
-                   class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-circle-info w-5 h-5"></i>
                     {% t "site.menu.about" %}
                 </a>
                 <a href="{% url 'blog:article_list' %}" 
-                   class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-blog w-5 h-5"></i>
                     {% t "site.menu.blog" %}
                 </a>
                 <a href="{% url 'blog:contact' %}" 
-                   class="block px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2" @click="mobileMenuOpen = false">
                     <i class="fa-solid fa-envelope w-5 h-5"></i>
                     {% t "site.menu.contact" %}
                 </a>
+                
+                <button @click="toggleTheme()" 
+                   class="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-purple-50 dark:hover:bg-gray-800 rounded-lg transition-all font-semibold flex items-center gap-2">
+                    <i class="fas" :class="darkMode ? 'fa-sun' : 'fa-moon'"></i>
+                    <span x-text="darkMode ? 'Mode clair' : 'Mode sombre'"></span>
+                </button>
+
                 <a href="{% url 'dashboard:index' %}" 
-                   class="block px-4 py-3 bg-white text-purple-600 rounded-lg font-bold text-center" @click="mobileMenuOpen = false">
+                   class="block px-4 py-3 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 rounded-lg font-bold text-center" @click="mobileMenuOpen = false">
                     {% t "site.menu.login" %}
                 </a>
             </div>

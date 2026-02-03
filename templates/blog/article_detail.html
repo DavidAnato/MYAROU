@@ -4,7 +4,7 @@
 {% block title %}{{ article.title }} - MYAROU{% endblock %}
 
 {% block hero %}
-<section class="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden">
+<section class="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 dark:from-blue-950 dark:via-purple-950 dark:to-indigo-950 text-white overflow-hidden">
     <div class="absolute inset-0 overflow-hidden opacity-20">
         <div class="absolute w-[600px] h-[600px] bg-gradient-to-br from-white to-transparent rounded-full -top-80 left-1/4 animate-float"></div>
         <div class="absolute w-96 h-96 bg-yellow-300 rounded-full top-0 right-0 transform translate-x-32 -translate-y-32 animate-pulse-slow"></div>
@@ -31,17 +31,17 @@
         </div>
     </div>
     <div class="absolute bottom-0 left-0 w-full leading-none">
-        <svg class="block w-full h-16 md:h-24 text-white" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="currentColor" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
+        <svg class="block w-full h-16 md:h-24 text-white dark:text-gray-900" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="currentColor" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
     </div>
 </section>
 {% endblock %}
 
 {% block content %}
 <!-- Breadcrumb -->
-<section class="bg-gradient-to-br from-gray-50 to-blue-50 py-6 border-b border-gray-100">
+<section class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 py-6 border-b border-gray-100 dark:border-gray-700">
     <div class="container mx-auto px-4">
         <nav class="flex items-center space-x-2 text-sm max-w-4xl mx-auto">
-            <a href="{% url 'blog:home' %}" class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+            <a href="{% url 'blog:home' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
@@ -50,34 +50,34 @@
             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <a href="{% url 'blog:article_list' %}" class="text-blue-600 hover:text-blue-700 font-medium">
+            <a href="{% url 'blog:article_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
                 {% t "site.blog.detail.breadcrumb.articles" %}
             </a>
             {% if article.category %}
             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <a href="{% url 'blog:category_detail' article.category.slug %}" class="text-blue-600 hover:text-blue-700 font-medium">
+            <a href="{% url 'blog:category_detail' article.category.slug %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
                 {{ article.category.name }}
             </a>
             {% endif %}
             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <span class="text-gray-600 truncate max-w-xs">{{ article.title }}</span>
+            <span class="text-gray-600 dark:text-gray-400 truncate max-w-xs">{{ article.title }}</span>
         </nav>
     </div>
 </section>
 
 <!-- Article Header -->
-<article class="py-12 bg-white">
+<article class="py-12 bg-white dark:bg-gray-900">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
             <!-- Category Badge -->
             {% if article.category %}
             <div class="mb-6">
                 <a href="{% url 'blog:category_detail' article.category.slug %}" 
-                   class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full font-bold text-sm hover:shadow-md transition-all">
+                   class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 text-blue-700 dark:text-blue-200 rounded-full font-bold text-sm hover:shadow-md transition-all">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                     </svg>
@@ -89,38 +89,38 @@
             
             
             <!-- Article Meta -->
-            <div class="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b border-gray-200">
+            <div class="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b border-gray-200 dark:border-gray-700">
                 <!-- Author -->
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-900 rounded-full flex items-center justify-center">
                         <span class="text-white font-bold text-lg">
                             {{ article.author|default:"M"|first|upper }}
                         </span>
                     </div>
                     <div>
-                        <div class="text-sm text-gray-500 font-medium">{% t "site.blog.detail.meta.author" %}</div>
-                        <div class="font-bold text-gray-900">{{ article.author|default:"MYAROU" }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 font-medium">{% t "site.blog.detail.meta.author" %}</div>
+                        <div class="font-bold text-gray-900 dark:text-white">{{ article.author|default:"MYAROU" }}</div>
                     </div>
                 </div>
                 
                 <!-- Published Date -->
-                <div class="flex items-center gap-2 text-gray-600">
+                <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     <span class="text-sm">
-                        <span class="text-gray-500">{% t "site.blog.detail.meta.published_at" %}</span>
-                        <span class="font-bold text-gray-900">{{ article.published_at|date:"d M Y" }}</span>
+                        <span class="text-gray-500 dark:text-gray-400">{% t "site.blog.detail.meta.published_at" %}</span>
+                        <span class="font-bold text-gray-900 dark:text-white">{{ article.published_at|date:"d M Y" }}</span>
                     </span>
                 </div>
                 
                 <!-- Views -->
-                <div class="flex items-center gap-2 text-gray-600">
+                <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
-                    <span class="text-sm font-bold text-gray-900">{{ article.views }} {% t "site.blog.detail.meta.views" %}</span>
+                    <span class="text-sm font-bold text-gray-900 dark:text-white">{{ article.views }} {% t "site.blog.detail.meta.views" %}</span>
                 </div>
             </div>
             
@@ -128,7 +128,7 @@
             {% if article.tags %}
             <div class="flex flex-wrap gap-2 mb-8">
                 {% for tag in article.get_tags_list %}
-                <span class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors">
+                <span class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                     #{{ tag }}
                 </span>
                 {% endfor %}
@@ -140,7 +140,7 @@
 
 <!-- Media Section (Image & Video) -->
 {% if article.image or article.video_file or article.video_url %}
-<section class="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-16">
+<section class="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16">
     <div class="container mx-auto px-4">
         <div class="max-w-7xl mx-auto">
             {% if article.image %}
@@ -150,9 +150,9 @@
                     <!-- Image Card -->
                     <div class="group relative">
                         <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
-                        <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl">
+                        <div class="relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-2xl">
                             <div class="absolute top-4 left-4 z-10">
-                                <span class="px-4 py-2 bg-white/95 backdrop-blur-sm text-gray-900 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                                <span class="px-4 py-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-gray-900 dark:text-white rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
                                     <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
@@ -170,7 +170,7 @@
                         <div class="absolute -inset-1 bg-gradient-to-r from-pink-600 via-red-600 to-orange-600 rounded-3xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
                         <div class="relative bg-black rounded-3xl overflow-hidden shadow-2xl">
                             <div class="absolute top-4 left-4 z-10">
-                                <span class="px-4 py-2 bg-white/95 backdrop-blur-sm text-gray-900 rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
+                                <span class="px-4 py-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-gray-900 dark:text-white rounded-full text-sm font-bold shadow-lg flex items-center gap-2">
                                     <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -200,9 +200,9 @@
                 <!-- Only Image - Full Width -->
                 <div class="group relative max-w-5xl mx-auto">
                     <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-3xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
-                    <div class="relative bg-white rounded-3xl overflow-hidden shadow-2xl">
+                    <div class="relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-2xl">
                         <div class="absolute top-6 left-6 z-10">
-                            <span class="px-5 py-3 bg-white/95 backdrop-blur-sm text-gray-900 rounded-full text-base font-bold shadow-lg flex items-center gap-2">
+                            <span class="px-5 py-3 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-gray-900 dark:text-white rounded-full text-base font-bold shadow-lg flex items-center gap-2">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
@@ -221,7 +221,7 @@
                     <div class="absolute -inset-1 bg-gradient-to-r from-pink-600 via-red-600 to-orange-600 rounded-3xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
                     <div class="relative bg-black rounded-3xl overflow-hidden shadow-2xl">
                         <div class="absolute top-6 left-6 z-10">
-                            <span class="px-5 py-3 bg-white/95 backdrop-blur-sm text-gray-900 rounded-full text-base font-bold shadow-lg flex items-center gap-2">
+                            <span class="px-5 py-3 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm text-gray-900 dark:text-white rounded-full text-base font-bold shadow-lg flex items-center gap-2">
                                 <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -254,10 +254,10 @@
 
 
 <!-- Article Content -->
-<section class="py-16 bg-white">
+<section class="py-16 bg-white dark:bg-gray-900">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
-            <div class="article-content prose prose-lg max-w-none">
+            <div class="article-content prose prose-lg max-w-none dark:prose-invert">
                 {{ article.content|safe }}
             </div>
         </div>
@@ -265,20 +265,20 @@
 </section>
 
 <!-- Share Section -->
-<section class="py-12 bg-gradient-to-br from-gray-50 to-blue-50">
+<section class="py-12 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
-            <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-6">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-900 rounded-full flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900">{% t "site.blog.detail.share.title" %}</h3>
-                            <p class="text-gray-600">{% t "site.blog.detail.share.description" %}</p>
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{% t "site.blog.detail.share.title" %}</h3>
+                            <p class="text-gray-600 dark:text-gray-300">{% t "site.blog.detail.share.description" %}</p>
                         </div>
                     </div>
                     
@@ -315,7 +315,7 @@
                         
                         <!-- Copy Link -->
                         <button onclick="copyToClipboard()" 
-                                class="group px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl">
+                                class="group px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                             </svg>
@@ -330,22 +330,22 @@
 
 <!-- Related Articles -->
 {% if related_articles %}
-<section class="py-16 bg-white">
+<section class="py-16 bg-white dark:bg-gray-900">
     <div class="container mx-auto px-4">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-extrabold text-gray-900 mb-4 flex items-center justify-center gap-3">
+                <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-3">
                     <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                     </svg>
                     {% t "site.blog.detail.related.title" %}
                 </h2>
-                <p class="text-gray-600 text-lg">{% t "site.blog.detail.related.description" %}</p>
+                <p class="text-gray-600 dark:text-gray-300 text-lg">{% t "site.blog.detail.related.description" %}</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {% for related in related_articles %}
-                <article class="group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <article class="group bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
                     <a href="{% url 'blog:article_detail' related.slug %}" class="block relative overflow-hidden aspect-video">
                         {% if related.image %}
                         <img src="{{ related.image.url }}" 
@@ -362,21 +362,21 @@
                     
                     <div class="p-6 space-y-3">
                         {% if related.category %}
-                        <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-bold">
+                        <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 text-blue-700 dark:text-blue-200 rounded-full text-sm font-bold">
                             {{ related.category.name }}
                         </span>
                         {% endif %}
                         
-                        <h3 class="text-lg font-extrabold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                        <h3 class="text-lg font-extrabold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                             <a href="{% url 'blog:article_detail' related.slug %}">
                                 {{ related.title }}
                             </a>
                         </h3>
                         
-                        <p class="text-sm text-gray-500">{{ related.published_at|date:"d M Y" }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ related.published_at|date:"d M Y" }}</p>
                         
                         <a href="{% url 'blog:article_detail' related.slug %}" 
-                           class="inline-flex items-center gap-2 text-blue-600 font-bold hover:text-blue-700 group-hover:gap-3 transition-all text-sm">
+                           class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold hover:text-blue-700 dark:hover:text-blue-300 group-hover:gap-3 transition-all text-sm">
                             {% t "site.blog.article.read_more" %}
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
@@ -392,11 +392,11 @@
 {% endif %}
 
 <!-- Navigation -->
-<section class="py-12 bg-gradient-to-br from-gray-50 to-blue-50">
+<section class="py-12 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between gap-4">
             <a href="{% url 'blog:article_list' %}" 
-               class="group px-8 py-4 bg-white hover:bg-gray-50 text-gray-900 rounded-xl font-bold transition-all flex items-center gap-3 shadow-lg hover:shadow-xl border-2 border-gray-200 hover:border-blue-500">
+               class="group px-8 py-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-bold transition-all flex items-center gap-3 shadow-lg hover:shadow-xl border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500">
                 <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -571,6 +571,42 @@
 
 .animate-pulse-slow {
     animation: pulse-slow 4s ease-in-out infinite;
+}
+
+/* Dark Mode Support */
+.dark .article-content {
+    color: #D1D5DB; /* gray-300 */
+}
+.dark .article-content h2,
+.dark .article-content h3,
+.dark .article-content h4 {
+    color: #F3F4F6; /* gray-100 */
+}
+.dark .article-content h2 {
+    border-bottom-color: #3B82F6;
+}
+.dark .article-content blockquote {
+    background: linear-gradient(to right, #1E3A8A, #1E40AF); /* blue-900 */
+    color: #93C5FD; /* blue-300 */
+    border-left-color: #60A5FA; /* blue-400 */
+}
+.dark .article-content code {
+    background: #374151; /* gray-700 */
+    color: #FCA5A5; /* red-300 */
+}
+.dark .article-content table th {
+    background: #374151; /* gray-700 */
+    color: #F3F4F6;
+    border-color: #4B5563; /* gray-600 */
+}
+.dark .article-content table td {
+    border-color: #4B5563;
+}
+.dark .article-content a {
+    color: #60A5FA; /* blue-400 */
+}
+.dark .article-content a:hover {
+    color: #93C5FD; /* blue-300 */
 }
 </style>
 
