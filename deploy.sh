@@ -25,10 +25,9 @@ fi
 git fetch --all
 git reset --hard origin/main
 
-# 4️⃣ Corriger les permissions critiques
-# SQLite et deploy.sh
-sudo chown david:david db.sqlite3
-chmod 664 db.sqlite3
+# 4️⃣ Corriger les permissions critiques (Compatible Gunicorn/Nginx)
+sudo chown -R david:www-data $APP_DIR
+sudo chmod -R 775 $APP_DIR
 chmod +x deploy.sh
 
 # 5️⃣ Activer l'environnement virtuel
