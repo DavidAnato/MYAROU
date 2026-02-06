@@ -11,7 +11,7 @@ body {
 }
 
 .jumbotron {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
     color: white;
 }
 
@@ -46,7 +46,7 @@ footer a {
 }
 
 footer a:hover {
-    color: #667eea !important;
+    color: #10B981 !important;
 }
 
 .article-content h1,
@@ -72,7 +72,7 @@ footer a:hover {
 }
 
 .article-content blockquote {
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #10B981;
     padding-left: 1rem;
     margin: 1.5rem 0;
     font-style: italic;
@@ -111,30 +111,30 @@ footer a:hover {
 }
 
 .pagination .page-link {
-    color: #667eea;
+    color: #10B981;
 }
 
 .pagination .page-item.active .page-link {
-    background-color: #667eea;
-    border-color: #667eea;
+    background-color: #10B981;
+    border-color: #10B981;
 }
 
 .btn-primary {
-    background-color: #667eea;
-    border-color: #667eea;
+    background-color: #10B981;
+    border-color: #10B981;
 }
 
 .btn-primary:hover {
-    background-color: #5568d3;
-    border-color: #5568d3;
+    background-color: #059669;
+    border-color: #059669;
 }
 
 .bg-primary {
-    background-color: #667eea !important;
+    background-color: #10B981 !important;
 }
 
 .text-primary {
-    color: #667eea !important;
+    color: #10B981 !important;
 }
 
 /* Responsive */
