@@ -51,4 +51,6 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 
 # 9️⃣ Redémarrer le service Gunicorn
-sudo systemctl restart $
+sudo systemctl restart $SERVICE_NAME
+
+echo "✅ Déploiement terminé avec succès !"
