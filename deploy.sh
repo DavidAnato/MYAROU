@@ -47,6 +47,14 @@ pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
 
+# 7️⃣.1️⃣ Créer un superuser s'il n'existe pas
+# Remplacez les valeurs ci-dessous ou utilisez des variables d'environnement
+export DJANGO_SUPERUSER_PASSWORD='password_a_changer'
+export DJANGO_SUPERUSER_USERNAME='admin'
+export DJANGO_SUPERUSER_EMAIL='admin@example.com'
+
+python manage.py createsuperuser --noinput || echo "Superuser existe déjà ou erreur lors de la création"
+
 # 8️⃣ Collecter les fichiers statiques
 python manage.py collectstatic --noinput
 
