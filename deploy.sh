@@ -49,7 +49,7 @@ python manage.py migrate
 
 # 7️⃣.1️⃣ Créer un superuser s'il n'existe pas
 # Remplacez les valeurs ci-dessous ou utilisez des variables d'environnement
-export DJANGO_SUPERUSER_PASSWORD='password_a_changer'
+export DJANGO_SUPERUSER_PASSWORD='12345'
 export DJANGO_SUPERUSER_USERNAME='admin'
 export DJANGO_SUPERUSER_EMAIL='admin@example.com'
 
