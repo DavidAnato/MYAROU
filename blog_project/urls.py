@@ -31,10 +31,5 @@ urlpatterns += i18n_patterns(
     path('', include('blog.urls')),
 )
 
-# Servir les fichiers statiques en développement (en prod: WhiteNoise via middleware)
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-# Toujours servir /media/ localement si on n'utilise pas S3 (évite la 404)
-if getattr(settings, 'MEDIA_BACKEND', 'local') != 's3':
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Toujours servir /media/ (non recommandé en prod, mais demandé)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
