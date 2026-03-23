@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static json_i18n %}
+
+{% block title %}{% t "site.404.title" %}{% endblock %}
+
+{% block hero %}
+<section class="relative bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-950 dark:via-emerald-950 dark:to-emerald-950 text-white overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden opacity-20">
+        <div class="absolute w-96 h-96 bg-white rounded-full -top-48 -left-48 animate-float"></div>
+        <div class="absolute w-64 h-64 bg-emerald-300 rounded-full top-20 right-10 animate-float-delayed"></div>
+        <div class="absolute w-72 h-72 bg-white rounded-full bottom-20 right-1/4 animate-float"></div>
+        <div class="absolute w-56 h-56 bg-emerald-300 rounded-full -bottom-28 -right-28 animate-float-delayed"></div>
+    </div>
+    <div class="container mx-auto px-4 py-32 md:py-40 relative z-10">
+        <div class="max-w-3xl mx-auto text-center space-y-6">
+            <div class="inline-block">
+                <span class="px-4 py-2 bg-white/10 backdrop-blur rounded-full text-sm font-semibold tracking-wide">
+                    {% t "site.404.hero.badge" %}
+                </span>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold leading-tight">
+                <span class="block">{% t "site.404.hero.title_prefix" %}</span>
+                <span class="text-emerald-300">{% t "site.404.hero.title_suffix" %}</span>
+            </h1>
+            <p class="text-lg md:text-xl text-white/90">
+                {% t "site.404.description" %}
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+                <a href="{% url 'blog:home' %}" class="px-6 py-3 bg-white text-primary rounded-full font-bold hover:shadow-xl transform hover:scale-105 transition-all">
+                    {% t "site.404.cta.home" %}
+                </a>
+                <a href="{% url 'blog:article_list' %}" class="px-6 py-3 border border-white/50 text-white rounded-full font-bold hover:bg-white/10 transition-all">
+                    {% t "site.404.cta.articles" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="py-16 bg-white dark:bg-matte-black">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center">
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="h-1 bg-emerald-500 rounded-full"></div>
+                <div class="h-1 bg-emerald-400 rounded-full"></div>
+                <div class="h-1 bg-emerald-300 rounded-full"></div>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300">
+                {% t "site.404.description" %}
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

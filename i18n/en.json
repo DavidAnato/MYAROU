@@ -368,5 +368,12 @@
     "site.modal.legal.credits.photos": "Photos:",
     "site.modal.legal.credits.icons": "Icons:",
     "site.modal.legal.law.title": "Applicable Law",
-    "site.modal.legal.law.content": "These legal mentions are subject to French law. In case of dispute and failing amicable agreement, the dispute will be brought before the French courts in accordance with the rules of jurisdiction in force."
+    "site.modal.legal.law.content": "These legal mentions are subject to French law. In case of dispute and failing amicable agreement, the dispute will be brought before the French courts in accordance with the rules of jurisdiction in force.",
+    "site.404.title": "Page Not Found - MYAROU",
+    "site.404.hero.badge": "Error 404",
+    "site.404.hero.title_prefix": "Oops,",
+    "site.404.hero.title_suffix": "page not found",
+    "site.404.description": "The page you’re looking for doesn’t exist or has been moved.",
+    "site.404.cta.home": "Back to Home",
+    "site.404.cta.articles": "Browse Articles"
 }

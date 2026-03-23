@@ -293,5 +293,12 @@
     "site.modal.legal.credits.photos": "Photos :",
     "site.modal.legal.credits.icons": "Icônes :",
     "site.modal.legal.law.title": "Droit applicable",
-    "site.modal.legal.law.content": "Les présentes mentions légales sont soumises au droit français. En cas de litige et à défaut d'accord amiable, le litige sera porté devant les tribunaux français conformément aux règles de compétence en vigueur."
+    "site.modal.legal.law.content": "Les présentes mentions légales sont soumises au droit français. En cas de litige et à défaut d'accord amiable, le litige sera porté devant les tribunaux français conformément aux règles de compétence en vigueur.",
+    "site.404.title": "Page non trouvée - MYAROU",
+    "site.404.hero.badge": "Erreur 404",
+    "site.404.hero.title_prefix": "Oups,",
+    "site.404.hero.title_suffix": "page introuvable",
+    "site.404.description": "La page que vous cherchez n’existe plus ou a été déplacée.",
+    "site.404.cta.home": "Retour à l’accueil",
+    "site.404.cta.articles": "Voir les articles"
 }
