@@ -89,3 +89,6 @@ class ArticleAdmin(admin.ModelAdmin):
         updated = queryset.update(status='draft')
         self.message_user(request, f'{updated} article(s) ont été mis en brouillon.')
     unpublish_articles.short_description = "Mettre en brouillon"
+
+
+ 

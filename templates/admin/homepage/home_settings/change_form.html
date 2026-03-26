@@ -1,0 +1,76 @@
+ {% extends "admin/change_form.html" %}
+ {% load static %}
+ 
+ {% block content %}
+ {{ block.super }}
+ <div id="home-preview" style="margin-top:24px; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden;">
+   <div style="padding:24px; background:linear-gradient(135deg,#064e3b,#065f46,#0f172a); color:#fff;">
+     <div style="display:flex; align-items:center; gap:8px; padding:6px 12px; border:1px solid rgba(255,255,255,.2); border-radius:999px; width:max-content;">
+       <span style="width:8px;height:8px;background:#34d399;border-radius:999px;"></span>
+       <span id="prev-hero-badge" style="font-weight:600; font-size:12px; letter-spacing:.1em; text-transform:uppercase;">Badge</span>
+     </div>
+     <h1 style="margin:16px 0 8px; font-size:40px; font-weight:800; line-height:1.1;">
+       <span id="prev-hero-title-prefix">Titre prefixe</span><br/>
+       <span id="prev-hero-title-suffix" style="background:linear-gradient(90deg,#5eead4,#86efac); -webkit-background-clip:text; background-clip:text; color:transparent;">Titre suffixe</span>
+     </h1>
+     <p id="prev-hero-desc" style="opacity:.9; max-width:640px;">Description du héros...</p>
+     <div style="margin-top:16px; display:flex; gap:24px; border-top:1px solid rgba(255,255,255,.2); padding-top:12px;">
+       <div><div id="prev-stat-youth" style="font-weight:700; font-size:24px;">500+</div><div style="font-size:12px; opacity:.8;">Jeunes encadrés</div></div>
+       <div><div id="prev-stat-years" style="font-weight:700; font-size:24px;">15+</div><div style="font-size:12px; opacity:.8;">Années d’expérience</div></div>
+       <div><div id="prev-stat-continents" style="font-weight:700; font-size:24px;">3</div><div style="font-size:12px; opacity:.8;">Continents</div></div>
+     </div>
+   </div>
+   <div style="display:flex; gap:24px; padding:24px; align-items:flex-start;">
+     <div style="flex:1;">
+       <h2 style="font-size:28px; font-weight:800; margin-bottom:8px;">“<span id="prev-quote-text">Texte de citation</span>”</h2>
+       <p id="prev-quote-sub" style="font-weight:600; background:linear-gradient(90deg,#059669,#10b981); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:12px;">Sous-texte</p>
+       <div style="display:flex; align-items:center; gap:12px;">
+         <div style="width:48px; height:4px; background:#e5e7eb;"></div>
+         <span id="prev-quote-role" style="color:#6b7280; font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:12px;">Rôle auteur</span>
+       </div>
+       <div style="margin-top:16px;">
+         <span id="prev-quote-cta" style="display:inline-block; padding:10px 16px; background:#059669; color:#fff; border-radius:8px; font-weight:700;">CTA</span>
+       </div>
+     </div>
+     <div style="flex:0 0 320px;">
+       <img id="prev-hero-image" src="{% static 'images/grid-4.png' %}" alt="Hero" style="width:100%; border-radius:16px; box-shadow:0 12px 24px rgba(0,0,0,.15);" />
+     </div>
+   </div>
+ </div>
+ 
+ <script>
+ (function() {
+   const byName = n => document.querySelector(`[name="${n}"]`);
+   const setText = (id, name, fallback) => {
+     const el = document.getElementById(id);
+     const input = byName(name);
+     if (el && input) {
+       const apply = () => { el.textContent = input.value || fallback; };
+       input.addEventListener('input', apply);
+       apply();
+     }
+   };
+   setText('prev-hero-badge', 'hero_badge', 'Badge');
+   setText('prev-hero-title-prefix', 'hero_title_prefix', 'Titre prefixe');
+   setText('prev-hero-title-suffix', 'hero_title_suffix', 'Titre suffixe');
+   setText('prev-hero-desc', 'hero_description', 'Description du héros...');
+   setText('prev-stat-youth', 'hero_stats_youth_mentored', '500+');
+   setText('prev-stat-years', 'hero_stats_years_experience', '15+');
+   setText('prev-stat-continents', 'hero_stats_continents', '3');
+   setText('prev-quote-text', 'quote_text', 'Texte de citation');
+   setText('prev-quote-sub', 'quote_subtext', 'Sous-texte');
+   setText('prev-quote-role', 'quote_author_role', 'Rôle auteur');
+   setText('prev-quote-cta', 'quote_cta', 'CTA');
+ 
+   const imgInput = byName('hero_right_image');
+   const imgEl = document.getElementById('prev-hero-image');
+   if (imgInput && imgEl) {
+     imgInput.addEventListener('change', function() {
+       if (this.files && this.files[0]) {
+         imgEl.src = URL.createObjectURL(this.files[0]);
+       }
+     });
+   }
+ })();
+ </script>
+ {% endblock %}

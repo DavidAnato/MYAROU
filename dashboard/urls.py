@@ -23,6 +23,8 @@ urlpatterns = [
     path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
     path('categories/create-ajax/', views.category_create_ajax, name='category_create_ajax'),
 
+    # Page d'accueil
+    path('home/', views.home_settings_edit, name='home_settings'),
     
     # API
     path('api/stats/', views.stats_api, name='stats_api'),

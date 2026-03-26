@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 
 from django.views.generic import ListView, DetailView
 from .models import Article, Category
+from homepage.models import HomeSettings
 
 
 class ArticleListView(ListView):
@@ -63,11 +65,29 @@ def home(request):
     recent_articles = Article.objects.filter(status='published').order_by('-published_at')[:3]
     categories = Category.objects.all()[:6]
     popular_articles = Article.objects.filter(status='published').order_by('-views')[:3]
+    home_settings = HomeSettings.get_solo(language_code=getattr(request, 'LANGUAGE_CODE', 'fr'))
     
     context = {
         'recent_articles': recent_articles,
         'categories': categories,
         'popular_articles': popular_articles,
+        'home': home_settings,
+    }
+    return render(request, 'blog/home.html', context)
+
+
+@xframe_options_sameorigin
+def home_dashboard_preview(request):
+    recent_articles = Article.objects.filter(status='published').order_by('-published_at')[:3]
+    categories = Category.objects.all()[:6]
+    popular_articles = Article.objects.filter(status='published').order_by('-views')[:3]
+    home_settings = HomeSettings.get_solo(language_code=getattr(request, 'LANGUAGE_CODE', 'fr'))
+    
+    context = {
+        'recent_articles': recent_articles,
+        'categories': categories,
+        'popular_articles': popular_articles,
+        'home': home_settings,
     }
     return render(request, 'blog/home.html', context)
 

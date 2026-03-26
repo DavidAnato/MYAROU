@@ -6,8 +6,10 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
 from blog.models import Article, Category
-from .forms import ArticleForm, CategoryForm
+from .forms import ArticleForm, CategoryForm, HomeSettingsForm, HomeGalleryImageFormSet
+from homepage.models import HomeSettings
 from django.http import JsonResponse
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 
@@ -241,6 +243,36 @@ def category_delete(request, pk):
     category.delete()
     messages.success(request, f'Catégorie "{name}" supprimée avec succès.')
     return redirect('dashboard:category_list')
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def home_settings_edit(request):
+    home = HomeSettings.get_solo(language_code=getattr(request, 'LANGUAGE_CODE', 'fr'))
+    preview_url = f"{reverse('blog:home_dashboard_preview')}?dashboard_preview=1"
+    
+    if request.method == 'POST':
+        form = HomeSettingsForm(request.POST, request.FILES, instance=home)
+        formset = HomeGalleryImageFormSet(request.POST, request.FILES, instance=home)
+        if form.is_valid() and formset.is_valid():
+            instance = form.save(commit=False)
+            if request.POST.get('clear_hero_right_image') == '1':
+                if instance.hero_right_image:
+                    instance.hero_right_image.delete(save=False)
+                instance.hero_right_image = None
+            if request.POST.get('clear_quote_image') == '1':
+                if instance.quote_image:
+                    instance.quote_image.delete(save=False)
+                instance.quote_image = None
+            instance.save()
+            formset.save()
+            messages.success(request, "Page d'accueil mise à jour avec succès.")
+            return redirect('dashboard:home_settings')
+    else:
+        form = HomeSettingsForm(instance=home)
+        formset = HomeGalleryImageFormSet(instance=home)
+    
+    return render(request, 'dashboard/home_settings_form.html', {'form': form, 'formset': formset, 'preview_url': preview_url})
 
 
 @login_required(login_url='dashboard:login')

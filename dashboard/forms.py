@@ -1,5 +1,7 @@
 from django import forms
 from blog.models import Article, Category
+from django.forms import inlineformset_factory
+from homepage.models import HomeSettings, HomeGalleryImage
 
 
 class ArticleForm(forms.ModelForm):
@@ -98,3 +100,62 @@ class CategoryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Rendre le slug optionnel (il sera généré automatiquement)
         self.fields['slug'].required = False
+
+
+class HomeSettingsForm(forms.ModelForm):
+    class Meta:
+        model = HomeSettings
+        fields = [
+            'hero_badge', 'hero_title_prefix', 'hero_title_suffix', 'hero_description', 'hero_right_image',
+            'hero_stats_youth_mentored', 'hero_stats_years_experience', 'hero_stats_continents',
+            'quote_text', 'quote_subtext', 'quote_author_role', 'quote_cta', 'quote_image',
+            'vision_badge', 'vision_title', 'vision_description',
+            'values_leadership_title', 'values_leadership_desc',
+            'values_excellence_title', 'values_excellence_desc',
+            'values_impact_title', 'values_impact_desc',
+            'barika_desc',
+            'barika_education_title', 'barika_education_desc',
+            'barika_sport_title', 'barika_sport_desc',
+            'barika_entrepreneurship_title', 'barika_entrepreneurship_desc',
+            'barika_cta',
+            'join_badge', 'join_title_prefix', 'join_desc', 'join_cta',
+            'articles_title_prefix', 'articles_title_suffix', 'articles_desc', 'articles_view_all', 'articles_read_more',
+        ]
+        widgets = {
+            'hero_description': forms.Textarea(attrs={'rows': 3}),
+            'quote_text': forms.Textarea(attrs={'rows': 3}),
+            'vision_description': forms.Textarea(attrs={'rows': 3}),
+            'values_leadership_desc': forms.Textarea(attrs={'rows': 3}),
+            'values_excellence_desc': forms.Textarea(attrs={'rows': 3}),
+            'values_impact_desc': forms.Textarea(attrs={'rows': 3}),
+            'barika_desc': forms.Textarea(attrs={'rows': 3}),
+            'barika_education_desc': forms.Textarea(attrs={'rows': 2}),
+            'barika_sport_desc': forms.Textarea(attrs={'rows': 2}),
+            'barika_entrepreneurship_desc': forms.Textarea(attrs={'rows': 2}),
+            'join_desc': forms.Textarea(attrs={'rows': 3}),
+            'articles_desc': forms.Textarea(attrs={'rows': 3}),
+            'hero_right_image': forms.FileInput(attrs={'accept': 'image/*'}),
+            'quote_image': forms.FileInput(attrs={'accept': 'image/*'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        base_classes = 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors'
+        for name, field in self.fields.items():
+            widget = field.widget
+            existing = widget.attrs.get('class', '')
+            widget.attrs['class'] = (existing + ' ' + base_classes).strip()
+
+
+HomeGalleryImageFormSet = inlineformset_factory(
+    HomeSettings,
+    HomeGalleryImage,
+    fields=('image', 'order'),
+    extra=0,
+    can_delete=True,
+    max_num=4,
+    validate_max=True,
+    widgets={
+        'image': forms.FileInput(attrs={'accept': 'image/*'}),
+    },
+)

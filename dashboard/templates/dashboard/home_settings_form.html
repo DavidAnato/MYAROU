@@ -1,0 +1,1031 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Page d’accueil{% endblock %}
+{% block page_title %}Page d’accueil{% endblock %}
+
+{% block content %}
+<div class="mx-auto">
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl p-8 transition-colors xl:col-span-5">
+            <form method="post" enctype="multipart/form-data" id="homeSettingsForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-4 rounded mb-6">
+                        <p class="text-sm text-red-800 dark:text-red-300">{{ form.non_field_errors }}</p>
+                    </div>
+                {% endif %}
+
+                <div class="space-y-5">
+                    <div x-data="{ open: true }" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                        <button type="button" class="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50/80 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-900/60 transition-colors" @click="open = !open">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-extrabold text-gray-900 dark:text-white leading-tight">Hero</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Titre, description, stats et image</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="p-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge</label>
+                                {{ form.hero_badge }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image (droite)</label>
+                                <div data-media-container data-clear-flag-name="clear_hero_right_image">
+                                    <input type="hidden" name="clear_hero_right_image" value="0">
+                                    <div class="media-dropzone relative overflow-hidden rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-3 bg-white dark:bg-gray-800 transition-colors">
+                                        <div class="flex items-center justify-between gap-3 mb-2">
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-300" data-drop-hint>Glisser-déposer ou cliquer</div>
+                                            <button type="button" class="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors opacity-50 cursor-not-allowed" data-clear-file disabled>Retirer</button>
+                                        </div>
+                                        <div class="text-xs text-gray-600 dark:text-gray-300 mb-2 truncate" data-filename></div>
+                                        {{ form.hero_right_image }}
+                                    </div>
+                                    <div class="mt-3">
+                                        <img alt="" class="w-full max-w-sm rounded-2xl shadow hidden" data-preview-image>
+                                        {% if form.instance.hero_right_image %}
+                                            <img src="{{ form.instance.hero_right_image.url }}" alt="" class="w-full max-w-sm rounded-2xl shadow" data-existing-image/>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe)</label>
+                                {{ form.hero_title_prefix }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (suffixe)</label>
+                                {{ form.hero_title_suffix }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                {{ form.hero_description }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Jeunes encadrés</label>
+                                {{ form.hero_stats_youth_mentored }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Années d’expérience</label>
+                                {{ form.hero_stats_years_experience }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Continents</label>
+                                {{ form.hero_stats_continents }}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                        <button type="button" class="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50/80 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-900/60 transition-colors" @click="open = !open">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h6M5 20l2-4h10l2 4H5zM7 4h10v4H7V4z"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-extrabold text-gray-900 dark:text-white leading-tight">Citation</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Texte, auteur et visuel</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="p-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Texte</label>
+                                {{ form.quote_text }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sous-texte</label>
+                                {{ form.quote_subtext }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Rôle auteur</label>
+                                {{ form.quote_author_role }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA</label>
+                                {{ form.quote_cta }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image citation</label>
+                                <div data-media-container data-clear-flag-name="clear_quote_image">
+                                    <input type="hidden" name="clear_quote_image" value="0">
+                                    <div class="media-dropzone relative overflow-hidden rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-3 bg-white dark:bg-gray-800 transition-colors">
+                                        <div class="flex items-center justify-between gap-3 mb-2">
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-300" data-drop-hint>Glisser-déposer ou cliquer</div>
+                                            <button type="button" class="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors opacity-50 cursor-not-allowed" data-clear-file disabled>Retirer</button>
+                                        </div>
+                                        <div class="text-xs text-gray-600 dark:text-gray-300 mb-2 truncate" data-filename></div>
+                                        {{ form.quote_image }}
+                                    </div>
+                                    <div class="mt-3">
+                                        <img alt="" class="w-full max-w-sm rounded-2xl shadow hidden" data-preview-image>
+                                        {% if form.instance.quote_image %}
+                                            <img src="{{ form.instance.quote_image.url }}" alt="" class="w-full max-w-sm rounded-2xl shadow" data-existing-image/>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                        <button type="button" class="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50/80 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-900/60 transition-colors" @click="open = !open">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20l9-5-9-5-9 5 9 5zM12 12l9-5-9-5-9 5 9 5z"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-extrabold text-gray-900 dark:text-white leading-tight">Vision</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Badge, titre et description</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="p-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge</label>
+                                {{ form.vision_badge }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre</label>
+                                {{ form.vision_title }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                {{ form.vision_description }}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                        <button type="button" class="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50/80 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-900/60 transition-colors" @click="open = !open">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-extrabold text-gray-900 dark:text-white leading-tight">Valeurs</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Titres et descriptions</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="p-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Leadership (titre)</label>
+                                {{ form.values_leadership_title }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Excellence (titre)</label>
+                                {{ form.values_excellence_title }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Leadership (description)</label>
+                                {{ form.values_leadership_desc }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Excellence (description)</label>
+                                {{ form.values_excellence_desc }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Impact (titre)</label>
+                                {{ form.values_impact_title }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Impact (description)</label>
+                                {{ form.values_impact_desc }}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                        <button type="button" class="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50/80 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-900/60 transition-colors" @click="open = !open">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4-4 4 4 4-4 4 4M4 8h16"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-extrabold text-gray-900 dark:text-white leading-tight">Galerie</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Images et ordre d’affichage</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="p-5">
+                            <div data-gallery-section>
+                                {{ formset.management_form }}
+
+                                <div class="flex items-center justify-between gap-3 mb-4">
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Ajoute plusieurs images via sélection ou glisser-déposer <span class="text-gray-400 dark:text-gray-500" data-gallery-count></span></div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="file" accept="image/*" multiple class="hidden" data-gallery-multi-input>
+                                        <button type="button" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition-colors" data-gallery-multi-button>Choisir plusieurs images</button>
+                                        <button type="button" class="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" data-gallery-add-one>Ajouter une image</button>
+                                    </div>
+                                </div>
+
+                                <div class="rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-5 mb-4 bg-white dark:bg-gray-800 transition-colors" data-gallery-dropzone>
+                                    <div class="text-sm font-extrabold text-gray-900 dark:text-white">Glisser-déposer plusieurs images</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300 mt-1">Elles seront ajoutées automatiquement à la galerie</div>
+                                </div>
+
+                                <div class="space-y-4" data-gallery-forms>
+                                {% for f in formset.forms %}
+                                <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/20 overflow-hidden" data-gallery-form data-media-container>
+                                    {% if f.non_field_errors %}
+                                        <div class="px-4 pt-4 text-sm text-red-600 dark:text-red-300">{{ f.non_field_errors }}</div>
+                                    {% endif %}
+                                    <div class="flex items-center justify-between gap-3 px-4 py-3 bg-gray-50/80 dark:bg-gray-900/40 border-b border-gray-200 dark:border-gray-700">
+                                        <div class="text-sm font-extrabold text-gray-900 dark:text-white">Image <span class="text-emerald-600 dark:text-emerald-400" data-gallery-index></span></div>
+                                        {% if f.instance.pk %}
+                                            <label class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                                {{ f.DELETE }}
+                                                Supprimer
+                                            </label>
+                                        {% else %}
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Nouvelle</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                                        <div class="md:col-span-2">
+                                            <div class="media-dropzone relative overflow-hidden rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 bg-white dark:bg-gray-800 transition-colors">
+                                                <div class="flex items-center justify-between gap-3">
+                                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300" data-drop-hint>Glisser-déposer ou cliquer</div>
+                                                    <div class="text-xs text-gray-600 dark:text-gray-300 truncate max-w-[65%]" data-filename></div>
+                                                    <button type="button" class="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors opacity-50 cursor-not-allowed" data-clear-file disabled>Retirer</button>
+                                                </div>
+                                                <div class="mt-3">
+                                                    {{ f.image }}
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <img alt="" class="w-full max-w-sm rounded-2xl shadow hidden" data-preview-image>
+                                                {% if f.instance.pk and f.instance.image %}
+                                                    <img src="{{ f.instance.image.url }}" alt="" class="w-full max-w-sm rounded-2xl shadow" data-existing-image/>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ordre</label>
+                                            {{ f.order }}
+                                            <div class="mt-3 text-xs font-semibold text-gray-500 dark:text-gray-300">Plus petit = affiché avant</div>
+                                        </div>
+                                    </div>
+
+                                    {{ f.id }}
+                                </div>
+                                {% endfor %}
+                                </div>
+
+                                <div class="hidden" data-gallery-empty-template>
+                                    <div class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/20 overflow-hidden" data-gallery-form data-media-container>
+                                        <div class="flex items-center justify-between gap-3 px-4 py-3 bg-gray-50/80 dark:bg-gray-900/40 border-b border-gray-200 dark:border-gray-700">
+                                            <div class="text-sm font-extrabold text-gray-900 dark:text-white">Image <span class="text-emerald-600 dark:text-emerald-400" data-gallery-index></span></div>
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Nouvelle</div>
+                                        </div>
+                                        <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                                            <div class="md:col-span-2">
+                                                <div class="media-dropzone relative overflow-hidden rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 bg-white dark:bg-gray-800 transition-colors">
+                                                    <div class="flex items-center justify-between gap-3">
+                                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-300" data-drop-hint>Glisser-déposer ou cliquer</div>
+                                                        <div class="text-xs text-gray-600 dark:text-gray-300 truncate max-w-[65%]" data-filename></div>
+                                                        <button type="button" class="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors opacity-50 cursor-not-allowed" data-clear-file disabled>Retirer</button>
+                                                    </div>
+                                                    <div class="mt-3">
+                                                        {{ formset.empty_form.image }}
+                                                    </div>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <img alt="" class="w-full max-w-sm rounded-2xl shadow hidden" data-preview-image>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ordre</label>
+                                                {{ formset.empty_form.order }}
+                                                <div class="mt-3 text-xs font-semibold text-gray-500 dark:text-gray-300">Plus petit = affiché avant</div>
+                                            </div>
+                                        </div>
+                                        {{ formset.empty_form.id }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                        <button type="button" class="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50/80 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-900/60 transition-colors" @click="open = !open">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3-1.343 3-3S13.657 2 12 2 9 3.343 9 5s1.343 3 3 3zm0 0v14m-7-7h14"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-extrabold text-gray-900 dark:text-white leading-tight">Section BARIKA</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Textes et CTA</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="p-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                {{ form.barika_desc }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Education (titre)</label>
+                                {{ form.barika_education_title }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sport (titre)</label>
+                                {{ form.barika_sport_title }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Education (desc)</label>
+                                {{ form.barika_education_desc }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sport (desc)</label>
+                                {{ form.barika_sport_desc }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Entrepreneuriat (titre)</label>
+                                {{ form.barika_entrepreneurship_title }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Entrepreneuriat (desc)</label>
+                                {{ form.barika_entrepreneurship_desc }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA</label>
+                                {{ form.barika_cta }}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                        <button type="button" class="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50/80 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-900/60 transition-colors" @click="open = !open">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9l-6 6-6-6"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-extrabold text-gray-900 dark:text-white leading-tight">Rejoindre</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Titre, description et CTA</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="p-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge</label>
+                                {{ form.join_badge }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe)</label>
+                                {{ form.join_title_prefix }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                {{ form.join_desc }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA</label>
+                                {{ form.join_cta }}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" class="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+                        <button type="button" class="w-full flex items-center justify-between gap-4 px-5 py-4 bg-gray-50/80 dark:bg-gray-900/40 hover:bg-gray-100/80 dark:hover:bg-gray-900/60 transition-colors" @click="open = !open">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7H5m14 4H5m14 4H5m14 4H5"></path>
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-base font-extrabold text-gray-900 dark:text-white leading-tight">Articles</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Titres, description et libellés</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition class="p-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe)</label>
+                                {{ form.articles_title_prefix }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (suffixe)</label>
+                                {{ form.articles_title_suffix }}
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                {{ form.articles_desc }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Voir tout</label>
+                                {{ form.articles_view_all }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Lire plus</label>
+                                {{ form.articles_read_more }}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sticky bottom-0 -mx-8 mt-6 px-8 py-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur border-t border-gray-200 dark:border-gray-700 flex items-center gap-4">
+                    <button type="submit" class="px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-600/20">Enregistrer</button>
+                    <a href="/" target="_blank" class="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Voir le site</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl transition-colors overflow-hidden flex flex-col xl:sticky xl:top-6 h-[calc(100vh-7rem)] xl:col-span-7">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between gap-4">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white">Aperçu en temps réel</h3>
+                    <a href="{{ preview_url }}" target="_blank" class="text-emerald-600 dark:text-emerald-400 font-bold hover:underline whitespace-nowrap">Ouvrir</a>
+                </div>
+                <div class="mt-4 flex items-center gap-2 flex-wrap">
+                    <button type="button" data-device="desktop" class="device-btn px-3 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white">Desktop</button>
+                    <button type="button" data-device="tablet" class="device-btn px-3 py-2 rounded-lg text-sm font-semibold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white">Tablet</button>
+                    <button type="button" data-device="mobile" class="device-btn px-3 py-2 rounded-lg text-sm font-semibold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white">Mobile</button>
+                </div>
+            </div>
+
+            <div class="flex-1 bg-gray-100 dark:bg-gray-900 p-4 overflow-hidden">
+                <div class="h-full w-full flex items-center justify-center">
+                    <div id="deviceFrame" class="h-full w-full bg-white dark:bg-black rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                        <div class="h-10 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                            </div>
+                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-300 truncate max-w-[70%]">{{ preview_url }}</div>
+                            <div class="w-6"></div>
+                        </div>
+                        <iframe id="homePreviewIframe" src="{{ preview_url }}" class="w-full h-[calc(100%-2.5rem)] bg-white" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const form = document.getElementById('homeSettingsForm');
+    const iframe = document.getElementById('homePreviewIframe');
+    const deviceFrame = document.getElementById('deviceFrame');
+    if (!form || !iframe || !deviceFrame) return;
+
+    const previewArea = deviceFrame.parentElement;
+    let currentDevice = 'desktop';
+    const desktopPreviewZoom = 0.5;
+    const tabletPreviewZoom = 0.85;
+    const maxGalleryImages = 4;
+
+    const applyIframeZoom = (scale) => {
+        const clampedScale = Number.isFinite(scale) ? Math.max(0.2, Math.min(scale, 1)) : 1;
+        if (clampedScale === 1) {
+            iframe.style.transform = '';
+            iframe.style.transformOrigin = '';
+            iframe.style.width = '';
+            iframe.style.height = '';
+            return;
+        }
+
+        iframe.style.transformOrigin = '0 0';
+        iframe.style.transform = 'scale(' + clampedScale + ')';
+        iframe.style.width = 'calc(100% / ' + clampedScale + ')';
+        iframe.style.height = 'calc((100% - 2.5rem) / ' + clampedScale + ')';
+    };
+
+    const applyDeviceLayout = () => {
+        const device = currentDevice;
+
+        if (device === 'mobile') {
+            const w = 390;
+            const h = 844;
+            deviceFrame.style.width = w + 'px';
+            deviceFrame.style.height = h + 'px';
+            deviceFrame.style.transformOrigin = 'center center';
+            const scale = Math.min(previewArea.clientWidth / w, previewArea.clientHeight / h, 1);
+            deviceFrame.style.transform = 'scale(' + (scale || 1) + ')';
+            applyIframeZoom(1);
+            return;
+        }
+
+        if (device === 'tablet') {
+            deviceFrame.style.width = '100%';
+            deviceFrame.style.height = '100%';
+            deviceFrame.style.transformOrigin = 'center center';
+            deviceFrame.style.transform = '';
+            applyIframeZoom(tabletPreviewZoom);
+            return;
+        }
+
+        deviceFrame.style.width = '100%';
+        deviceFrame.style.height = '100%';
+        deviceFrame.style.transformOrigin = 'center center';
+        deviceFrame.style.transform = '';
+        applyIframeZoom(desktopPreviewZoom);
+    };
+
+    const setDevice = (device) => {
+        currentDevice = device || 'desktop';
+        const buttons = document.querySelectorAll('.device-btn');
+        buttons.forEach((btn) => {
+            const active = btn.getAttribute('data-device') === currentDevice;
+            btn.className = active
+                ? 'device-btn px-3 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white'
+                : 'device-btn px-3 py-2 rounded-lg text-sm font-semibold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white';
+        });
+        applyDeviceLayout();
+    };
+
+    setDevice('desktop');
+    document.querySelectorAll('.device-btn').forEach((btn) => {
+        btn.addEventListener('click', () => setDevice(btn.getAttribute('data-device')));
+    });
+
+    window.addEventListener('resize', applyDeviceLayout);
+
+    const getInput = (name) => form.querySelector(`[name="${name}"]`);
+    const getValue = (name) => {
+        const el = getInput(name);
+        return el ? el.value : '';
+    };
+
+    const objectUrls = new Map();
+    const fileToObjectUrl = (inputName) => {
+        const input = getInput(inputName);
+        if (!input || !input.files || !input.files[0]) return '';
+        if (objectUrls.has(inputName)) {
+            URL.revokeObjectURL(objectUrls.get(inputName));
+        }
+        const url = URL.createObjectURL(input.files[0]);
+        objectUrls.set(inputName, url);
+        return url;
+    };
+
+    const galleryObjectUrls = new Map();
+    const getGalleryUrls = () => {
+        const urls = [];
+        const inputs = form.querySelectorAll('input[type="file"][name$="-image"]');
+        inputs.forEach((input) => {
+            if (!input.files || !input.files[0]) return;
+            const key = input.name;
+            if (galleryObjectUrls.has(key)) {
+                URL.revokeObjectURL(galleryObjectUrls.get(key));
+            }
+            const url = URL.createObjectURL(input.files[0]);
+            galleryObjectUrls.set(key, url);
+            urls.push(url);
+        });
+        return urls;
+    };
+
+    const galleryPreviewUrls = new Map();
+    const mediaPreviewUrls = new Map();
+    const updateGalleryIndices = () => {
+        const gallerySection = form.querySelector('[data-gallery-section]');
+        if (!gallerySection) return;
+        const formsContainer = gallerySection.querySelector('[data-gallery-forms]');
+        if (!formsContainer) return;
+        const forms = formsContainer.querySelectorAll('[data-gallery-form]');
+        forms.forEach((el, idx) => {
+            const target = el.querySelector('[data-gallery-index]');
+            if (target) target.textContent = String(idx + 1);
+        });
+    };
+
+    const updateGalleryPreviewFromInput = (input) => {
+        const galleryForm = input ? input.closest('[data-gallery-form]') : null;
+        if (!galleryForm) return;
+        const previewImg = galleryForm.querySelector('[data-preview-image]');
+        const existingImg = galleryForm.querySelector('[data-existing-image]');
+
+        if (!previewImg) return;
+
+        if (input.files && input.files[0]) {
+            const key = input.name + ':preview';
+            if (galleryPreviewUrls.has(key)) {
+                URL.revokeObjectURL(galleryPreviewUrls.get(key));
+            }
+            const url = URL.createObjectURL(input.files[0]);
+            galleryPreviewUrls.set(key, url);
+            previewImg.src = url;
+            previewImg.classList.remove('hidden');
+            if (existingImg) existingImg.classList.add('hidden');
+            return;
+        }
+
+        previewImg.src = '';
+        previewImg.classList.add('hidden');
+        if (existingImg) existingImg.classList.remove('hidden');
+    };
+
+    const updateMediaPreviewFromInput = (input) => {
+        const mediaContainer = input ? input.closest('[data-media-container]') : null;
+        if (!mediaContainer) return;
+
+        const previewImg = mediaContainer.querySelector('[data-preview-image]');
+        const existingImg = mediaContainer.querySelector('[data-existing-image]');
+
+        const flagName = mediaContainer.getAttribute('data-clear-flag-name');
+        const flagInput = flagName ? form.querySelector(`input[name="${flagName}"]`) : null;
+
+        if (input.files && input.files[0]) {
+            if (flagInput) flagInput.value = '0';
+            if (!previewImg) {
+                if (existingImg) existingImg.classList.add('hidden');
+                return;
+            }
+            const key = input.name + ':media-preview';
+            if (mediaPreviewUrls.has(key)) {
+                URL.revokeObjectURL(mediaPreviewUrls.get(key));
+            }
+            const url = URL.createObjectURL(input.files[0]);
+            mediaPreviewUrls.set(key, url);
+            previewImg.src = url;
+            previewImg.classList.remove('hidden');
+            if (existingImg) existingImg.classList.add('hidden');
+            return;
+        }
+
+        if (previewImg) {
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+        }
+        if (existingImg) {
+            const cleared = flagInput ? flagInput.value === '1' : false;
+            existingImg.classList.toggle('hidden', cleared);
+        }
+    };
+
+    const setSingleFile = (input, file) => {
+        if (!input || !file) return;
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        input.dataset.hasVirtualFile = '1';
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+
+    const clearFileInput = (input) => {
+        if (!input) return;
+        try {
+            const dt = new DataTransfer();
+            input.files = dt.files;
+        } catch (e) {}
+        input.value = '';
+        input.dataset.hasVirtualFile = '0';
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+
+    const setDropzoneActive = (zone, active) => {
+        if (!zone) return;
+        zone.classList.toggle('border-emerald-500', active);
+        zone.classList.toggle('bg-emerald-50', active);
+        zone.classList.toggle('dark:bg-emerald-900/20', active);
+        zone.classList.toggle('border-gray-300', !active);
+        zone.classList.toggle('dark:border-gray-600', !active);
+        zone.classList.toggle('bg-white', !active);
+        zone.classList.toggle('dark:bg-gray-800', !active);
+    };
+
+    const updateDropzoneFilename = (zone, input) => {
+        const el = zone ? zone.querySelector('[data-filename]') : null;
+        if (!el || !input) return;
+        el.textContent = input.files && input.files[0] ? input.files[0].name : '';
+        const clearBtn = zone.querySelector('[data-clear-file]');
+        if (clearBtn) {
+            const mediaContainer = zone.closest('[data-media-container]');
+            const existingImg = mediaContainer ? mediaContainer.querySelector('[data-existing-image]') : null;
+            const existingVisible = !!(existingImg && !existingImg.classList.contains('hidden'));
+            const previewImg = mediaContainer ? mediaContainer.querySelector('[data-preview-image]') : null;
+            const previewVisible = !!(previewImg && !previewImg.classList.contains('hidden'));
+            const hasFile = !!((input.files && input.files[0]) || input.dataset.hasVirtualFile === '1');
+            const enabled = hasFile || existingVisible || previewVisible;
+            clearBtn.disabled = !enabled;
+            clearBtn.classList.toggle('opacity-50', !enabled);
+            clearBtn.classList.toggle('cursor-not-allowed', !enabled);
+        }
+    };
+
+    const updateGalleryControls = () => {
+        const gallerySection = form.querySelector('[data-gallery-section]');
+        if (!gallerySection) return;
+        const totalFormsInput = gallerySection.querySelector('input[name$="-TOTAL_FORMS"]');
+        const countEl = gallerySection.querySelector('[data-gallery-count]');
+        const addBtn = gallerySection.querySelector('[data-gallery-add-one]');
+        const multiBtn = gallerySection.querySelector('[data-gallery-multi-button]');
+
+        const current = totalFormsInput ? parseInt(totalFormsInput.value || '0', 10) : 0;
+        if (countEl) countEl.textContent = `(${Math.min(current, maxGalleryImages)}/${maxGalleryImages})`;
+
+        const canAdd = current < maxGalleryImages;
+        if (addBtn) {
+            addBtn.disabled = !canAdd;
+            addBtn.classList.toggle('opacity-50', !canAdd);
+            addBtn.classList.toggle('cursor-not-allowed', !canAdd);
+        }
+        if (multiBtn) {
+            multiBtn.disabled = !canAdd;
+            multiBtn.classList.toggle('opacity-50', !canAdd);
+            multiBtn.classList.toggle('cursor-not-allowed', !canAdd);
+        }
+    };
+
+    const addGalleryFormsIfNeeded = (count) => {
+        const gallerySection = form.querySelector('[data-gallery-section]');
+        if (!gallerySection) return;
+        const totalFormsInput = gallerySection.querySelector('input[name$="-TOTAL_FORMS"]');
+        const formsContainer = gallerySection.querySelector('[data-gallery-forms]');
+        const template = gallerySection.querySelector('[data-gallery-empty-template]');
+        if (!totalFormsInput || !formsContainer || !template) return;
+
+        const desired = Math.min(count, maxGalleryImages);
+        const existing = formsContainer.querySelectorAll('input[type="file"][name$="-image"]').length;
+        let toCreate = Math.max(0, desired - existing);
+
+        for (let i = 0; i < toCreate; i += 1) {
+            const index = parseInt(totalFormsInput.value || '0', 10);
+            if (index >= maxGalleryImages) break;
+            const html = template.innerHTML.replaceAll('__prefix__', String(index)).trim();
+            if (!html) break;
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = html;
+            const node = wrapper.firstElementChild;
+            if (!node) break;
+            formsContainer.appendChild(node);
+            totalFormsInput.value = String(index + 1);
+        }
+
+        setupMediaDropzones();
+        updateGalleryIndices();
+        updateGalleryControls();
+    };
+
+    const addGalleryFiles = (files) => {
+        const gallerySection = form.querySelector('[data-gallery-section]');
+        if (!gallerySection) return;
+        const formsContainer = gallerySection.querySelector('[data-gallery-forms]');
+        if (!formsContainer) return;
+
+        const imageFiles = (files || []).filter((f) => f && typeof f.type === 'string' && f.type.startsWith('image/'));
+        if (!imageFiles.length) return;
+
+        const totalFormsInput = gallerySection.querySelector('input[name$="-TOTAL_FORMS"]');
+        const currentTotal = totalFormsInput ? parseInt(totalFormsInput.value || '0', 10) : 0;
+        let inputs = Array.from(formsContainer.querySelectorAll('input[type="file"][name$="-image"]'));
+        const emptySlots = inputs.filter((input) => !(input.files && input.files.length)).length;
+        const creatable = Math.max(0, maxGalleryImages - currentTotal);
+        const capacity = emptySlots + creatable;
+        const limitedFiles = imageFiles.slice(0, capacity);
+        if (!limitedFiles.length) return;
+
+        const needNewForms = Math.max(0, limitedFiles.length - emptySlots);
+        if (needNewForms > 0) {
+            addGalleryFormsIfNeeded(currentTotal + needNewForms);
+            inputs = Array.from(formsContainer.querySelectorAll('input[type="file"][name$="-image"]'));
+        }
+
+        for (const file of limitedFiles) {
+            let target = inputs.find((input) => !(input.files && input.files.length));
+
+            if (!target) {
+                break;
+            }
+
+            setSingleFile(target, file);
+            updateGalleryPreviewFromInput(target);
+        }
+        updateGalleryControls();
+    };
+
+    function setupMediaDropzones() {
+        form.querySelectorAll('.media-dropzone').forEach((zone) => {
+            if (zone.dataset.dropzoneReady === '1') return;
+            const input = zone.querySelector('input[type="file"]');
+            if (!input) return;
+            zone.dataset.dropzoneReady = '1';
+
+            updateDropzoneFilename(zone, input);
+            updateMediaPreviewFromInput(input);
+            input.addEventListener('change', () => {
+                updateDropzoneFilename(zone, input);
+                updateGalleryPreviewFromInput(input);
+                updateMediaPreviewFromInput(input);
+            });
+
+            zone.addEventListener('click', (e) => {
+                if (e.target && e.target.closest && e.target.closest('input[type="file"]')) return;
+                input.click();
+            });
+
+            const clearBtn = zone.querySelector('[data-clear-file]');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (clearBtn.disabled) return;
+                    const mediaContainer = zone.closest('[data-media-container]');
+                    const flagName = mediaContainer ? mediaContainer.getAttribute('data-clear-flag-name') : '';
+                    if (flagName) {
+                        const flagInput = form.querySelector(`input[name="${flagName}"]`);
+                        if (flagInput) flagInput.value = '1';
+                    }
+                    clearFileInput(input);
+                    updateMediaPreviewFromInput(input);
+                    updateDropzoneFilename(zone, input);
+                });
+            }
+
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                setDropzoneActive(zone, true);
+            });
+            zone.addEventListener('dragleave', () => setDropzoneActive(zone, false));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                setDropzoneActive(zone, false);
+                const files = e.dataTransfer ? e.dataTransfer.files : null;
+                if (!files || !files.length) return;
+                const arr = Array.from(files);
+                setSingleFile(input, arr[0]);
+                updateMediaPreviewFromInput(input);
+                if (arr.length > 1 && zone.closest('[data-gallery-section]')) {
+                    addGalleryFiles(arr.slice(1));
+                }
+            });
+        });
+
+        const gallerySection = form.querySelector('[data-gallery-section]');
+        const galleryZone = gallerySection ? gallerySection.querySelector('[data-gallery-dropzone]') : null;
+        if (galleryZone && gallerySection) {
+            const multiInput = gallerySection.querySelector('[data-gallery-multi-input]');
+            const multiButton = gallerySection.querySelector('[data-gallery-multi-button]');
+            const addOneButton = gallerySection.querySelector('[data-gallery-add-one]');
+            const totalFormsInput = gallerySection.querySelector('input[name$="-TOTAL_FORMS"]');
+
+            if (multiButton && multiInput && multiButton.dataset.bound !== '1') {
+                multiButton.dataset.bound = '1';
+                multiButton.addEventListener('click', () => multiInput.click());
+                multiInput.addEventListener('change', () => {
+                    addGalleryFiles(Array.from(multiInput.files || []));
+                    multiInput.value = '';
+                });
+            }
+
+            if (addOneButton && addOneButton.dataset.bound !== '1') {
+                addOneButton.dataset.bound = '1';
+                addOneButton.addEventListener('click', () => {
+                    const current = totalFormsInput ? parseInt(totalFormsInput.value || '0', 10) : 0;
+                    addGalleryFormsIfNeeded(current + 1);
+                });
+            }
+
+            galleryZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                galleryZone.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-900/20');
+                galleryZone.classList.remove('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800');
+            });
+            galleryZone.addEventListener('dragleave', () => {
+                galleryZone.classList.remove('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-900/20');
+                galleryZone.classList.add('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800');
+            });
+            galleryZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                galleryZone.classList.remove('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-900/20');
+                galleryZone.classList.add('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800');
+                const files = e.dataTransfer ? Array.from(e.dataTransfer.files || []) : [];
+                if (!files.length) return;
+                addGalleryFiles(files);
+            });
+            updateGalleryControls();
+        }
+
+        updateGalleryIndices();
+    };
+
+    const buildPayload = () => ({
+        hero_badge: getValue('hero_badge'),
+        hero_title_prefix: getValue('hero_title_prefix'),
+        hero_title_suffix: getValue('hero_title_suffix'),
+        hero_description: getValue('hero_description'),
+        hero_stats_youth_mentored: getValue('hero_stats_youth_mentored'),
+        hero_stats_years_experience: getValue('hero_stats_years_experience'),
+        hero_stats_continents: getValue('hero_stats_continents'),
+        quote_text: getValue('quote_text'),
+        quote_subtext: getValue('quote_subtext'),
+        quote_author_role: getValue('quote_author_role'),
+        quote_cta: getValue('quote_cta'),
+        vision_badge: getValue('vision_badge'),
+        vision_title: getValue('vision_title'),
+        vision_description: getValue('vision_description'),
+        values_leadership_title: getValue('values_leadership_title'),
+        values_leadership_desc: getValue('values_leadership_desc'),
+        values_excellence_title: getValue('values_excellence_title'),
+        values_excellence_desc: getValue('values_excellence_desc'),
+        values_impact_title: getValue('values_impact_title'),
+        values_impact_desc: getValue('values_impact_desc'),
+        barika_desc: getValue('barika_desc'),
+        barika_education_title: getValue('barika_education_title'),
+        barika_education_desc: getValue('barika_education_desc'),
+        barika_sport_title: getValue('barika_sport_title'),
+        barika_sport_desc: getValue('barika_sport_desc'),
+        barika_entrepreneurship_title: getValue('barika_entrepreneurship_title'),
+        barika_entrepreneurship_desc: getValue('barika_entrepreneurship_desc'),
+        barika_cta: getValue('barika_cta'),
+        join_badge: getValue('join_badge'),
+        join_title_prefix: getValue('join_title_prefix'),
+        join_desc: getValue('join_desc'),
+        join_cta: getValue('join_cta'),
+        articles_title_prefix: getValue('articles_title_prefix'),
+        articles_title_suffix: getValue('articles_title_suffix'),
+        articles_desc: getValue('articles_desc'),
+        articles_view_all: getValue('articles_view_all'),
+        articles_read_more: getValue('articles_read_more'),
+        hero_right_image_url: fileToObjectUrl('hero_right_image'),
+        quote_image_url: fileToObjectUrl('quote_image'),
+        gallery_image_urls: getGalleryUrls(),
+    });
+
+    let raf = null;
+    const sendPreview = () => {
+        if (!iframe.contentWindow) return;
+        const payload = buildPayload();
+        iframe.contentWindow.postMessage({ type: 'home-preview', payload }, '*');
+    };
+    const schedulePreview = () => {
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(sendPreview);
+    };
+
+    form.addEventListener('input', schedulePreview);
+    form.addEventListener('change', schedulePreview);
+    setupMediaDropzones();
+    iframe.addEventListener('load', () => {
+        schedulePreview();
+    });
+})();
+</script>
+{% endblock %}
