@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load json_i18n %}
+{% load home_i18n %}
 
 {% block title %}{% t "site.home.title" %}{% endblock %}
 
@@ -35,19 +36,19 @@
                     <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
                         <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                         <span class="text-sm font-semibold tracking-wide uppercase" data-preview="hero_badge">
-                            {% if home.hero_badge %}{{ home.hero_badge }}{% else %}{% t "site.home.hero.badge" %}{% endif %}
+                            {% home_text home "hero_badge" "site.home.hero.badge" %}
                         </span>
                     </div>
                     
                     <h1 class="text-6xl md:text-7xl font-extrabold leading-[1.1] tracking-tight">
-                        <span data-preview="hero_title_prefix">{% if home.hero_title_prefix %}{{ home.hero_title_prefix }}{% else %}{% t "site.home.hero.title_prefix" %}{% endif %}</span> <br>
+                        <span data-preview="hero_title_prefix">{% home_text home "hero_title_prefix" "site.home.hero.title_prefix" %}</span> <br>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-300">
-                            <span data-preview="hero_title_suffix">{% if home.hero_title_suffix %}{{ home.hero_title_suffix }}{% else %}{% t "site.home.hero.title_suffix" %}{% endif %}</span>
+                            <span data-preview="hero_title_suffix">{% home_text home "hero_title_suffix" "site.home.hero.title_suffix" %}</span>
                         </span>
                     </h1>
                     
                     <p class="hidden lg:block text-xl text-white/90 leading-relaxed max-w-xl" data-preview="hero_description">
-                        {% if home.hero_description %}{{ home.hero_description }}{% else %}{% t "site.home.hero.description" %}{% endif %}
+                        {% home_text home "hero_description" "site.home.hero.description" %}
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-4 pt-4">
@@ -116,19 +117,19 @@
                 <div class="md:w-1/2 relative z-10">
                     <i class="fas fa-quote-left opacity-20 mb-6 text-6xl dark:text-gray-600"></i>
                     <h2 class="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
-                        "<span data-preview="quote_text">{% if home.quote_text %}{{ home.quote_text }}{% else %}{% t "site.home.quote.text" %}{% endif %}</span>"
+                        "<span data-preview="quote_text">{% home_text home "quote_text" "site.home.quote.text" %}</span>"
                     </h2>
                     <p class="text-2xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-500 mb-8" data-preview="quote_subtext">
-                        {% if home.quote_subtext %}{{ home.quote_subtext }}{% else %}{% t "site.home.quote.subtext" %}{% endif %}
+                        {% home_text home "quote_subtext" "site.home.quote.subtext" %}
                     </p>
                     <div class="flex items-center gap-4">
                         <div class="h-1 w-12 bg-gray-300 dark:bg-gray-600"></div>
                         <span class="text-gray-500 dark:text-gray-400 font-semibold tracking-wider text-sm uppercase" data-preview="quote_author_role">
-                            {% if home.quote_author_role %}{{ home.quote_author_role }}{% else %}{% t "site.home.quote.author_role" %}{% endif %}
+                            {% home_text home "quote_author_role" "site.home.quote.author_role" %}
                         </span>
                     </div>
                     <button class="mt-8 px-8 py-3 bg-emerald-600 text-white rounded-lg font-bold shadow-lg shadow-emerald-200 hover:shadow-xl transition-all">
-                        <span data-preview="quote_cta">{% if home.quote_cta %}{{ home.quote_cta }}{% else %}{% t "site.home.quote.cta" %}{% endif %}</span>
+                        <span data-preview="quote_cta">{% home_text home "quote_cta" "site.home.quote.cta" %}</span>
                     </button>
                 </div>
                 
@@ -148,13 +149,13 @@
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
                 <span class="bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 px-4 py-1 rounded-full text-sm font-bold mb-4 inline-block" data-preview="vision_badge">
-                    {% if home.vision_badge %}{{ home.vision_badge }}{% else %}{% t "site.home.vision.badge" %}{% endif %}
+                    {% home_text home "vision_badge" "site.home.vision.badge" %}
                 </span>
                 <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white" data-preview="vision_title">
-                    {% if home.vision_title %}{{ home.vision_title }}{% else %}{% t "site.home.vision.title" %}{% endif %}
+                    {% home_text home "vision_title" "site.home.vision.title" %}
                 </h2>
                 <p class="mt-4 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto" data-preview="vision_description">
-                    {% if home.vision_description %}{{ home.vision_description }}{% else %}{% t "site.home.vision.description" %}{% endif %}
+                    {% home_text home "vision_description" "site.home.vision.description" %}
                 </p>
             </div>
 
@@ -164,10 +165,10 @@
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     </div>
                     <h3 class="text-xl font-bold mb-3 dark:text-white" data-preview="values_leadership_title">
-                        {% if home.values_leadership_title %}{{ home.values_leadership_title }}{% else %}{% t "site.home.values.leadership.title" %}{% endif %}
+                        {% home_text home "values_leadership_title" "site.home.values.leadership.title" %}
                     </h3>
                     <p class="text-gray-500 dark:text-gray-400 leading-relaxed" data-preview="values_leadership_desc">
-                        {% if home.values_leadership_desc %}{{ home.values_leadership_desc }}{% else %}{% t "site.home.values.leadership.desc" %}{% endif %}
+                        {% home_text home "values_leadership_desc" "site.home.values.leadership.desc" %}
                     </p>
                 </div>
                  <div class="bg-white dark:bg-matte-black p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border-b-4 border-emerald-500 group">
@@ -175,10 +176,10 @@
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <h3 class="text-xl font-bold mb-3 dark:text-white" data-preview="values_excellence_title">
-                        {% if home.values_excellence_title %}{{ home.values_excellence_title }}{% else %}{% t "site.home.values.excellence.title" %}{% endif %}
+                        {% home_text home "values_excellence_title" "site.home.values.excellence.title" %}
                     </h3>
                     <p class="text-gray-500 dark:text-gray-400 leading-relaxed" data-preview="values_excellence_desc">
-                        {% if home.values_excellence_desc %}{{ home.values_excellence_desc }}{% else %}{% t "site.home.values.excellence.desc" %}{% endif %}
+                        {% home_text home "values_excellence_desc" "site.home.values.excellence.desc" %}
                     </p>
                 </div>
                  <div class="bg-white dark:bg-matte-black p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border-b-4 border-emerald-500 group">
@@ -186,10 +187,10 @@
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <h3 class="text-xl font-bold mb-3 dark:text-white" data-preview="values_impact_title">
-                        {% if home.values_impact_title %}{{ home.values_impact_title }}{% else %}{% t "site.home.values.impact.title" %}{% endif %}
+                        {% home_text home "values_impact_title" "site.home.values.impact.title" %}
                     </h3>
                     <p class="text-gray-500 dark:text-gray-400 leading-relaxed" data-preview="values_impact_desc">
-                        {% if home.values_impact_desc %}{{ home.values_impact_desc }}{% else %}{% t "site.home.values.impact.desc" %}{% endif %}
+                        {% home_text home "values_impact_desc" "site.home.values.impact.desc" %}
                     </p>
                 </div>
             </div>
@@ -248,7 +249,7 @@
                         MY BARIKA<span class="text-emerald-600">.</span>
                     </h2>
                     <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed" data-preview="barika_desc">
-                        {% if home.barika_desc %}{{ home.barika_desc }}{% else %}{% t "site.home.barika.desc" %}{% endif %}
+                        {% home_text home "barika_desc" "site.home.barika.desc" %}
                     </p>
 
                     <div class="space-y-6">
@@ -258,10 +259,10 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-900 dark:text-white" data-preview="barika_education_title">
-                                    {% if home.barika_education_title %}{{ home.barika_education_title }}{% else %}{% t "site.home.barika.education.title" %}{% endif %}
+                                    {% home_text home "barika_education_title" "site.home.barika.education.title" %}
                                 </h4>
                                 <p class="text-sm text-gray-500 dark:text-gray-400" data-preview="barika_education_desc">
-                                    {% if home.barika_education_desc %}{{ home.barika_education_desc }}{% else %}{% t "site.home.barika.education.desc" %}{% endif %}
+                                    {% home_text home "barika_education_desc" "site.home.barika.education.desc" %}
                                 </p>
                             </div>
                         </div>
@@ -271,10 +272,10 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-900 dark:text-white" data-preview="barika_sport_title">
-                                    {% if home.barika_sport_title %}{{ home.barika_sport_title }}{% else %}{% t "site.home.barika.sport.title" %}{% endif %}
+                                    {% home_text home "barika_sport_title" "site.home.barika.sport.title" %}
                                 </h4>
                                 <p class="text-sm text-gray-500 dark:text-gray-400" data-preview="barika_sport_desc">
-                                    {% if home.barika_sport_desc %}{{ home.barika_sport_desc }}{% else %}{% t "site.home.barika.sport.desc" %}{% endif %}
+                                    {% home_text home "barika_sport_desc" "site.home.barika.sport.desc" %}
                                 </p>
                             </div>
                         </div>
@@ -284,10 +285,10 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-900 dark:text-white" data-preview="barika_entrepreneurship_title">
-                                    {% if home.barika_entrepreneurship_title %}{{ home.barika_entrepreneurship_title }}{% else %}{% t "site.home.barika.entrepreneurship.title" %}{% endif %}
+                                    {% home_text home "barika_entrepreneurship_title" "site.home.barika.entrepreneurship.title" %}
                                 </h4>
                                 <p class="text-sm text-gray-500 dark:text-gray-400" data-preview="barika_entrepreneurship_desc">
-                                    {% if home.barika_entrepreneurship_desc %}{{ home.barika_entrepreneurship_desc }}{% else %}{% t "site.home.barika.entrepreneurship.desc" %}{% endif %}
+                                    {% home_text home "barika_entrepreneurship_desc" "site.home.barika.entrepreneurship.desc" %}
                                 </p>
                             </div>
                         </div>
@@ -295,7 +296,7 @@
 
                     <div class="mt-10">
                         <a href="#soutenir" class="inline-block bg-emerald-600 text-white font-bold px-8 py-3 rounded-md shadow-lg hover:bg-emerald-800 transition-colors">
-                            <span data-preview="barika_cta">{% if home.barika_cta %}{{ home.barika_cta }}{% else %}{% t "site.home.barika.cta" %}{% endif %}</span>
+                            <span data-preview="barika_cta">{% home_text home "barika_cta" "site.home.barika.cta" %}</span>
                         </a>
                     </div>
                 </div>
@@ -354,17 +355,17 @@
         <div class="container mx-auto px-6 text-center relative z-10">
             <div class="flex items-center justify-center mb-6">
                 <span class="bg-white/20 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider" data-preview="join_badge">
-                    {% if home.join_badge %}{{ home.join_badge }}{% else %}{% t "site.home.join.badge" %}{% endif %}
+                    {% home_text home "join_badge" "site.home.join.badge" %}
                 </span>
             </div>
             <h2 class="text-4xl md:text-6xl font-extrabold mb-6 max-w-4xl mx-auto leading-tight">
-                <span data-preview="join_title_prefix">{% if home.join_title_prefix %}{{ home.join_title_prefix }}{% else %}{% t "site.home.join.title_prefix" %}{% endif %}</span> <span class="text-emerald-300">MY BARIKA</span>
+                <span data-preview="join_title_prefix">{% home_text home "join_title_prefix" "site.home.join.title_prefix" %}</span> <span class="text-emerald-300">MY BARIKA</span>
             </h2>
             <p class="text-xl text-emerald-100 mb-10 max-w-2xl mx-auto" data-preview="join_desc">
-                {% if home.join_desc %}{{ home.join_desc }}{% else %}{% t "site.home.join.desc" %}{% endif %}
+                {% home_text home "join_desc" "site.home.join.desc" %}
             </p>
             <a href="#contact" class="inline-block bg-white text-emerald-700 font-bold px-10 py-4 rounded-full shadow-[0_10px_20px_rgba(0,0,0,0.2)] hover:shadow-[0_15px_30px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all">
-                <span data-preview="join_cta">{% if home.join_cta %}{{ home.join_cta }}{% else %}{% t "site.home.join.cta" %}{% endif %}</span>
+                <span data-preview="join_cta">{% home_text home "join_cta" "site.home.join.cta" %}</span>
             </a>
             
             <div class="absolute -bottom-12 right-12 opacity-10 text-9xl font-black">
@@ -378,14 +379,14 @@
             <div class="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
                 <div class="max-w-2xl">
                     <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
-                        <span data-preview="articles_title_prefix">{% if home.articles_title_prefix %}{{ home.articles_title_prefix }}{% else %}{% t "site.home.articles.title_prefix" %}{% endif %}</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-600" data-preview="articles_title_suffix">{% if home.articles_title_suffix %}{{ home.articles_title_suffix }}{% else %}{% t "site.home.articles.title_suffix" %}{% endif %}</span>
+                        <span data-preview="articles_title_prefix">{% home_text home "articles_title_prefix" "site.home.articles.title_prefix" %}</span> <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-600" data-preview="articles_title_suffix">{% home_text home "articles_title_suffix" "site.home.articles.title_suffix" %}</span>
                     </h2>
                     <p class="text-gray-600 dark:text-gray-300 text-lg" data-preview="articles_desc">
-                        {% if home.articles_desc %}{{ home.articles_desc }}{% else %}{% t "site.home.articles.desc" %}{% endif %}
+                        {% home_text home "articles_desc" "site.home.articles.desc" %}
                     </p>
                 </div>
                 <a href="/blog" class="text-emerald-600 dark:text-emerald-400 font-bold hover:text-emerald-800 dark:hover:text-emerald-300 flex items-center group">
-                    <span data-preview="articles_view_all">{% if home.articles_view_all %}{{ home.articles_view_all }}{% else %}{% t "site.home.articles.view_all" %}{% endif %}</span> <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                    <span data-preview="articles_view_all">{% home_text home "articles_view_all" "site.home.articles.view_all" %}</span> <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                 </a>
             </div>
 
@@ -409,7 +410,7 @@
                             {{ article.author|default:"Anonyme" }} · {{ article.published_at|date:"d M Y" }}
                         </div>
                         <a href="{% url 'blog:article_detail' article.slug %}" class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-full font-bold hover:bg-emerald-700">
-                            <span data-preview="articles_read_more">{% if home.articles_read_more %}{{ home.articles_read_more }}{% else %}{% t "site.home.articles.read_more" %}{% endif %}</span>
+                            <span data-preview="articles_read_more">{% home_text home "articles_read_more" "site.home.articles.read_more" %}</span>
                         </a>
                     </div>
                 </article>
@@ -528,44 +529,45 @@
     window.addEventListener('message', (event) => {
         if (!event || !event.data || event.data.type !== 'home-preview') return;
         const payload = event.data.payload || {};
+        const isEn = (document.documentElement && document.documentElement.lang ? document.documentElement.lang : '').toLowerCase().startsWith('en');
 
-        applyText('hero_badge', payload.hero_badge);
-        applyText('hero_title_prefix', payload.hero_title_prefix);
-        applyText('hero_title_suffix', payload.hero_title_suffix);
-        applyText('hero_description', payload.hero_description);
+        applyText('hero_badge', isEn ? payload.hero_badge_en : payload.hero_badge);
+        applyText('hero_title_prefix', isEn ? payload.hero_title_prefix_en : payload.hero_title_prefix);
+        applyText('hero_title_suffix', isEn ? payload.hero_title_suffix_en : payload.hero_title_suffix);
+        applyText('hero_description', isEn ? payload.hero_description_en : payload.hero_description);
         applyText('hero_stats_youth_mentored', payload.hero_stats_youth_mentored);
         applyText('hero_stats_years_experience', payload.hero_stats_years_experience);
         applyText('hero_stats_continents', payload.hero_stats_continents);
-        applyText('quote_text', payload.quote_text);
-        applyText('quote_subtext', payload.quote_subtext);
-        applyText('quote_author_role', payload.quote_author_role);
-        applyText('quote_cta', payload.quote_cta);
-        applyText('vision_badge', payload.vision_badge);
-        applyText('vision_title', payload.vision_title);
-        applyText('vision_description', payload.vision_description);
-        applyText('values_leadership_title', payload.values_leadership_title);
-        applyText('values_leadership_desc', payload.values_leadership_desc);
-        applyText('values_excellence_title', payload.values_excellence_title);
-        applyText('values_excellence_desc', payload.values_excellence_desc);
-        applyText('values_impact_title', payload.values_impact_title);
-        applyText('values_impact_desc', payload.values_impact_desc);
-        applyText('barika_desc', payload.barika_desc);
-        applyText('barika_education_title', payload.barika_education_title);
-        applyText('barika_education_desc', payload.barika_education_desc);
-        applyText('barika_sport_title', payload.barika_sport_title);
-        applyText('barika_sport_desc', payload.barika_sport_desc);
-        applyText('barika_entrepreneurship_title', payload.barika_entrepreneurship_title);
-        applyText('barika_entrepreneurship_desc', payload.barika_entrepreneurship_desc);
-        applyText('barika_cta', payload.barika_cta);
-        applyText('join_badge', payload.join_badge);
-        applyText('join_title_prefix', payload.join_title_prefix);
-        applyText('join_desc', payload.join_desc);
-        applyText('join_cta', payload.join_cta);
-        applyText('articles_title_prefix', payload.articles_title_prefix);
-        applyText('articles_title_suffix', payload.articles_title_suffix);
-        applyText('articles_desc', payload.articles_desc);
-        applyText('articles_view_all', payload.articles_view_all);
-        applyText('articles_read_more', payload.articles_read_more);
+        applyText('quote_text', isEn ? payload.quote_text_en : payload.quote_text);
+        applyText('quote_subtext', isEn ? payload.quote_subtext_en : payload.quote_subtext);
+        applyText('quote_author_role', isEn ? payload.quote_author_role_en : payload.quote_author_role);
+        applyText('quote_cta', isEn ? payload.quote_cta_en : payload.quote_cta);
+        applyText('vision_badge', isEn ? payload.vision_badge_en : payload.vision_badge);
+        applyText('vision_title', isEn ? payload.vision_title_en : payload.vision_title);
+        applyText('vision_description', isEn ? payload.vision_description_en : payload.vision_description);
+        applyText('values_leadership_title', isEn ? payload.values_leadership_title_en : payload.values_leadership_title);
+        applyText('values_leadership_desc', isEn ? payload.values_leadership_desc_en : payload.values_leadership_desc);
+        applyText('values_excellence_title', isEn ? payload.values_excellence_title_en : payload.values_excellence_title);
+        applyText('values_excellence_desc', isEn ? payload.values_excellence_desc_en : payload.values_excellence_desc);
+        applyText('values_impact_title', isEn ? payload.values_impact_title_en : payload.values_impact_title);
+        applyText('values_impact_desc', isEn ? payload.values_impact_desc_en : payload.values_impact_desc);
+        applyText('barika_desc', isEn ? payload.barika_desc_en : payload.barika_desc);
+        applyText('barika_education_title', isEn ? payload.barika_education_title_en : payload.barika_education_title);
+        applyText('barika_education_desc', isEn ? payload.barika_education_desc_en : payload.barika_education_desc);
+        applyText('barika_sport_title', isEn ? payload.barika_sport_title_en : payload.barika_sport_title);
+        applyText('barika_sport_desc', isEn ? payload.barika_sport_desc_en : payload.barika_sport_desc);
+        applyText('barika_entrepreneurship_title', isEn ? payload.barika_entrepreneurship_title_en : payload.barika_entrepreneurship_title);
+        applyText('barika_entrepreneurship_desc', isEn ? payload.barika_entrepreneurship_desc_en : payload.barika_entrepreneurship_desc);
+        applyText('barika_cta', isEn ? payload.barika_cta_en : payload.barika_cta);
+        applyText('join_badge', isEn ? payload.join_badge_en : payload.join_badge);
+        applyText('join_title_prefix', isEn ? payload.join_title_prefix_en : payload.join_title_prefix);
+        applyText('join_desc', isEn ? payload.join_desc_en : payload.join_desc);
+        applyText('join_cta', isEn ? payload.join_cta_en : payload.join_cta);
+        applyText('articles_title_prefix', isEn ? payload.articles_title_prefix_en : payload.articles_title_prefix);
+        applyText('articles_title_suffix', isEn ? payload.articles_title_suffix_en : payload.articles_title_suffix);
+        applyText('articles_desc', isEn ? payload.articles_desc_en : payload.articles_desc);
+        applyText('articles_view_all', isEn ? payload.articles_view_all_en : payload.articles_view_all);
+        applyText('articles_read_more', isEn ? payload.articles_read_more_en : payload.articles_read_more);
         applySrc('hero_right_image_url', payload.hero_right_image_url);
         applySrc('quote_image_url', payload.quote_image_url);
         applyGallery(payload.gallery_image_urls);

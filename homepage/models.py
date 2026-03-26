@@ -6,50 +6,84 @@ import json
 class HomeSettings(models.Model):
     """Paramètres dynamiques de la page d'accueil (singleton)"""
     hero_badge = models.CharField(max_length=100, blank=True)
+    hero_badge_en = models.CharField(max_length=100, blank=True)
     hero_title_prefix = models.CharField(max_length=200, blank=True)
+    hero_title_prefix_en = models.CharField(max_length=200, blank=True)
     hero_title_suffix = models.CharField(max_length=200, blank=True)
+    hero_title_suffix_en = models.CharField(max_length=200, blank=True)
     hero_description = models.TextField(blank=True)
+    hero_description_en = models.TextField(blank=True)
     hero_right_image = models.ImageField(upload_to='home/hero/', blank=True, null=True)
     hero_stats_youth_mentored = models.PositiveIntegerField(blank=True, null=True)
     hero_stats_years_experience = models.PositiveIntegerField(blank=True, null=True)
     hero_stats_continents = models.PositiveIntegerField(blank=True, null=True)
     
     quote_text = models.TextField(blank=True)
+    quote_text_en = models.TextField(blank=True)
     quote_subtext = models.CharField(max_length=255, blank=True)
+    quote_subtext_en = models.CharField(max_length=255, blank=True)
     quote_author_role = models.CharField(max_length=255, blank=True)
+    quote_author_role_en = models.CharField(max_length=255, blank=True)
     quote_cta = models.CharField(max_length=100, blank=True)
+    quote_cta_en = models.CharField(max_length=100, blank=True)
     quote_image = models.ImageField(upload_to='home/quote/', blank=True, null=True)
     
     vision_badge = models.CharField(max_length=100, blank=True)
+    vision_badge_en = models.CharField(max_length=100, blank=True)
     vision_title = models.CharField(max_length=255, blank=True)
+    vision_title_en = models.CharField(max_length=255, blank=True)
     vision_description = models.TextField(blank=True)
+    vision_description_en = models.TextField(blank=True)
     
     values_leadership_title = models.CharField(max_length=200, blank=True)
+    values_leadership_title_en = models.CharField(max_length=200, blank=True)
     values_leadership_desc = models.TextField(blank=True)
+    values_leadership_desc_en = models.TextField(blank=True)
     values_excellence_title = models.CharField(max_length=200, blank=True)
+    values_excellence_title_en = models.CharField(max_length=200, blank=True)
     values_excellence_desc = models.TextField(blank=True)
+    values_excellence_desc_en = models.TextField(blank=True)
     values_impact_title = models.CharField(max_length=200, blank=True)
+    values_impact_title_en = models.CharField(max_length=200, blank=True)
     values_impact_desc = models.TextField(blank=True)
+    values_impact_desc_en = models.TextField(blank=True)
     
     barika_desc = models.TextField(blank=True)
+    barika_desc_en = models.TextField(blank=True)
     barika_education_title = models.CharField(max_length=200, blank=True)
+    barika_education_title_en = models.CharField(max_length=200, blank=True)
     barika_education_desc = models.TextField(blank=True)
+    barika_education_desc_en = models.TextField(blank=True)
     barika_sport_title = models.CharField(max_length=200, blank=True)
+    barika_sport_title_en = models.CharField(max_length=200, blank=True)
     barika_sport_desc = models.TextField(blank=True)
+    barika_sport_desc_en = models.TextField(blank=True)
     barika_entrepreneurship_title = models.CharField(max_length=200, blank=True)
+    barika_entrepreneurship_title_en = models.CharField(max_length=200, blank=True)
     barika_entrepreneurship_desc = models.TextField(blank=True)
+    barika_entrepreneurship_desc_en = models.TextField(blank=True)
     barika_cta = models.CharField(max_length=100, blank=True)
+    barika_cta_en = models.CharField(max_length=100, blank=True)
     
     join_badge = models.CharField(max_length=100, blank=True)
+    join_badge_en = models.CharField(max_length=100, blank=True)
     join_title_prefix = models.CharField(max_length=255, blank=True)
+    join_title_prefix_en = models.CharField(max_length=255, blank=True)
     join_desc = models.TextField(blank=True)
+    join_desc_en = models.TextField(blank=True)
     join_cta = models.CharField(max_length=100, blank=True)
+    join_cta_en = models.CharField(max_length=100, blank=True)
     
     articles_title_prefix = models.CharField(max_length=255, blank=True)
+    articles_title_prefix_en = models.CharField(max_length=255, blank=True)
     articles_title_suffix = models.CharField(max_length=255, blank=True)
+    articles_title_suffix_en = models.CharField(max_length=255, blank=True)
     articles_desc = models.TextField(blank=True)
+    articles_desc_en = models.TextField(blank=True)
     articles_view_all = models.CharField(max_length=100, blank=True)
+    articles_view_all_en = models.CharField(max_length=100, blank=True)
     articles_read_more = models.CharField(max_length=100, blank=True)
+    articles_read_more_en = models.CharField(max_length=100, blank=True)
     
     class Meta:
         verbose_name = "Paramètres d'accueil"
@@ -120,7 +154,16 @@ class HomeSettings(models.Model):
         return defaults
     
     def apply_static_defaults_if_missing(self, language_code='fr'):
-        defaults = self.load_static_defaults(language_code=language_code)
+        fr_defaults = self.load_static_defaults(language_code='fr')
+        en_defaults = self.load_static_defaults(language_code='en')
+
+        defaults = dict(fr_defaults)
+        for key, value in en_defaults.items():
+            if key.startswith('hero_stats_'):
+                defaults[key] = value
+            else:
+                defaults[f'{key}_en'] = value
+
         changed_fields = []
         for field_name, default_value in defaults.items():
             current = getattr(self, field_name)

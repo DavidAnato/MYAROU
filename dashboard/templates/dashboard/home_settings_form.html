@@ -38,8 +38,10 @@
                         <div x-show="open" x-transition class="p-5">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge (FR)</label>
                                 {{ form.hero_badge }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Badge (EN)</label>
+                                {{ form.hero_badge_en }}
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image (droite)</label>
@@ -62,16 +64,22 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe) (FR)</label>
                                 {{ form.hero_title_prefix }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Titre (prefixe) (EN)</label>
+                                {{ form.hero_title_prefix_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (suffixe)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (suffixe) (FR)</label>
                                 {{ form.hero_title_suffix }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Titre (suffixe) (EN)</label>
+                                {{ form.hero_title_suffix_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description (FR)</label>
                                 {{ form.hero_description }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Description (EN)</label>
+                                {{ form.hero_description_en }}
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Jeunes encadrés</label>
@@ -109,20 +117,28 @@
                         <div x-show="open" x-transition class="p-5">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Texte</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Texte (FR)</label>
                                 {{ form.quote_text }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Texte (EN)</label>
+                                {{ form.quote_text_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sous-texte</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sous-texte (FR)</label>
                                 {{ form.quote_subtext }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Sous-texte (EN)</label>
+                                {{ form.quote_subtext_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Rôle auteur</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Rôle auteur (FR)</label>
                                 {{ form.quote_author_role }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Rôle auteur (EN)</label>
+                                {{ form.quote_author_role_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA (FR)</label>
                                 {{ form.quote_cta }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">CTA (EN)</label>
+                                {{ form.quote_cta_en }}
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image citation</label>
@@ -168,16 +184,22 @@
                         <div x-show="open" x-transition class="p-5">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge (FR)</label>
                                 {{ form.vision_badge }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Badge (EN)</label>
+                                {{ form.vision_badge_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (FR)</label>
                                 {{ form.vision_title }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Titre (EN)</label>
+                                {{ form.vision_title_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description (FR)</label>
                                 {{ form.vision_description }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Description (EN)</label>
+                                {{ form.vision_description_en }}
                             </div>
                             </div>
                         </div>
@@ -203,28 +225,40 @@
                         <div x-show="open" x-transition class="p-5">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Leadership (titre)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Leadership (titre) (FR)</label>
                                 {{ form.values_leadership_title }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Leadership (titre) (EN)</label>
+                                {{ form.values_leadership_title_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Excellence (titre)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Excellence (titre) (FR)</label>
                                 {{ form.values_excellence_title }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Excellence (titre) (EN)</label>
+                                {{ form.values_excellence_title_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Leadership (description)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Leadership (description) (FR)</label>
                                 {{ form.values_leadership_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Leadership (description) (EN)</label>
+                                {{ form.values_leadership_desc_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Excellence (description)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Excellence (description) (FR)</label>
                                 {{ form.values_excellence_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Excellence (description) (EN)</label>
+                                {{ form.values_excellence_desc_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Impact (titre)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Impact (titre) (FR)</label>
                                 {{ form.values_impact_title }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Impact (titre) (EN)</label>
+                                {{ form.values_impact_title_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Impact (description)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Impact (description) (FR)</label>
                                 {{ form.values_impact_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Impact (description) (EN)</label>
+                                {{ form.values_impact_desc_en }}
                             </div>
                             </div>
                         </div>
@@ -370,36 +404,52 @@
                         <div x-show="open" x-transition class="p-5">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description (FR)</label>
                                 {{ form.barika_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Description (EN)</label>
+                                {{ form.barika_desc_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Education (titre)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Education (titre) (FR)</label>
                                 {{ form.barika_education_title }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Education (titre) (EN)</label>
+                                {{ form.barika_education_title_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sport (titre)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sport (titre) (FR)</label>
                                 {{ form.barika_sport_title }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Sport (titre) (EN)</label>
+                                {{ form.barika_sport_title_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Education (desc)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Education (desc) (FR)</label>
                                 {{ form.barika_education_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Education (desc) (EN)</label>
+                                {{ form.barika_education_desc_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sport (desc)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sport (desc) (FR)</label>
                                 {{ form.barika_sport_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Sport (desc) (EN)</label>
+                                {{ form.barika_sport_desc_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Entrepreneuriat (titre)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Entrepreneuriat (titre) (FR)</label>
                                 {{ form.barika_entrepreneurship_title }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Entrepreneuriat (titre) (EN)</label>
+                                {{ form.barika_entrepreneurship_title_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Entrepreneuriat (desc)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Entrepreneuriat (desc) (FR)</label>
                                 {{ form.barika_entrepreneurship_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Entrepreneuriat (desc) (EN)</label>
+                                {{ form.barika_entrepreneurship_desc_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA (FR)</label>
                                 {{ form.barika_cta }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">CTA (EN)</label>
+                                {{ form.barika_cta_en }}
                             </div>
                             </div>
                         </div>
@@ -425,20 +475,28 @@
                         <div x-show="open" x-transition class="p-5">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Badge (FR)</label>
                                 {{ form.join_badge }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Badge (EN)</label>
+                                {{ form.join_badge_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe) (FR)</label>
                                 {{ form.join_title_prefix }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Titre (prefixe) (EN)</label>
+                                {{ form.join_title_prefix_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description (FR)</label>
                                 {{ form.join_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Description (EN)</label>
+                                {{ form.join_desc_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">CTA (FR)</label>
                                 {{ form.join_cta }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">CTA (EN)</label>
+                                {{ form.join_cta_en }}
                             </div>
                             </div>
                         </div>
@@ -464,24 +522,34 @@
                         <div x-show="open" x-transition class="p-5">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (prefixe) (FR)</label>
                                 {{ form.articles_title_prefix }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Titre (prefixe) (EN)</label>
+                                {{ form.articles_title_prefix_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (suffixe)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre (suffixe) (FR)</label>
                                 {{ form.articles_title_suffix }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Titre (suffixe) (EN)</label>
+                                {{ form.articles_title_suffix_en }}
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description (FR)</label>
                                 {{ form.articles_desc }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Description (EN)</label>
+                                {{ form.articles_desc_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Voir tout</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Voir tout (FR)</label>
                                 {{ form.articles_view_all }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Voir tout (EN)</label>
+                                {{ form.articles_view_all_en }}
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Lire plus</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Lire plus (FR)</label>
                                 {{ form.articles_read_more }}
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">Lire plus (EN)</label>
+                                {{ form.articles_read_more_en }}
                             </div>
                             </div>
                         </div>
@@ -968,42 +1036,76 @@
 
     const buildPayload = () => ({
         hero_badge: getValue('hero_badge'),
+        hero_badge_en: getValue('hero_badge_en'),
         hero_title_prefix: getValue('hero_title_prefix'),
+        hero_title_prefix_en: getValue('hero_title_prefix_en'),
         hero_title_suffix: getValue('hero_title_suffix'),
+        hero_title_suffix_en: getValue('hero_title_suffix_en'),
         hero_description: getValue('hero_description'),
+        hero_description_en: getValue('hero_description_en'),
         hero_stats_youth_mentored: getValue('hero_stats_youth_mentored'),
         hero_stats_years_experience: getValue('hero_stats_years_experience'),
         hero_stats_continents: getValue('hero_stats_continents'),
         quote_text: getValue('quote_text'),
+        quote_text_en: getValue('quote_text_en'),
         quote_subtext: getValue('quote_subtext'),
+        quote_subtext_en: getValue('quote_subtext_en'),
         quote_author_role: getValue('quote_author_role'),
+        quote_author_role_en: getValue('quote_author_role_en'),
         quote_cta: getValue('quote_cta'),
+        quote_cta_en: getValue('quote_cta_en'),
         vision_badge: getValue('vision_badge'),
+        vision_badge_en: getValue('vision_badge_en'),
         vision_title: getValue('vision_title'),
+        vision_title_en: getValue('vision_title_en'),
         vision_description: getValue('vision_description'),
+        vision_description_en: getValue('vision_description_en'),
         values_leadership_title: getValue('values_leadership_title'),
+        values_leadership_title_en: getValue('values_leadership_title_en'),
         values_leadership_desc: getValue('values_leadership_desc'),
+        values_leadership_desc_en: getValue('values_leadership_desc_en'),
         values_excellence_title: getValue('values_excellence_title'),
+        values_excellence_title_en: getValue('values_excellence_title_en'),
         values_excellence_desc: getValue('values_excellence_desc'),
+        values_excellence_desc_en: getValue('values_excellence_desc_en'),
         values_impact_title: getValue('values_impact_title'),
+        values_impact_title_en: getValue('values_impact_title_en'),
         values_impact_desc: getValue('values_impact_desc'),
+        values_impact_desc_en: getValue('values_impact_desc_en'),
         barika_desc: getValue('barika_desc'),
+        barika_desc_en: getValue('barika_desc_en'),
         barika_education_title: getValue('barika_education_title'),
+        barika_education_title_en: getValue('barika_education_title_en'),
         barika_education_desc: getValue('barika_education_desc'),
+        barika_education_desc_en: getValue('barika_education_desc_en'),
         barika_sport_title: getValue('barika_sport_title'),
+        barika_sport_title_en: getValue('barika_sport_title_en'),
         barika_sport_desc: getValue('barika_sport_desc'),
+        barika_sport_desc_en: getValue('barika_sport_desc_en'),
         barika_entrepreneurship_title: getValue('barika_entrepreneurship_title'),
+        barika_entrepreneurship_title_en: getValue('barika_entrepreneurship_title_en'),
         barika_entrepreneurship_desc: getValue('barika_entrepreneurship_desc'),
+        barika_entrepreneurship_desc_en: getValue('barika_entrepreneurship_desc_en'),
         barika_cta: getValue('barika_cta'),
+        barika_cta_en: getValue('barika_cta_en'),
         join_badge: getValue('join_badge'),
+        join_badge_en: getValue('join_badge_en'),
         join_title_prefix: getValue('join_title_prefix'),
+        join_title_prefix_en: getValue('join_title_prefix_en'),
         join_desc: getValue('join_desc'),
+        join_desc_en: getValue('join_desc_en'),
         join_cta: getValue('join_cta'),
+        join_cta_en: getValue('join_cta_en'),
         articles_title_prefix: getValue('articles_title_prefix'),
+        articles_title_prefix_en: getValue('articles_title_prefix_en'),
         articles_title_suffix: getValue('articles_title_suffix'),
+        articles_title_suffix_en: getValue('articles_title_suffix_en'),
         articles_desc: getValue('articles_desc'),
+        articles_desc_en: getValue('articles_desc_en'),
         articles_view_all: getValue('articles_view_all'),
+        articles_view_all_en: getValue('articles_view_all_en'),
         articles_read_more: getValue('articles_read_more'),
+        articles_read_more_en: getValue('articles_read_more_en'),
         hero_right_image_url: fileToObjectUrl('hero_right_image'),
         quote_image_url: fileToObjectUrl('quote_image'),
         gallery_image_urls: getGalleryUrls(),
