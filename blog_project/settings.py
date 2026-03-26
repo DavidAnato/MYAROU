@@ -84,26 +84,23 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-USE_SQLITE = os.environ.get('USE_SQLITE') == '1'
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'myarou_db',
+        'USER': 'myarou_user',
+        'PASSWORD': 'My@rou_2026_Secure!',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
 
-if USE_SQLITE:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'myarou_db',
-            'USER': 'myarou_user',
-            'PASSWORD': 'My@rou_2026_Secure!',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
