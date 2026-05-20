@@ -24,26 +24,26 @@
         /* Titre hero : mobile plus petit, desktop plus grand */
         .hero-title-adaptive {
             font-size: clamp(
-                1.75rem,
-                calc(2.75rem - (var(--hero-chars, 24) - 18) * 0.035rem),
-                2.75rem
+                3.25rem,
+                calc(3.5rem - (var(--hero-chars, 24) - 18) * 0.03rem),
+                4rem
             );
         }
         @media (min-width: 768px) {
             .hero-title-adaptive {
                 font-size: clamp(
-                    2rem,
-                    calc(3.75rem - (var(--hero-chars, 24) - 18) * 0.04rem),
-                    3.75rem
+                    3.5rem,
+                    calc(5.5rem - (var(--hero-chars, 24) - 18) * 0.036rem),
+                    5.5rem
                 );
             }
         }
         @media (min-width: 1024px) {
             .hero-title-adaptive {
                 font-size: clamp(
-                    2.25rem,
-                    calc(5rem - (var(--hero-chars, 24) - 18) * 0.05rem),
-                    5rem
+                    4.25rem,
+                    calc(5.25rem - (var(--hero-chars, 24) - 18) * 0.04rem),
+                    6.25rem
                 );
             }
         }
