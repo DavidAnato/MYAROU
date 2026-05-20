@@ -19,5 +19,4 @@ def site_globals(request):
         'social_links': _active_links(SiteLink.CATEGORY_SOCIAL),
         'nav_links': _active_links(SiteLink.CATEGORY_NAV),
         'footer_links': _active_links(SiteLink.CATEGORY_FOOTER),
-        'useful_links': _active_links(SiteLink.CATEGORY_USEFUL),
     }

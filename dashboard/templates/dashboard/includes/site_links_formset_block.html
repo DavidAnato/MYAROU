@@ -25,11 +25,6 @@
                 :class="linkTab === 'footer' ? 'bg-emerald-600 text-white shadow' : 'text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800'">
             MY BARIKA (footer)
         </button>
-        <button type="button" @click="linkTab = 'useful'"
-                class="px-4 py-2 rounded-lg text-sm font-bold transition-colors"
-                :class="linkTab === 'useful' ? 'bg-emerald-600 text-white shadow' : 'text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800'">
-            Liens utiles
-        </button>
     </div>
 
     <div class="space-y-4" data-links-list>
@@ -93,8 +88,5 @@
     </p>
     <p x-show="linkTab === 'footer'" class="text-xs text-gray-500 dark:text-gray-400" x-cloak>
         Colonne MY BARIKA du footer (Nos programmes, Soutiens, etc.).
-    </p>
-    <p x-show="linkTab === 'useful'" class="text-xs text-gray-500 dark:text-gray-400" x-cloak>
-        Section Liens utiles sous MY BARIKA dans le footer.
     </p>
 </div>

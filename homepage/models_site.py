@@ -48,12 +48,10 @@ class SiteLink(models.Model):
     CATEGORY_SOCIAL = 'social'
     CATEGORY_NAV = 'nav'
     CATEGORY_FOOTER = 'footer'
-    CATEGORY_USEFUL = 'useful'
     CATEGORY_CHOICES = [
         (CATEGORY_SOCIAL, 'Réseaux sociaux'),
         (CATEGORY_NAV, 'Navigation (footer)'),
         (CATEGORY_FOOTER, 'MY BARIKA (footer)'),
-        (CATEGORY_USEFUL, 'Liens utiles'),
     ]
 
     INTERNAL_ROUTE_CHOICES = [

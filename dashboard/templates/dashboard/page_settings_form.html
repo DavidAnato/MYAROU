@@ -5,8 +5,8 @@
 
 {% block content %}
 <div class="mx-auto">
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
-        <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl p-6 md:p-8 transition-colors xl:col-span-5 max-h-[calc(100vh-7rem)] overflow-y-auto">
+    <div id="dashboardPreviewSplit" class="flex flex-col xl:flex-row gap-6 xl:gap-0 items-stretch xl:min-h-[calc(100vh-7rem)]">
+        <div data-split-form class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl p-6 md:p-8 transition-colors w-full xl:w-[var(--split-form-width,420px)] xl:shrink-0 max-h-[calc(100vh-7rem)] xl:max-h-none overflow-y-auto">
             <p class="text-gray-600 dark:text-gray-300 text-sm mb-6">
                 Les champs vides reprennent les textes par défaut (fichiers i18n).
                 {% if page_note %}{{ page_note }}{% endif %}
@@ -87,7 +87,7 @@
                             </div>
                             <div class="text-left">
                                 <div class="text-base font-extrabold text-gray-900 dark:text-white">{{ links_formset_label|default:"Liens du site" }}</div>
-                                <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Réseaux, footer MY BARIKA, liens utiles</div>
+                                <div class="text-xs font-semibold text-gray-500 dark:text-gray-300">Réseaux, navigation et MY BARIKA</div>
                             </div>
                         </div>
                         <svg class="w-5 h-5 text-gray-500 transform transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -108,7 +108,15 @@
         </div>
 
         {% if preview_url %}
-        {% include 'dashboard/includes/preview_panel.html' %}
+        <div data-split-handle
+             class="hidden xl:flex w-3 shrink-0 cursor-col-resize items-center justify-center self-stretch mx-1 hover:bg-emerald-500/10 rounded-lg transition-colors"
+             title="Glisser pour redimensionner · double-clic = taille par défaut"
+             aria-label="Redimensionner l'aperçu">
+            <div class="w-1 h-16 rounded-full bg-gray-300 dark:bg-gray-600 hover:bg-emerald-500 transition-colors"></div>
+        </div>
+        <div data-split-preview class="w-full xl:flex-1 xl:min-w-[300px] min-h-[420px] xl:min-h-0 xl:h-[calc(100vh-7rem)] xl:sticky xl:top-24">
+            {% include 'dashboard/includes/preview_panel.html' %}
+        </div>
         {% endif %}
     </div>
 </div>
