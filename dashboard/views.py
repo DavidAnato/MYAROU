@@ -406,6 +406,10 @@ def site_links_edit(request):
             formset.save()
             messages.success(request, "Liens du site mis à jour.")
             return redirect('dashboard:site_links')
+        messages.error(
+            request,
+            "Enregistrement impossible : vérifiez les URLs (ex. https://…) et les erreurs ci-dessous.",
+        )
     else:
         formset = SiteLinkFormSet(queryset=queryset)
 

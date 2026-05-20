@@ -63,12 +63,44 @@ class SiteLinkForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['url'].required = False
         _style_form(self)
+
+    def clean_url(self):
+        url = (self.cleaned_data.get('url') or '').strip()
+        if not url:
+            return ''
+        if not url.startswith(('http://', 'https://', 'mailto:')):
+            url = f'https://{url}'
+        return url
+
+
+class BaseSiteLinkFormSet(forms.BaseModelFormSet):
+    """Ignore les lignes vides ; n'enregistre que les liens avec une URL."""
+
+    def save(self, commit=True):
+        if not commit:
+            return super().save(commit=False)
+        for form in self.deleted_forms:
+            if form.instance.pk:
+                form.instance.delete()
+        saved = []
+        for form in self.forms:
+            if form in self.deleted_forms:
+                continue
+            if not form.cleaned_data:
+                continue
+            url = (form.cleaned_data.get('url') or '').strip()
+            if not url:
+                continue
+            saved.append(form.save())
+        return saved
 
 
 SiteLinkFormSet = modelformset_factory(
     SiteLink,
     form=SiteLinkForm,
+    formset=BaseSiteLinkFormSet,
     extra=2,
     can_delete=True,
 )

@@ -68,7 +68,7 @@ class SiteLink(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default=CATEGORY_SOCIAL)
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, default='other')
     label = models.CharField(max_length=120, blank=True)
-    url = models.URLField(max_length=500)
+    url = models.URLField(max_length=500, blank=True)
     order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     open_in_new_tab = models.BooleanField(default=True)

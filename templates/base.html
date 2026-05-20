@@ -459,17 +459,8 @@
                 <div>
                     <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">MY BARIKA</h3>
                     <ul class="space-y-3">
-                        {% for link in footer_links %}
-                        <li>
-                            <a href="{{ link.url }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}
-                               class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {{ link.label|default:link.get_platform_display }}
-                            </a>
-                        </li>
-                        {% empty %}
+                        {% include 'includes/site_text_links.html' with links=footer_links %}
+                        {% if not footer_links %}
                         <li>
                             <a href="{% url 'blog:contact' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -478,7 +469,7 @@
                                 {% t "site.footer.nav.programs" %}
                             </a>
                         </li>
-                        {% endfor %}
+                        {% endif %}
                         <li>
                             <a href="{% url 'blog:contact' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -496,6 +487,12 @@
                             </a>
                         </li>
                     </ul>
+                    {% if useful_links %}
+                    <h4 class="text-lg font-bold mt-8 mb-4 text-gray-900 dark:text-white">{% t "site.footer.useful.title" %}</h4>
+                    <ul class="space-y-3">
+                        {% include 'includes/site_text_links.html' with links=useful_links %}
+                    </ul>
+                    {% endif %}
                 </div>
                 
                 <!-- Legal -->

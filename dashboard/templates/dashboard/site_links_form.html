@@ -5,10 +5,24 @@
 
 {% block content %}
 <div class="max-w-5xl mx-auto">
-    <p class="text-gray-600 dark:text-gray-300 text-sm mb-6 flex items-start gap-2">
-        <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-        <span>Réseaux sociaux (footer, contact). Laissez l’URL vide pour masquer un lien. Utilisez « Ajouter » pour une nouvelle ligne.</span>
-    </p>
+    <div class="mb-6 space-y-3 text-sm text-gray-600 dark:text-gray-300">
+        <p class="flex items-start gap-2">
+            <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"/></svg>
+            <span>Choisissez la <strong class="text-gray-900 dark:text-white">catégorie</strong> selon l’emplacement sur le site, puis cliquez <strong class="text-gray-900 dark:text-white">Enregistrer les liens</strong>.</span>
+        </p>
+        <ul class="ml-7 list-disc space-y-1">
+            <li><strong>Réseaux sociaux</strong> — icônes sous le logo (footer) et bloc « Réseaux sociaux » sur la page Contact.</li>
+            <li><strong>Liens footer</strong> — liste texte dans la colonne « MY BARIKA » du footer + liens texte sous les icônes sur Contact.</li>
+            <li><strong>Liens utiles</strong> — section « Liens utiles » dans le footer (colonne MY BARIKA).</li>
+        </ul>
+        <p class="text-xs text-gray-500">URL complète recommandée (<code class="text-emerald-600">https://…</code>). Sans <code>https://</code>, elle sera ajoutée automatiquement. Cochez <strong>Actif</strong>. Laissez l’URL vide pour une ligne vide.</p>
+    </div>
+
+    {% if formset.non_form_errors %}
+    <div class="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 text-sm">
+        {{ formset.non_form_errors }}
+    </div>
+    {% endif %}
 
     <form id="siteLinksForm" method="post" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100 dark:border-gray-700">
         {% csrf_token %}
@@ -30,6 +44,13 @@
                 <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{ form.id }}
                     <div class="hidden">{{ form.DELETE }}</div>
+                    {% if form.errors %}
+                    <div class="md:col-span-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 text-sm">
+                        {% for field, errs in form.errors.items %}
+                        <p><strong>{{ field }}</strong> : {{ errs|join:", " }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Catégorie</label>
                         {{ form.category }}
