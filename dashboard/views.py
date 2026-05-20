@@ -453,6 +453,8 @@ def contact_message_list(request):
     if request_type:
         qs = qs.filter(request_type=request_type)
 
+    list_query = request.GET.urlencode()
+
     context = {
         'messages_list': qs[:200],
         'total_count': ContactMessage.objects.count(),
@@ -461,9 +463,19 @@ def contact_message_list(request):
         'status': status,
         'request_type': request_type,
         'request_type_choices': ContactMessage.REQUEST_TYPE_CHOICES,
+        'list_query': list_query,
         'page_title': 'Messages reçus',
     }
     return render(request, 'dashboard/contact_message_list.html', context)
+
+
+def _contact_messages_list_redirect(request, extra_query=None):
+    """Retour liste en conservant filtres (paramètre next ou query actuelle)."""
+    query = (request.POST.get('next') or request.GET.get('next') or extra_query or '').strip()
+    base = reverse('dashboard:contact_message_list')
+    if query:
+        return redirect(f'{base}?{query}')
+    return redirect(base)
 
 
 @login_required(login_url='dashboard:login')
@@ -473,8 +485,10 @@ def contact_message_detail(request, pk):
     if not msg.is_read:
         msg.is_read = True
         msg.save(update_fields=['is_read'])
+    list_query = request.GET.get('next', '').strip()
     return render(request, 'dashboard/contact_message_detail.html', {
         'msg': msg,
+        'list_query': list_query,
         'page_title': f'Message — {msg.subject[:50]}',
     })
 
@@ -486,7 +500,11 @@ def contact_message_toggle_read(request, pk):
     msg = get_object_or_404(ContactMessage, pk=pk)
     msg.is_read = not msg.is_read
     msg.save(update_fields=['is_read'])
-    return redirect('dashboard:contact_message_detail', pk=pk)
+    if msg.is_read:
+        messages.success(request, 'Message marqué comme lu.')
+    else:
+        messages.success(request, 'Message marqué comme non lu.')
+    return _contact_messages_list_redirect(request)
 
 
 @login_required(login_url='dashboard:login')
@@ -496,7 +514,7 @@ def contact_message_delete(request, pk):
     msg = get_object_or_404(ContactMessage, pk=pk)
     msg.delete()
     messages.success(request, 'Message supprimé.')
-    return redirect('dashboard:contact_message_list')
+    return _contact_messages_list_redirect(request)
 
 
 @login_required(login_url='dashboard:login')
@@ -505,7 +523,7 @@ def contact_message_delete(request, pk):
 def contact_message_mark_all_read(request):
     updated = ContactMessage.objects.filter(is_read=False).update(is_read=True)
     messages.success(request, f'{updated} message(s) marqué(s) comme lu(s).')
-    return redirect('dashboard:contact_message_list')
+    return _contact_messages_list_redirect(request)
 
 
 @login_required(login_url='dashboard:login')

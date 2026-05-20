@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
-    <a href="{% url 'dashboard:contact_message_list' %}" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline mb-6">
+    <a href="{% url 'dashboard:contact_message_list' %}{% if list_query %}?{{ list_query }}{% endif %}" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline mb-6">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         Retour aux messages
     </a>
@@ -50,14 +50,18 @@
                 Répondre par e-mail
             </a>
             <div class="flex flex-wrap gap-2">
+                {% if msg.is_read %}
                 <form method="post" action="{% url 'dashboard:contact_message_toggle_read' pk=msg.pk %}">
                     {% csrf_token %}
+                    {% if list_query %}<input type="hidden" name="next" value="{{ list_query }}">{% endif %}
                     <button type="submit" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        {% if msg.is_read %}Marquer non lu{% else %}Marquer lu{% endif %}
+                        Marquer comme non lu
                     </button>
                 </form>
+                {% endif %}
                 <form method="post" action="{% url 'dashboard:contact_message_delete' pk=msg.pk %}" onsubmit="return confirm('Supprimer ce message définitivement ?');">
                     {% csrf_token %}
+                    {% if list_query %}<input type="hidden" name="next" value="{{ list_query }}">{% endif %}
                     <button type="submit" class="px-4 py-2 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm font-bold hover:bg-red-100 transition-colors">
                         Supprimer
                     </button>

@@ -18,6 +18,7 @@
         {% if unread_count %}
         <form method="post" action="{% url 'dashboard:contact_message_mark_all_read' %}">
             {% csrf_token %}
+            {% if list_query %}<input type="hidden" name="next" value="{{ list_query }}">{% endif %}
             <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 Tout marquer comme lu
@@ -47,15 +48,15 @@
         {% if messages_list %}
         <div class="divide-y divide-gray-100 dark:divide-gray-700">
             {% for item in messages_list %}
-            <a href="{% url 'dashboard:contact_message_detail' pk=item.pk %}"
-               class="flex flex-col sm:flex-row sm:items-center gap-3 py-4 px-2 -mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors group {% if not item.is_read %}bg-emerald-50/50 dark:bg-emerald-900/10{% endif %}">
-                <div class="flex items-start gap-3 flex-1 min-w-0">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 py-4 px-2 -mx-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors {% if not item.is_read %}bg-emerald-50/50 dark:bg-emerald-900/10{% endif %}">
+                <a href="{% url 'dashboard:contact_message_detail' pk=item.pk %}{% if list_query %}?next={{ list_query|urlencode }}{% endif %}"
+                   class="flex items-start gap-3 flex-1 min-w-0 group">
                     <div class="w-10 h-10 shrink-0 rounded-full flex items-center justify-center font-bold text-sm {% if item.is_read %}bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300{% else %}bg-emerald-600 text-white{% endif %}">
                         {{ item.name|slice:":1"|upper }}
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="font-bold text-gray-900 dark:text-white truncate">{{ item.name }}</span>
+                            <span class="font-bold text-gray-900 dark:text-white truncate group-hover:text-emerald-700 dark:group-hover:text-emerald-400">{{ item.name }}</span>
                             {% if not item.is_read %}
                             <span class="text-xs font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full">Nouveau</span>
                             {% endif %}
@@ -66,12 +67,42 @@
                         <p class="font-semibold text-gray-800 dark:text-gray-200 truncate mt-0.5">{{ item.subject }}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ item.message }}</p>
                     </div>
+                </a>
+                <div class="flex flex-wrap items-center gap-2 shrink-0 sm:pl-2">
+                    <div class="text-right text-sm text-gray-500 dark:text-gray-400 hidden md:block mr-2">
+                        <div class="truncate max-w-[180px]">{{ item.email }}</div>
+                        <div class="mt-0.5">{{ item.created_at|date:"d/m/Y H:i" }}</div>
+                    </div>
+                    <form method="post" action="{% url 'dashboard:contact_message_toggle_read' pk=item.pk %}" class="inline">
+                        {% csrf_token %}
+                        {% if list_query %}<input type="hidden" name="next" value="{{ list_query }}">{% endif %}
+                        {% if item.is_read %}
+                        <button type="submit" title="Marquer comme non lu"
+                                class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap">
+                            Non lu
+                        </button>
+                        {% else %}
+                        <button type="submit" title="Marquer comme lu"
+                                class="px-3 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 whitespace-nowrap">
+                            Lu
+                        </button>
+                        {% endif %}
+                    </form>
+                    <a href="{% url 'dashboard:contact_message_detail' pk=item.pk %}{% if list_query %}?next={{ list_query|urlencode }}{% endif %}"
+                       class="px-3 py-2 rounded-lg bg-gray-900 dark:bg-gray-700 text-white text-xs font-bold hover:opacity-90 whitespace-nowrap">
+                        Ouvrir
+                    </a>
+                    <form method="post" action="{% url 'dashboard:contact_message_delete' pk=item.pk %}" class="inline"
+                          onsubmit="return confirm('Supprimer ce message définitivement ?');">
+                        {% csrf_token %}
+                        {% if list_query %}<input type="hidden" name="next" value="{{ list_query }}">{% endif %}
+                        <button type="submit" title="Supprimer"
+                                class="px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-xs font-bold hover:bg-red-100 whitespace-nowrap">
+                            Suppr.
+                        </button>
+                    </form>
                 </div>
-                <div class="shrink-0 text-right text-sm text-gray-500 dark:text-gray-400 sm:pl-4">
-                    <div>{{ item.email }}</div>
-                    <div class="mt-1">{{ item.created_at|date:"d/m/Y H:i" }}</div>
-                </div>
-            </a>
+            </div>
             {% endfor %}
         </div>
         {% else %}
