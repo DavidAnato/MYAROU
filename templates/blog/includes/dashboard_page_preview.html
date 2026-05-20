@@ -144,23 +144,6 @@
         ul.innerHTML = items.map((link) => textLinkItemHtml(link, linkClass)).join('');
     };
 
-    const applyFooterTextLinks = (links) => {
-        const ul = document.querySelector('[data-preview-footer-text-links]');
-        if (!ul) return;
-        const footer = (links || []).filter((l) => l.category === 'footer');
-        if (footer.length === 0) {
-            ul.innerHTML = '';
-            ul.classList.add('hidden');
-            return;
-        }
-        ul.classList.remove('hidden');
-        ul.innerHTML = footer.map((link) => {
-            const target = link.open_in_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
-            const label = escapeHtml(link.label || link.platform || '');
-            return '<li><a href="' + escapeHtml(link.url) + '"' + target + ' class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">' + label + '</a></li>';
-        }).join('');
-    };
-
     const applyPayload = (payload) => {
         const en = isEnglish();
         const seen = new Set();
@@ -183,7 +166,6 @@
         else applyGallery([]);
         if (payload.site_links) {
             applySocialLinks(payload.site_links);
-            applyFooterTextLinks(payload.site_links);
             applyTextLinkList(
                 '[data-preview-nav-links]',
                 payload.site_links,

@@ -4,53 +4,97 @@
     {{ links_formset.non_form_errors }}
 </div>
 {% endif %}
-<p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
-    <strong>Navigation (footer)</strong> : Accueil, À propos, Blog… — <strong>MY BARIKA (footer)</strong> : Nos programmes, Soutiens… — <strong>Réseaux sociaux</strong> : icônes. Choisissez une <strong>page interne</strong> ou une URL <code class="text-emerald-600">https://</code>.
-</p>
-<div class="space-y-4" data-links-list>
-    {% for form in links_formset %}
-    <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 p-4" data-link-card data-link-pk="{{ form.instance.pk|default:'' }}">
-        {{ form.id }}
-        <div class="hidden">{{ form.DELETE }}</div>
-        {% if form.errors %}
-        <div class="mb-3 p-2 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 text-xs">
-            {% for field, errs in form.errors.items %}<p>{{ field }} : {{ errs|join:", " }}</p>{% endfor %}
-        </div>
-        {% endif %}
-        <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="text-sm font-bold text-gray-900 dark:text-white">Lien {% if form.instance.pk %}#{{ form.instance.pk }}{% else %}<span class="text-emerald-600">nouveau</span>{% endif %}</span>
-            <button type="button" class="text-xs font-bold text-red-600 hover:underline" data-delete-link data-link-pk="{{ form.instance.pk|default:'' }}" {% if not form.instance.pk %}data-delete-new-link{% endif %}>Supprimer</button>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Catégorie</label>
-                {{ form.category }}
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Plateforme</label>
-                {{ form.platform }}
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Libellé</label>
-                {{ form.label }}
-            </div>
-            <div>
-                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Ordre</label>
-                {{ form.order }}
-            </div>
-            <div class="sm:col-span-2">
-                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Page interne</label>
-                {{ form.route_name }}
-            </div>
-            <div class="sm:col-span-2">
-                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">URL (si pas de page interne)</label>
-                {{ form.url }}
-            </div>
-            <div class="sm:col-span-2 flex flex-wrap gap-4">
-                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">{{ form.is_active }} Actif</label>
-                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">{{ form.open_in_new_tab }} Nouvel onglet</label>
-            </div>
-        </div>
+
+<div x-data="{ linkTab: 'social' }" class="space-y-4">
+    <p class="text-xs text-gray-500 dark:text-gray-400">
+        Les onglets filtrent les lignes par catégorie. <strong>Réseaux sociaux</strong> = bloc « Suivez-nous » sur la page Contact (icônes uniquement).
+    </p>
+    <div class="flex flex-wrap gap-2 p-1 bg-gray-100 dark:bg-gray-900/50 rounded-xl">
+        <button type="button" @click="linkTab = 'social'"
+                class="px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                :class="linkTab === 'social' ? 'bg-emerald-600 text-white shadow' : 'text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800'">
+            Réseaux sociaux
+        </button>
+        <button type="button" @click="linkTab = 'nav'"
+                class="px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                :class="linkTab === 'nav' ? 'bg-emerald-600 text-white shadow' : 'text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800'">
+            Navigation (footer)
+        </button>
+        <button type="button" @click="linkTab = 'footer'"
+                class="px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                :class="linkTab === 'footer' ? 'bg-emerald-600 text-white shadow' : 'text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800'">
+            MY BARIKA (footer)
+        </button>
+        <button type="button" @click="linkTab = 'useful'"
+                class="px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                :class="linkTab === 'useful' ? 'bg-emerald-600 text-white shadow' : 'text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800'">
+            Liens utiles
+        </button>
     </div>
-    {% endfor %}
+
+    <div class="space-y-4" data-links-list>
+        {% for form in links_formset %}
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 p-4"
+             data-link-card
+             data-link-pk="{{ form.instance.pk|default:'' }}"
+             data-link-category="{{ form.instance.category|default:'social' }}"
+             x-show="linkTab === $el.dataset.linkCategory"
+             x-transition>
+            {{ form.id }}
+            <div class="hidden">{{ form.DELETE }}</div>
+            {% if form.errors %}
+            <div class="mb-3 p-2 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 text-xs">
+                {% for field, errs in form.errors.items %}<p>{{ field }} : {{ errs|join:", " }}</p>{% endfor %}
+            </div>
+            {% endif %}
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-sm font-bold text-gray-900 dark:text-white">Lien {% if form.instance.pk %}#{{ form.instance.pk }}{% else %}<span class="text-emerald-600">nouveau</span>{% endif %}</span>
+                <button type="button" class="text-xs font-bold text-red-600 hover:underline" data-delete-link data-link-pk="{{ form.instance.pk|default:'' }}" {% if not form.instance.pk %}data-delete-new-link{% endif %}>Supprimer</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Catégorie</label>
+                    {{ form.category }}
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Plateforme</label>
+                    {{ form.platform }}
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Libellé</label>
+                    {{ form.label }}
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Ordre</label>
+                    {{ form.order }}
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Page interne</label>
+                    {{ form.route_name }}
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">URL (si pas de page interne)</label>
+                    {{ form.url }}
+                </div>
+                <div class="sm:col-span-2 flex flex-wrap gap-4">
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">{{ form.is_active }} Actif</label>
+                    <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">{{ form.open_in_new_tab }} Nouvel onglet</label>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p x-show="linkTab === 'social'" class="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+        Ces liens apparaissent comme icônes dans « Suivez-nous » (Contact) et sous le logo dans le footer.
+    </p>
+    <p x-show="linkTab === 'nav'" class="text-xs text-gray-500 dark:text-gray-400" x-cloak>
+        Colonne Navigation du footer du site.
+    </p>
+    <p x-show="linkTab === 'footer'" class="text-xs text-gray-500 dark:text-gray-400" x-cloak>
+        Colonne MY BARIKA du footer (Nos programmes, Soutiens, etc.).
+    </p>
+    <p x-show="linkTab === 'useful'" class="text-xs text-gray-500 dark:text-gray-400" x-cloak>
+        Section Liens utiles sous MY BARIKA dans le footer.
+    </p>
 </div>

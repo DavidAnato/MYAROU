@@ -420,6 +420,18 @@
 
     function initSiteLinksForm(form) {
         if (!form) return;
+        form.querySelectorAll('[data-link-card]').forEach((card) => {
+            const catSelect = card.querySelector('select[name$="-category"]');
+            if (!catSelect) return;
+            const sync = () => {
+                card.dataset.linkCategory = catSelect.value;
+            };
+            sync();
+            if (!catSelect.dataset.boundCategory) {
+                catSelect.dataset.boundCategory = '1';
+                catSelect.addEventListener('change', sync);
+            }
+        });
         form.querySelectorAll('[data-delete-link]').forEach((btn) => {
             btn.addEventListener('click', async () => {
                 const pk = btn.getAttribute('data-link-pk');
