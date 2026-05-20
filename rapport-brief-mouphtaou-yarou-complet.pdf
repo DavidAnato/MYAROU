@@ -1,0 +1,228 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+3 0 obj
+<< /Length 4864 >>
+stream
+0.039 0.086 0.157 rg BT /F2 20.0 Tf 48.0 788.0 Td (Rapport complet - Refonte du site Mouphtaou Yarou) Tj ET
+0.000 0.000 0.000 rg BT /F1 11.0 Tf 48.0 760.0 Td (Analyse de faisabilite basee sur le cahier des charges PDF fourni et sur l'etat actuel) Tj ET
+0.000 0.000 0.000 rg BT /F1 11.0 Tf 48.0 746.0 Td (du projet Django/Tailwind existant.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 728.0 Td (Date : 12 mai 2026) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 710.0 Td (Projet analyse : Site MYAROU / MY BARIKA existant dans blog_project) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 692.0 Td (Objectif : Identifier ce qui est faisable rapidement, ce qui demande plus de cadrage, et) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 678.0 Td (l'impact d'un developpement assiste par IA.) Tj ET
+0.78 0.78 0.78 RG 48 660.0 m 547 660.0 l S
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 638.0 Td (1. Synthese executive) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 616.0 Td (Le brief demande une refonte vitrine premium autour de Mouphtaou Yarou : ancien basketteur) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 602.0 Td (professionnel, MBA HEC Paris, entrepreneur, fondateur de MY BARIKA, avec une offre de) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 588.0 Td (mentoring, conseil, impact associatif, presse et prise de rendez-vous.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 570.0 Td (Le projet actuel est deja une bonne base technique : Django 5, templates Tailwind,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 556.0 Td (Alpine.js, pages Accueil / A propos / Blog / Contact, internationalisation FR/EN, dashboard) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 542.0 Td (de contenu d'accueil, gestion d'articles et medias. Il ne faut donc pas repartir de zero) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 528.0 Td (pour une V1.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 510.0 Td (La recommandation est de livrer une V1 presentable rapidement, puis d'ajouter les pages et) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 496.0 Td (integrations avancees par lots. Avec IA, une V1 solide peut raisonnablement etre produite) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 482.0 Td (en 1 a 2 jours si les contenus et les liens externes sont disponibles.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 458.0 Td (2. Ce que demande le brief) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 436.0 Td (- Un site personnel premium positionne comme vitrine de credibilite, plateforme d'impact) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 422.0 Td (et outil commercial.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 404.0 Td (- Six pages principales : Accueil, A propos, MY BARIKA, Mentoring & Conseil, Pressroom /) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 390.0 Td (Medias, Contact & RDV, avec une FAQ.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 372.0 Td (- Une direction visuelle precise : bleu nuit, or africain, bleu acier, sable ivoire, gris) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 358.0 Td (fonce, typographies editoriales et photos fortes.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 340.0 Td (- Des parcours utilisateurs pour trois cibles : athletes ou professionnels cherchant du) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 326.0 Td (mentoring, partenaires MY BARIKA, medias et organisations.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 308.0 Td (- Des integrations : Calendly ou Cal.com inline, formulaire de contact segmente,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 294.0 Td (possibilite HelloAsso pour les dons, press kit PDF, confirmation email.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 276.0 Td (- Des micro-interactions : header sticky, CTA visible, hover cards, compteurs animes,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 262.0 Td (entrees de sections, navigation active.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 238.0 Td (3. Etat actuel du projet) Tj ET
+0.110 0.310 0.447 rg BT /F2 12.5 Tf 48.0 216.0 Td (Forces deja presentes) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 198.0 Td (- Stack deja adaptee : Django, Tailwind CDN, Alpine.js, Whitenoise, CKEditor, dashboard) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 184.0 Td (admin, internationalisation JSON FR/EN.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 166.0 Td (- Pages publiques deja disponibles : accueil, a propos, blog/articles, contact,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 152.0 Td (categories et detail article.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 134.0 Td (- Accueil deja proche du besoin : hero, stats, citation, section MY BARIKA, galerie, CTA,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 120.0 Td (articles recents.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 102.0 Td (- Dashboard de contenu d'accueil deja existant via HomeSettings, utile pour modifier des) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 88.0 Td (textes et images sans toucher au code.) Tj ET
+0.45 0.45 0.45 rg BT /F1 8.5 Tf 48.0 28 Td (Rapport brief Mouphtaou Yarou) Tj ET
+0.45 0.45 0.45 rg BT /F1 8.5 Tf 500.0 28 Td (Page 1/4) Tj ET
+endstream
+endobj
+4 0 obj
+<< /Length 4937 >>
+stream
+0 0 0 rg BT /F1 10.5 Tf 56.0 788.0 Td (- Contact deja structure avec formulaire, types de demandes, FAQ, reseaux sociaux et zone) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 774.0 Td (d'informations.) Tj ET
+0.110 0.310 0.447 rg BT /F2 12.5 Tf 48.0 756.0 Td (Ecarts avec le brief) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 738.0 Td (- La charte actuelle est principalement verte/emerald, alors que le brief demande bleu) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 724.0 Td (nuit et or africain.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 706.0 Td (- Les pages MY BARIKA, Mentoring & Conseil et Pressroom ne sont pas encore des pages) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 692.0 Td (dediees.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 674.0 Td (- Le formulaire contact semble surtout visuel : l'envoi email, la confirmation) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 660.0 Td (automatique et le routage des demandes doivent etre finalises.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 642.0 Td (- Certains contenus semblent generiques ou incoherents avec Mouphtaou Yarou ; la) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 628.0 Td (biographie, les chiffres et le nom doivent etre valides.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 610.0 Td (- Les integrations externes exactes ne sont pas encore fournies : Calendly/Cal.com,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 596.0 Td (HelloAsso, reseaux sociaux, press kit.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 572.0 Td (4. Faisable rapidement) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 550.0 Td (Rebranding visuel - 0,5 a 1 jour : Remplacer les couleurs principales et harmoniser CTA,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 536.0 Td (titres, bordures, footer, hero.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 518.0 Td (Hero accueil - 0,5 a 1 jour : Mettre le H1 du brief, les CTA Decouvrir / Reserver, les) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 504.0 Td (chiffres cles et une photo principale.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 486.0 Td (Navigation - 0,5 jour : Menus Accueil, A propos, MY BARIKA, Mentoring, Medias, Contact,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 472.0 Td (Prendre RDV.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 454.0 Td (Accueil enrichi - 1 a 2 jours : Recomposer les sections existantes pour coller au brief :) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 440.0 Td (citation, 4 piliers, actualites, teaser MY BARIKA.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 422.0 Td (Contact & RDV - 0,5 a 1 jour : Ajouter un embed Calendly/Cal.com et adapter les champs du) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 408.0 Td (formulaire.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 390.0 Td (Contenus FR/EN - 0,5 a 1 jour : Mettre a jour les fichiers i18n et les textes HomeSettings.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 366.0 Td (5. Impact du codage avec IA) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 344.0 Td (L'IA reduit surtout le temps de production des templates, du CSS Tailwind, des routes) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 330.0 Td (Django simples, des sections repetitives, des textes de depart et des ajustements) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 316.0 Td (responsive.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 298.0 Td (Elle reduit moins les validations client, la selection photo, la direction artistique) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 284.0 Td (finale, les integrations externes bloquees par des comptes tiers, la verification des) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 270.0 Td (donnees et la mise en production propre.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 252.0 Td (- MVP rapide : 2 a 4 jours en classique, 1 a 2 jours avec IA.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 234.0 Td (- Refonte complete fonctionnelle : 10 a 20 jours en classique, 5 a 10 jours avec IA.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 216.0 Td (- Version premium validee client : souvent 2 a 4 semaines dans les deux cas, car les) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 202.0 Td (allers-retours et contenus font le delai.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 178.0 Td (6. Roadmap recommandee) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 156.0 Td (Lot 1 - MVP rapide - 1 a 2 jours avec IA : Rebrand, navigation, accueil, contact, RDV,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 142.0 Td (textes principaux.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 124.0 Td (Lot 2 - Pages dediees - 2 a 4 jours avec IA : MY BARIKA, Mentoring & Conseil, Pressroom,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 110.0 Td (FAQ mieux structuree.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 92.0 Td (Lot 3 - Integrations completes - 1 a 2 jours avec IA : HelloAsso, email, press kit,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 78.0 Td (formulaire route par type de demande.) Tj ET
+0.45 0.45 0.45 rg BT /F1 8.5 Tf 48.0 28 Td (Rapport brief Mouphtaou Yarou) Tj ET
+0.45 0.45 0.45 rg BT /F1 8.5 Tf 500.0 28 Td (Page 2/4) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Length 4814 >>
+stream
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 788.0 Td (Lot 4 - Finition premium - 1 a 3 jours avec IA : Animations, compteurs, SEO, performance,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 774.0 Td (responsive, tests.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 750.0 Td (7. Analyse page par page) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 728.0 Td (Accueil : Base deja presente. Adapter fortement le hero, les chiffres cles, les CTA, la) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 714.0 Td (section 4 piliers, la citation, les actualites et l'ancrage MY BARIKA.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 696.0 Td (A propos : Page existante. Corriger la biographie, la timeline basket / MBA HEC /) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 682.0 Td (entrepreneur, les valeurs et le CTA final.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 664.0 Td (MY BARIKA : A creer comme page dediee. Contenu : mission, signification, impact chiffre,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 650.0 Td (programmes, galerie, dons, partenariat, benevolat.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 632.0 Td (Mentoring & Conseil : A creer. Contenu : pour qui, offres gratuite/mensuelle/intensive,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 618.0 Td (methode, temoignages, CTA RDV.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 600.0 Td (Pressroom / Medias : A creer. Contenu : bio courte, photos, videos, passages media, events,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 586.0 Td (telechargement press kit, contact presse.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 568.0 Td (Contact & RDV : Page existante a renforcer. Ajouter embed, formulaire complet, champs) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 554.0 Td (organisation/type/sujet, confirmation email et liens reseaux.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 536.0 Td (FAQ : Deja presente sur contact. A ajuster pour repondre aux vraies questions : mentoring,) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 522.0 Td (dons, partenariat, presse, benevolat.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 498.0 Td (8. Dependances a demander au client) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 476.0 Td (- Photos HD : portrait professionnel, photos terrain MY BARIKA, basket, enfants, clubs,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 462.0 Td (evenements.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 444.0 Td (- Biographie validee : version courte, version longue, timeline sportive, MBA HEC Paris,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 430.0 Td (parcours entrepreneurial.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 412.0 Td (- Chiffres d'impact valides : jeunes touches, camps, pays, partenaires, annees) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 398.0 Td (d'experience, clubs.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 380.0 Td (- Liens : Calendly ou Cal.com, HelloAsso, LinkedIn, Instagram, Facebook, YouTube, email) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 366.0 Td (public.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 348.0 Td (- Offres mentoring : noms, durees, prix ou mention sur devis, promesse, limites, process.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 330.0 Td (- Press kit : PDF existant ou elements pour le construire, photos HD autorisees, bio) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 316.0 Td (presse.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 298.0 Td (- Mentions legales : editeur, hebergeur, contact, politique de confidentialite si) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 284.0 Td (collecte de donnees.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 260.0 Td (9. Risques et points de vigilance) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 238.0 Td (- Risque de contenu incorrect : le site actuel contient deja des textes qui peuvent ne) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 224.0 Td (pas correspondre exactement a Mouphtaou Yarou.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 206.0 Td (- Risque de faux rendu premium : sans vraies photos, le site peut rester generique meme) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 192.0 Td (avec une bonne structure.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 174.0 Td (- Risque formulaire : si l'email n'est pas configure, le formulaire ne doit pas etre) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 160.0 Td (presente comme pleinement operationnel.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 142.0 Td (- Risque production : les secrets, identifiants et parametres DEBUG/ALLOWED_HOSTS doivent) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 128.0 Td (etre securises avant mise en ligne.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 110.0 Td (- Risque scope : le brief parle d'un planning 8 semaines avec maquettes et validations ;) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 96.0 Td (pour aller vite, il faut assumer une V1 sans cycle de design complet.) Tj ET
+0.45 0.45 0.45 rg BT /F1 8.5 Tf 48.0 28 Td (Rapport brief Mouphtaou Yarou) Tj ET
+0.45 0.45 0.45 rg BT /F1 8.5 Tf 500.0 28 Td (Page 3/4) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Length 3223 >>
+stream
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 782.0 Td (10. Recommandation commerciale) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 760.0 Td (Pour cadrer le projet proprement, il est preferable de vendre deux niveaux : une V1 rapide) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 746.0 Td (et une version complete. Cela permet de montrer vite un resultat concret sans bloquer sur) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 732.0 Td (les contenus ou les validations longues.) Tj ET
+0.110 0.310 0.447 rg BT /F2 12.5 Tf 48.0 714.0 Td (Proposition de decoupage) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 696.0 Td (- Pack V1 rapide : adaptation du site existant, accueil, navigation, contact/RDV,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 682.0 Td (rebrand, textes principaux. Delai avec IA : 1 a 2 jours.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 664.0 Td (- Pack complet : 6 pages, integrations, pressroom, emails, HelloAsso, SEO, responsive et) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 650.0 Td (tests. Delai avec IA : 5 a 10 jours hors validations client.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 632.0 Td (- Pack premium : maquettes, direction artistique poussee, shooting/selection photo,) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 618.0 Td (retours client, press kit, optimisation production. Delai : 2 a 4 semaines.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 594.0 Td (11. Priorites immediates) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 572.0 Td (- Valider le nom public : Mouphtaou Yarou, MYAROU, MY BARIKA, orthographe et usage) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 558.0 Td (exacts.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 540.0 Td (- Recuperer les photos et les liens externes.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 522.0 Td (- Choisir si l'on livre d'abord un MVP ou une refonte complete.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 504.0 Td (- Adapter la charte actuelle vers bleu nuit/or africain.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 486.0 Td (- Creer les routes et templates des trois pages manquantes.) Tj ET
+0 0 0 rg BT /F1 10.5 Tf 56.0 468.0 Td (- Brancher Calendly/Cal.com inline et finaliser l'envoi du formulaire.) Tj ET
+0.039 0.086 0.157 rg BT /F2 15.0 Tf 48.0 444.0 Td (Conclusion) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 422.0 Td (Le projet est faisable rapidement parce qu'une base Django/Tailwind existe deja et couvre) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 408.0 Td (une partie importante du brief. Avec IA, le gain est reel : la V1 peut etre produite en 24) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 394.0 Td (a 48 heures si les contenus essentiels sont disponibles.) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 376.0 Td (La prudence principale concerne la promesse premium : elle depend moins du code que des) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 362.0 Td (contenus, des photos, des validations et des integrations externes. La meilleure strategie) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 348.0 Td (est donc de livrer vite une V1 propre, puis de pousser les pages dediees et les) Tj ET
+0.000 0.000 0.000 rg BT /F1 10.5 Tf 48.0 334.0 Td (integrations en lots.) Tj ET
+0.45 0.45 0.45 rg BT /F1 8.5 Tf 48.0 28 Td (Rapport brief Mouphtaou Yarou) Tj ET
+0.45 0.45 0.45 rg BT /F1 8.5 Tf 500.0 28 Td (Page 4/4) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 3 0 R >>
+endobj
+8 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 4 0 R >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 5 0 R >>
+endobj
+10 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> /Contents 6 0 R >>
+endobj
+11 0 obj
+<< /Type /Pages /Kids [7 0 R 8 0 R 9 0 R 10 0 R] /Count 4 >>
+endobj
+12 0 obj
+<< /Type /Catalog /Pages 11 0 R >>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000015 00000 n 
+0000000112 00000 n 
+0000000214 00000 n 
+0000005129 00000 n 
+0000010117 00000 n 
+0000014982 00000 n 
+0000018256 00000 n 
+0000018393 00000 n 
+0000018530 00000 n 
+0000018667 00000 n 
+0000018805 00000 n 
+0000018882 00000 n 
+trailer
+<< /Size 13 /Root 12 0 R >>
+startxref
+18933
+%%EOF

@@ -1,0 +1,13 @@
+Nouveau message depuis le site MYAROU
+========================================
+
+Nom : {{ message.name }}
+Email : {{ message.email }}
+Type de demande : {{ request_label }}
+Sujet : {{ message.subject }}
+
+Message :
+{{ message.message }}
+
+---
+Reçu le {{ message.created_at|date:"d/m/Y H:i" }}

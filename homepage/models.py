@@ -187,3 +187,15 @@ class HomeGalleryImage(models.Model):
     
     def __str__(self):
         return f"Image #{self.pk} (ordre {self.order})"
+
+
+from .models_site import (  # noqa: E402
+    SiteSettings,
+    SiteLink,
+    AboutPageSettings,
+    AboutGalleryImage,
+    GalleryPageSettings,
+    GalleryPageImage,
+    ContactPageSettings,
+    ContactMessage,
+)

@@ -1,0 +1,91 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <p class="text-gray-600 dark:text-gray-300 text-sm">
+            Les champs vides reprennent les textes par défaut (fichiers i18n).
+            {% if page_note %}{{ page_note }}{% else %}Aperçu galerie accueil (max 4) : menu « Page d'accueil ». Page complète : menu « Galerie ».{% endif %}
+        </p>
+        {% if preview_url %}
+        <a href="{{ preview_url }}" target="_blank" rel="noopener"
+           class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors">
+            Voir sur le site
+        </a>
+        {% endif %}
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700 space-y-8">
+        {% csrf_token %}
+
+        {% if site_form %}
+        <div class="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/20 p-6 space-y-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Coordonnées & notifications</h3>
+            {% if site_form_note %}<p class="text-sm text-gray-600 dark:text-gray-400">{{ site_form_note }}</p>{% endif %}
+            {% for field in site_form %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}
+                {% for err in field.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for section_title, section_fields in sections %}
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="px-5 py-3 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="font-bold text-gray-900 dark:text-white">{{ section_title }}</h3>
+            </div>
+            <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for field in section_fields %}
+                <div class="{% if 'description' in field.name or 'profile_p' in field.name or 'vision_quote' in field.name or 'faq_a' in field.name or 'journey_item' in field.name and '_desc' in field.name %}md:col-span-2{% endif %}">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">{{ field.label }}</label>
+                    {% if field.name == clear_image_field %}
+                    <input type="hidden" name="clear_profile_image" value="0">
+                    <div class="flex flex-wrap items-center gap-3 mb-2">
+                        <button type="button" onclick="document.querySelector('[name=clear_profile_image]').value='1'; this.classList.add('ring-2');"
+                                class="text-xs font-bold px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200">
+                            Retirer l'image actuelle
+                        </button>
+                    </div>
+                    {% endif %}
+                    {{ field }}
+                    {% for err in field.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if formset %}
+        <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+            <h3 class="font-bold text-gray-900 dark:text-white mb-4">{{ formset_label }}</h3>
+            {{ formset.management_form }}
+            <div class="space-y-4">
+                {% for f in formset %}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
+                    {% for field in f %}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+            <button type="submit" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors">
+                Enregistrer
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

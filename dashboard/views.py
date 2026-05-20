@@ -7,7 +7,21 @@ from django.utils import timezone
 from datetime import timedelta
 from blog.models import Article, Category
 from .forms import ArticleForm, CategoryForm, HomeSettingsForm, HomeGalleryImageFormSet
+from .site_forms import (
+    SiteSettingsForm,
+    SiteLinkFormSet,
+    AboutPageSettingsForm,
+    AboutGalleryImageFormSet,
+    GalleryPageSettingsForm,
+    GalleryPageImageFormSet,
+    GALLERY_SECTIONS,
+    ContactPageSettingsForm,
+    build_form_sections,
+    ABOUT_SECTIONS,
+    CONTACT_SECTIONS,
+)
 from homepage.models import HomeSettings
+from homepage.models_site import SiteSettings, AboutPageSettings, ContactPageSettings, GalleryPageSettings
 from django.http import JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -273,6 +287,119 @@ def home_settings_edit(request):
         formset = HomeGalleryImageFormSet(instance=home)
     
     return render(request, 'dashboard/home_settings_form.html', {'form': form, 'formset': formset, 'preview_url': preview_url})
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def about_settings_edit(request):
+    about = AboutPageSettings.get_solo()
+    preview_url = reverse('blog:about')
+
+    if request.method == 'POST':
+        form = AboutPageSettingsForm(request.POST, request.FILES, instance=about)
+        formset = AboutGalleryImageFormSet(request.POST, request.FILES, instance=about)
+        if form.is_valid() and formset.is_valid():
+            instance = form.save(commit=False)
+            if request.POST.get('clear_profile_image') == '1':
+                if instance.profile_image:
+                    instance.profile_image.delete(save=False)
+                instance.profile_image = None
+            instance.save()
+            formset.save()
+            messages.success(request, "Page À propos mise à jour avec succès.")
+            return redirect('dashboard:about_settings')
+    else:
+        form = AboutPageSettingsForm(instance=about)
+        formset = AboutGalleryImageFormSet(instance=about)
+
+    return render(request, 'dashboard/page_settings_form.html', {
+        'form': form,
+        'formset': formset,
+        'formset_label': 'Photos galerie (affichées sur la page À propos)',
+        'sections': build_form_sections(form, ABOUT_SECTIONS),
+        'page_title': 'Page À propos',
+        'preview_url': preview_url,
+        'clear_image_field': 'profile_image',
+        'page_note': 'Galerie complète : menu « Galerie » (/galerie/). Aperçu accueil : « Page d\'accueil ».',
+    })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def gallery_settings_edit(request):
+    gallery = GalleryPageSettings.get_solo()
+    preview_url = reverse('blog:gallery')
+
+    if request.method == 'POST':
+        form = GalleryPageSettingsForm(request.POST, instance=gallery)
+        formset = GalleryPageImageFormSet(request.POST, request.FILES, instance=gallery)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            messages.success(request, "Page Galerie mise à jour avec succès.")
+            return redirect('dashboard:gallery_settings')
+    else:
+        form = GalleryPageSettingsForm(instance=gallery)
+        formset = GalleryPageImageFormSet(instance=gallery)
+
+    return render(request, 'dashboard/page_settings_form.html', {
+        'form': form,
+        'formset': formset,
+        'formset_label': 'Photos de la page Galerie (/galerie/)',
+        'page_note': 'Galerie sur À propos : menu « À propos ». Aperçu accueil (max 4) : « Page d\'accueil ».',
+        'sections': build_form_sections(form, GALLERY_SECTIONS),
+        'page_title': 'Page Galerie',
+        'preview_url': preview_url,
+    })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def contact_settings_edit(request):
+    contact_page = ContactPageSettings.get_solo()
+    site = SiteSettings.get_solo()
+    preview_url = reverse('blog:contact')
+
+    if request.method == 'POST':
+        form = ContactPageSettingsForm(request.POST, instance=contact_page)
+        site_form = SiteSettingsForm(request.POST, instance=site)
+        if form.is_valid() and site_form.is_valid():
+            form.save()
+            site_form.save()
+            messages.success(request, "Page Contact et coordonnées mises à jour.")
+            return redirect('dashboard:contact_settings')
+    else:
+        form = ContactPageSettingsForm(instance=contact_page)
+        site_form = SiteSettingsForm(instance=site)
+
+    return render(request, 'dashboard/page_settings_form.html', {
+        'form': form,
+        'site_form': site_form,
+        'site_form_note': "E-mail public, localisation et destinataire des messages du formulaire.",
+        'sections': build_form_sections(form, CONTACT_SECTIONS),
+        'page_title': 'Page Contact',
+        'preview_url': preview_url,
+    })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def site_links_edit(request):
+    queryset = SiteLink.objects.all()
+
+    if request.method == 'POST':
+        formset = SiteLinkFormSet(request.POST, queryset=queryset)
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, "Liens du site mis à jour.")
+            return redirect('dashboard:site_links')
+    else:
+        formset = SiteLinkFormSet(queryset=queryset)
+
+    return render(request, 'dashboard/site_links_form.html', {
+        'formset': formset,
+        'page_title': 'Liens du site',
+    })
 
 
 @login_required(login_url='dashboard:login')

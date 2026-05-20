@@ -23,8 +23,12 @@ urlpatterns = [
     path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
     path('categories/create-ajax/', views.category_create_ajax, name='category_create_ajax'),
 
-    # Page d'accueil
+    # Pages éditables
     path('home/', views.home_settings_edit, name='home_settings'),
+    path('about/', views.about_settings_edit, name='about_settings'),
+    path('gallery/', views.gallery_settings_edit, name='gallery_settings'),
+    path('contact/', views.contact_settings_edit, name='contact_settings'),
+    path('links/', views.site_links_edit, name='site_links'),
     
     # API
     path('api/stats/', views.stats_api, name='stats_api'),

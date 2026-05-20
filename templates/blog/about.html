@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static json_i18n %}
+{% load static json_i18n page_i18n %}
 
 {% block title %}{% t "site.about.title" %}{% endblock %}
 
@@ -17,13 +17,13 @@
         <div class="container mx-auto px-4 py-32 md:py-40 relative z-10"">
             <div class="max-w-4xl mx-auto text-center space-y-8">
                 <div class="inline-block">
-                    <span class="bg-white/10 px-4 py-2 rounded-full border border-white/20 font-semibold text-sm uppercase tracking-wider">{% t "site.about.hero.badge" %}</span>
+                    <span class="bg-white/10 px-4 py-2 rounded-full border border-white/20 font-semibold text-sm uppercase tracking-wider">{% page_text about "hero_badge" "site.about.hero.badge" %}</span>
                 </div>
                 <h1 class="text-6xl md:text-7xl font-extrabold">
-                    {% t "site.about.hero.title_prefix" %} <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-300">{% t "site.about.hero.title_suffix" %}</span>
+                    {% page_text about "hero_title_prefix" "site.about.hero.title_prefix" %} <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-300">{% page_text about "hero_title_suffix" "site.about.hero.title_suffix" %}</span>
                 </h1>
                 <p class="text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-                    {% t "site.about.hero.description" %}
+                    {% page_text about "hero_description" "site.about.hero.description" %}
                 </p>
             </div>
         </div>
@@ -49,11 +49,15 @@
                     <div class="relative">
                         <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-800 dark:to-emerald-900 rounded-3xl transform rotate-3"></div>
                         <div class="relative transform -rotate-3 hover:rotate-0 transition-transform duration-500">
-                            <img src="{% static 'images/profile.jpg' %}" alt="Mvingalakani Yércia" class="w-full rounded-3xl shadow-2xl">
+                            {% if about.profile_image %}
+                            <img src="{{ about.profile_image.url }}" alt="Profil" class="w-full rounded-3xl shadow-2xl">
+                            {% else %}
+                            <img src="{% static 'images/profile.jpg' %}" alt="Profil" class="w-full rounded-3xl shadow-2xl">
+                            {% endif %}
                         </div>
                         <div class="absolute -bottom-6 -right-6 bg-gradient-to-br from-teal-400 to-teal-500 text-white px-8 py-4 rounded-2xl shadow-xl transform rotate-3">
-                            <div class="font-bold text-2xl">15+</div>
-                            <div class="text-sm">{% t "site.about.profile.years_experience" %}</div>
+                            <div class="font-bold text-2xl">{% if about.profile_years_number %}{{ about.profile_years_number }}+{% else %}15+{% endif %}</div>
+                            <div class="text-sm">{% page_text about "profile_years_label" "site.about.profile.years_experience" %}</div>
                         </div>
                     </div>
                 </div>
@@ -61,17 +65,17 @@
                 <!-- Content Column -->
                 <div class="lg:w-7/12 space-y-6">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
-                        {% t "site.about.profile.title_prefix" %} <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-600">{% t "site.about.profile.title_suffix" %}</span>
+                        {% page_text about "profile_title_prefix" "site.about.profile.title_prefix" %} <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-600">{% page_text about "profile_title_suffix" "site.about.profile.title_suffix" %}</span>
                     </h2>
                     <div class="space-y-4 text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                         <p>
-                            {% t "site.about.profile.p1" %}
+                            {% page_text about "profile_p1" "site.about.profile.p1" %}
                         </p>
                         <p>
-                            {% t "site.about.profile.p2" %}
+                            {% page_text about "profile_p2" "site.about.profile.p2" %}
                         </p>
                         <p>
-                            {% t "site.about.profile.p3" %}
+                            {% page_text about "profile_p3" "site.about.profile.p3" %}
                         </p>
                     </div>
                     
@@ -80,13 +84,13 @@
                             <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                             </svg>
-                            <span class="font-semibold text-emerald-900 dark:text-emerald-100">{% t "site.about.profile.stats.youth" %}</span>
+                            <span class="font-semibold text-emerald-900 dark:text-emerald-100">{% page_text about "profile_stat_youth" "site.about.profile.stats.youth" %}</span>
                         </div>
                         <div class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 px-6 py-3 rounded-full border border-emerald-100 dark:border-emerald-800">
                             <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
                             </svg>
-                            <span class="font-semibold text-emerald-900 dark:text-emerald-100">{% t "site.about.profile.stats.continents" %}</span>
+                            <span class="font-semibold text-emerald-900 dark:text-emerald-100">{% page_text about "profile_stat_continents" "site.about.profile.stats.continents" %}</span>
                         </div>
                     </div>
                 </div>
@@ -100,10 +104,10 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-20">
             <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
-                {% t "site.about.journey.title" %}
+                {% page_text about "journey_title" "site.about.journey.title" %}
             </h2>
             <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                {% t "site.about.journey.description" %}
+                {% page_text about "journey_description" "site.about.journey.description" %}
             </p>
         </div>
         
@@ -116,9 +120,9 @@
                     <div class="relative flex flex-col md:flex-row items-center md:items-center gap-8">
                         <div class="w-full md:w-1/2 md:pr-12">
                             <div class="bg-white dark:bg-[#1E1E1E] rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow md:text-right border border-gray-100 dark:border-gray-700">
-                                <div class="text-emerald-600 dark:text-emerald-400 font-bold text-lg mb-2">{% t "site.about.journey.item1.badge" %}</div>
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{% t "site.about.journey.item1.title" %}</h3>
-                                <p class="text-gray-600 dark:text-gray-300">{% t "site.about.journey.item1.desc" %}</p>
+                                <div class="text-emerald-600 dark:text-emerald-400 font-bold text-lg mb-2">{% page_text about "journey_item1_badge" "site.about.journey.item1.badge" %}</div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{% page_text about "journey_item1_title" "site.about.journey.item1.title" %}</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{% page_text about "journey_item1_desc" "site.about.journey.item1.desc" %}</p>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-700 dark:from-emerald-700 dark:to-emerald-900 rounded-full shadow-xl flex-shrink-0 z-10">
@@ -133,9 +137,9 @@
                     <div class="relative flex flex-col md:flex-row items-center md:items-center gap-8">
                         <div class="w-full md:w-1/2 md:order-2 md:pl-12">
                             <div class="bg-white dark:bg-[#1E1E1E] rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow border border-gray-100 dark:border-gray-700">
-                                <div class="text-emerald-600 dark:text-emerald-400 font-bold text-lg mb-2">{% t "site.about.journey.item2.badge" %}</div>
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{% t "site.about.journey.item2.title" %}</h3>
-                                <p class="text-gray-600 dark:text-gray-300">{% t "site.about.journey.item2.desc" %}</p>
+                                <div class="text-emerald-600 dark:text-emerald-400 font-bold text-lg mb-2">{% page_text about "journey_item2_badge" "site.about.journey.item2.badge" %}</div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{% page_text about "journey_item2_title" "site.about.journey.item2.title" %}</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{% page_text about "journey_item2_desc" "site.about.journey.item2.desc" %}</p>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-700 dark:from-emerald-700 dark:to-emerald-900 rounded-full shadow-xl flex-shrink-0 z-10 md:order-1">
@@ -150,9 +154,9 @@
                     <div class="relative flex flex-col md:flex-row items-center md:items-center gap-8">
                         <div class="w-full md:w-1/2 md:pr-12">
                             <div class="bg-white dark:bg-[#1E1E1E] rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow md:text-right border border-gray-100 dark:border-gray-700">
-                                <div class="text-emerald-600 dark:text-emerald-400 font-bold text-lg mb-2">{% t "site.about.journey.item3.badge" %}</div>
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{% t "site.about.journey.item3.title" %}</h3>
-                                <p class="text-gray-600 dark:text-gray-300">{% t "site.about.journey.item3.desc" %}</p>
+                                <div class="text-emerald-600 dark:text-emerald-400 font-bold text-lg mb-2">{% page_text about "journey_item3_badge" "site.about.journey.item3.badge" %}</div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{% page_text about "journey_item3_title" "site.about.journey.item3.title" %}</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{% page_text about "journey_item3_desc" "site.about.journey.item3.desc" %}</p>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-700 dark:from-emerald-700 dark:to-emerald-900 rounded-full shadow-xl flex-shrink-0 z-10">
@@ -167,9 +171,9 @@
                     <div class="relative flex flex-col md:flex-row items-center md:items-center gap-8">
                         <div class="w-full md:w-1/2 md:order-2 md:pl-12">
                             <div class="bg-white dark:bg-[#1E1E1E] rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow border-2 border-green-500 dark:border-green-600">
-                                <div class="text-green-600 dark:text-green-400 font-bold text-lg mb-2">{% t "site.about.journey.item4.badge" %}</div>
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{% t "site.about.journey.item4.title" %}</h3>
-                                <p class="text-gray-600 dark:text-gray-300">{% t "site.about.journey.item4.desc" %}</p>
+                                <div class="text-green-600 dark:text-green-400 font-bold text-lg mb-2">{% page_text about "journey_item4_badge" "site.about.journey.item4.badge" %}</div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{% page_text about "journey_item4_title" "site.about.journey.item4.title" %}</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{% page_text about "journey_item4_desc" "site.about.journey.item4.desc" %}</p>
                             </div>
                         </div>
                         <div class="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-700 dark:from-green-700 dark:to-emerald-900 rounded-full shadow-xl flex-shrink-0 z-10 md:order-1">
@@ -185,16 +189,56 @@
     </div>
 </section>
 
+<!-- Galerie À propos -->
+{% with about_images=about.gallery_images.all %}
+<section class="py-24 bg-white dark:bg-[#121212] transition-colors duration-300" x-data="{ open: false, i: 0, imgs: [{% for img in about_images %}'{{ img.image.url }}'{% if not forloop.last %}, {% endif %}{% endfor %}] }" @keydown.window.escape="open=false">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+                {% t "site.about.gallery.title" %}
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                {% t "site.about.gallery.description" %}
+            </p>
+        </div>
+        {% if about_images %}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+            {% for img in about_images %}
+            <button type="button" @click="open=true; i={{ forloop.counter0 }}" class="group rounded-2xl overflow-hidden shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <img src="{{ img.image.url }}" alt="" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="text-center">
+            <a href="{% url 'blog:gallery' %}" class="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
+                {% t "site.home.gallery.view_all" %}
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+    </div>
+    <div x-show="open && imgs.length" x-transition.opacity class="fixed inset-0 z-50" style="display: none;">
+        <div class="absolute inset-0 bg-black/80" @click="open=false"></div>
+        <div class="relative h-full flex items-center justify-center px-4">
+            <img :src="imgs[i]" alt="" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl object-contain" />
+            <button type="button" @click="open=false" class="absolute top-6 right-6 w-12 h-12 rounded-full bg-white text-gray-900 font-bold">✕</button>
+            <button type="button" @click="i = (i - 1 + imgs.length) % imgs.length" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 text-gray-900 font-bold">‹</button>
+            <button type="button" @click="i = (i + 1) % imgs.length" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 text-gray-900 font-bold">›</button>
+        </div>
+    </div>
+</section>
+{% endwith %}
+
 <!-- Video Section -->
 <section class="py-24 bg-white dark:bg-[#121212] transition-colors duration-300">
     <div class="container mx-auto px-4">
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
-                    {% t "site.about.video.title" %}
+                    {% page_text about "video_title" "site.about.video.title" %}
                 </h2>
                 <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                    {% t "site.about.video.description" %}
+                    {% page_text about "video_description" "site.about.video.description" %}
                 </p>
             </div>
             
@@ -202,7 +246,7 @@
                 <div class="relative aspect-video">
                     <iframe 
                         class="w-full h-full"
-                        src="https://www.youtube.com/embed/MlCA-DC9WP8" 
+                        src="{{ about.video_embed_url|default:'https://www.youtube.com/embed/MlCA-DC9WP8' }}" 
                         title="{% t "site.about.video.iframe_title" %}" 
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -219,10 +263,10 @@
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
-                {% t "site.about.values.title" %}
+                {% page_text about "values_title" "site.about.values.title" %}
             </h2>
             <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                {% t "site.about.values.description" %}
+                {% page_text about "values_description" "site.about.values.description" %}
             </p>
         </div>
         
@@ -236,9 +280,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{% t "site.about.values.excellence.title" %}</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{% page_text about "values_excellence_title" "site.about.values.excellence.title" %}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        {% t "site.about.values.excellence.desc" %}
+                        {% page_text about "values_excellence_desc" "site.about.values.excellence.desc" %}
                     </p>
                 </div>
             </div>
@@ -252,9 +296,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{% t "site.about.values.solidarity.title" %}</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{% page_text about "values_solidarity_title" "site.about.values.solidarity.title" %}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        {% t "site.about.values.solidarity.desc" %}
+                        {% page_text about "values_solidarity_desc" "site.about.values.solidarity.desc" %}
                     </p>
                 </div>
             </div>
@@ -268,9 +312,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{% t "site.about.values.authenticity.title" %}</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{% page_text about "values_authenticity_title" "site.about.values.authenticity.title" %}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        {% t "site.about.values.authenticity.desc" %}
+                        {% page_text about "values_authenticity_desc" "site.about.values.authenticity.desc" %}
                     </p>
                 </div>
             </div>
@@ -284,9 +328,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{% t "site.about.values.impact.title" %}</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{% page_text about "values_impact_title" "site.about.values.impact.title" %}</h3>
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                        {% t "site.about.values.impact.desc" %}
+                        {% page_text about "values_impact_desc" "site.about.values.impact.desc" %}
                     </p>
                 </div>
             </div>
@@ -306,12 +350,12 @@
         <div class="max-w-4xl mx-auto text-center space-y-12">
             <div class="text-teal-300 text-6xl">"</div>
             <blockquote class="text-3xl md:text-4xl font-bold leading-relaxed">
-                {% t "site.about.vision.quote" %}
+                {% page_text about "vision_quote" "site.about.vision.quote" %}
             </blockquote>
             <div class="pt-8">
                 <div class="inline-block bg-white/10 px-8 py-4 rounded-2xl backdrop-blur-sm">
                     <p class="text-lg font-semibold">Mvingalakani Yércia</p>
-                    <p class="text-teal-200">{% t "site.about.vision.role" %}</p>
+                    <p class="text-teal-200">{% page_text about "vision_role" "site.about.vision.role" %}</p>
                 </div>
             </div>
         </div>
@@ -323,23 +367,23 @@
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto text-center space-y-10">
             <h2 class="text-4xl md:text-5xl font-extrabold">
-                {% t "site.about.cta.title" %}
+                {% page_text about "cta_title" "site.about.cta.title" %}
             </h2>
             <p class="text-xl md:text-2xl text-white/90 leading-relaxed">
-                {% t "site.about.cta.description" %}
+                {% page_text about "cta_description" "site.about.cta.description" %}
             </p>
             
             <div class="flex flex-col sm:flex-row justify-center gap-6 pt-6">
                 <a href="{% url 'blog:article_list' %}" 
                    class="group px-10 py-5 bg-white text-emerald-600 rounded-full font-bold text-lg hover:bg-gray-100 transform hover:scale-105 transition-all shadow-2xl inline-flex items-center justify-center">
-                    {% t "site.about.cta.blog_btn" %}
+                    {% page_text about "cta_blog_btn" "site.about.cta.blog_btn" %}
                     <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                     </svg>
                 </a>
                 <a href="{% url 'blog:contact' %}" 
                    class="px-10 py-5 bg-transparent border-2 border-white text-white rounded-full font-bold text-lg hover:bg-white hover:text-emerald-600 transform hover:scale-105 transition-all inline-flex items-center justify-center">
-                    {% t "site.about.cta.contact_btn" %}
+                    {% page_text about "cta_contact_btn" "site.about.cta.contact_btn" %}
                 </a>
             </div>
         </div>

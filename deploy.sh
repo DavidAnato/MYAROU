@@ -43,9 +43,8 @@ fi
 # 6️⃣ Installer les dépendances
 pip install -r requirements.txt
 
-# 7️⃣ Créer les migrations si nécessaire et appliquer
-python manage.py makemigrations
-python manage.py migrate
+# 7️⃣ Appliquer les migrations (créées en local, commitées sur main)
+python manage.py migrate --noinput
 
 # 7️⃣.1️⃣ Créer un superuser s'il n'existe pas
 # Remplacez les valeurs ci-dessous ou utilisez des variables d'environnement

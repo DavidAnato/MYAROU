@@ -294,9 +294,13 @@
                         </div>
                     </div>
 
-                    <div class="mt-10">
+                    <div class="mt-10 flex flex-wrap items-center gap-4">
                         <a href="#soutenir" class="inline-block bg-emerald-600 text-white font-bold px-8 py-3 rounded-md shadow-lg hover:bg-emerald-800 transition-colors">
                             <span data-preview="barika_cta">{% home_text home "barika_cta" "site.home.barika.cta" %}</span>
+                        </a>
+                        <a href="{% url 'blog:gallery' %}" class="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
+                            {% t "site.home.gallery.view_all" %}
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
                     </div>
                 </div>

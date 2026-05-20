@@ -1,10 +1,15 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.views.decorators.clickjacking import xframe_options_sameorigin
+from django.contrib import messages
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 from django.views.generic import ListView, DetailView
 from .models import Article, Category
 from homepage.models import HomeSettings
+from homepage.models_site import AboutPageSettings, ContactPageSettings, ContactMessage, GalleryPageSettings
+from homepage.contact_mail import send_contact_notification
 
 
 class ArticleListView(ListView):
@@ -94,15 +99,71 @@ def home_dashboard_preview(request):
 
 def about(request):
     """Page à propos"""
-    return render(request, 'blog/about.html')
+    about_page = AboutPageSettings.get_solo()
+    return render(request, 'blog/about.html', {'about': about_page})
+
+
+def gallery(request):
+    """Page galerie dédiée (toutes les photos)."""
+    gallery_page = GalleryPageSettings.get_solo()
+    return render(request, 'blog/gallery.html', {'gallery': gallery_page})
 
 
 def contact(request):
-    """Page de contact"""
-    # if request.method == 'POST':
-    #     # Traitement du formulaire (à implémenter si besoin)
-    #     messages.success(request, 'Votre message a été envoyé avec succès !')
-    return render(request, 'blog/contact.html')
+    """Page de contact avec enregistrement et notification e-mail."""
+    contact_page = ContactPageSettings.get_solo()
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        request_type = request.POST.get('request_type', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        body = request.POST.get('message', '').strip()
+
+        errors = []
+        if not name:
+            errors.append('Le nom est obligatoire.')
+        if not email:
+            errors.append("L'e-mail est obligatoire.")
+        else:
+            try:
+                validate_email(email)
+            except ValidationError:
+                errors.append("L'e-mail n'est pas valide.")
+        if not subject:
+            errors.append('Le sujet est obligatoire.')
+        if not body:
+            errors.append('Le message est obligatoire.')
+
+        if errors:
+            for err in errors:
+                messages.error(request, err)
+        else:
+            contact_msg = ContactMessage.objects.create(
+                name=name,
+                email=email,
+                request_type=request_type,
+                subject=subject,
+                message=body,
+            )
+            sent = send_contact_notification(contact_msg)
+            contact_msg.email_sent = sent
+            contact_msg.save(update_fields=['email_sent'])
+
+            if sent:
+                messages.success(
+                    request,
+                    'Votre message a bien été envoyé. Nous vous répondrons dans les meilleurs délais.',
+                )
+            else:
+                messages.warning(
+                    request,
+                    'Votre message a été enregistré, mais la notification e-mail n\'a pas pu être envoyée. '
+                    'Vérifiez la configuration e-mail du serveur.',
+                )
+            return redirect('blog:contact')
+
+    return render(request, 'blog/contact.html', {'contact_page': contact_page})
 
 
 class CategoryDetailView(DetailView):

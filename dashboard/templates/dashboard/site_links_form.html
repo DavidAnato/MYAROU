@@ -1,0 +1,41 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Liens du site{% endblock %}
+{% block page_title %}Liens du site{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <p class="text-gray-600 dark:text-gray-300 text-sm mb-6">
+        Réseaux sociaux affichés dans le footer et sur la page contact. Catégorie « Footer » pour des liens texte dans le pied de page.
+        Laisser une ligne vide (sans URL) pour ne pas l'afficher.
+    </p>
+
+    <form method="post" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        <div class="space-y-4">
+            {% for form in formset %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-700 {% if form.DELETE.value %}opacity-50{% endif %}">
+                {% for field in form %}
+                {% if field.name != 'id' %}
+                <div class="{% if field.name == 'url' %}md:col-span-2{% endif %}">
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+                {% else %}
+                {{ field }}
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="flex justify-end mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <button type="submit" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700">
+                Enregistrer les liens
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

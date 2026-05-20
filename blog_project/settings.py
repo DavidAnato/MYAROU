@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'homepage.context_processors.site_globals',
             ],
         },
     },
@@ -297,3 +298,11 @@ JAZZMIN_UI_TWEAKS = {
 # Trigger reload again
 
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+# Contact / e-mail
+EMAIL_BACKEND = os.environ.get(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend',
+)
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@myarou.com')
+CONTACT_AUTO_REPLY = os.environ.get('CONTACT_AUTO_REPLY', 'false').lower() in ('1', 'true', 'yes')
