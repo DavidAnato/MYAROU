@@ -182,15 +182,39 @@ class HomeSettingsForm(forms.ModelForm):
             widget.attrs['class'] = (existing + ' ' + base_classes).strip()
 
 
+class HomeGalleryImageForm(forms.ModelForm):
+    class Meta:
+        model = HomeGalleryImage
+        fields = ('image', 'order')
+        widgets = {
+            'image': forms.FileInput(attrs={'accept': 'image/*'}),
+            'order': forms.NumberInput(attrs={'min': 0, 'step': 1}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        base_classes = (
+            'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 '
+            'focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white '
+            'dark:placeholder-gray-400 transition-colors'
+        )
+        for name, field in self.fields.items():
+            widget = field.widget
+            if isinstance(widget, forms.CheckboxInput):
+                continue
+            if isinstance(widget, forms.FileInput):
+                widget.attrs.setdefault('accept', 'image/*')
+            existing = widget.attrs.get('class', '')
+            widget.attrs['class'] = (existing + ' ' + base_classes).strip()
+
+
 HomeGalleryImageFormSet = inlineformset_factory(
     HomeSettings,
     HomeGalleryImage,
+    form=HomeGalleryImageForm,
     fields=('image', 'order'),
     extra=0,
     can_delete=True,
     max_num=4,
     validate_max=True,
-    widgets={
-        'image': forms.FileInput(attrs={'accept': 'image/*'}),
-    },
 )

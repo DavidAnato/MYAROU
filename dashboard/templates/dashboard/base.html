@@ -15,6 +15,19 @@
     <!-- Alpine.js pour l'interactivité -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
+    <style>
+        /* Champs natifs (spinners, autofill) en mode sombre */
+        html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+        html.dark textarea,
+        html.dark select {
+            color-scheme: dark;
+        }
+        html.dark input[type="number"]::-webkit-inner-spin-button,
+        html.dark input[type="number"]::-webkit-outer-spin-button {
+            opacity: 0.85;
+        }
+    </style>
+
     <!-- Configuration Tailwind personnalisée -->
     <script>
         tailwind.config = {

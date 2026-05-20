@@ -26,6 +26,8 @@ def _style_form(form):
         elif isinstance(w, forms.FileInput):
             w.attrs['class'] = (w.attrs.get('class', '') + ' ' + WIDGET_CLASS).strip()
             w.attrs.setdefault('accept', 'image/*')
+        elif isinstance(w, forms.NumberInput):
+            w.attrs['class'] = WIDGET_CLASS
         elif not isinstance(w, forms.HiddenInput):
             w.attrs['class'] = WIDGET_CLASS
         if isinstance(w, forms.Textarea):
@@ -107,17 +109,29 @@ class AboutPageSettingsForm(forms.ModelForm):
         _style_form(self)
 
 
+class AboutGalleryImageForm(forms.ModelForm):
+    class Meta:
+        model = AboutGalleryImage
+        fields = ('image', 'order')
+        widgets = {
+            'image': forms.FileInput(attrs={'accept': 'image/*'}),
+            'order': forms.NumberInput(attrs={'min': 0, 'step': 1}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _style_form(self)
+
+
 AboutGalleryImageFormSet = inlineformset_factory(
     AboutPageSettings,
     AboutGalleryImage,
+    form=AboutGalleryImageForm,
     fields=('image', 'order'),
     extra=2,
     can_delete=True,
     max_num=24,
     validate_max=True,
-    widgets={
-        'image': forms.FileInput(attrs={'accept': 'image/*'}),
-    },
 )
 
 
@@ -135,18 +149,30 @@ class GalleryPageSettingsForm(forms.ModelForm):
         _style_form(self)
 
 
+class GalleryPageImageForm(forms.ModelForm):
+    class Meta:
+        model = GalleryPageImage
+        fields = ('image', 'caption', 'order')
+        widgets = {
+            'image': forms.FileInput(attrs={'accept': 'image/*'}),
+            'caption': forms.TextInput(attrs={'placeholder': 'Légende optionnelle'}),
+            'order': forms.NumberInput(attrs={'min': 0, 'step': 1}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _style_form(self)
+
+
 GalleryPageImageFormSet = inlineformset_factory(
     GalleryPageSettings,
     GalleryPageImage,
+    form=GalleryPageImageForm,
     fields=('image', 'caption', 'order'),
     extra=2,
     can_delete=True,
     max_num=50,
     validate_max=True,
-    widgets={
-        'image': forms.FileInput(attrs={'accept': 'image/*'}),
-        'caption': forms.TextInput(attrs={'placeholder': 'Légende optionnelle'}),
-    },
 )
 
 
