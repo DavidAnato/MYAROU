@@ -158,9 +158,9 @@
                 <span class="font-medium">Catégories</span>
             </a>
 
-            <div x-data="{ pagesOpen: {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' or current_view == 'dashboard:site_links' %}true{% else %}false{% endif %} }" class="space-y-1">
+            <div x-data="{ pagesOpen: {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' %}true{% else %}false{% endif %} }" class="space-y-1">
                 <button type="button" @click="pagesOpen = !pagesOpen"
-                        class="w-full flex items-center justify-between px-4 py-3 text-white rounded-lg transition-all duration-200 hover:bg-white hover:bg-opacity-10 {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' or current_view == 'dashboard:site_links' %}bg-white bg-opacity-10{% endif %}">
+                        class="w-full flex items-center justify-between px-4 py-3 text-white rounded-lg transition-all duration-200 hover:bg-white hover:bg-opacity-10 {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' %}bg-white bg-opacity-10{% endif %}">
                     <span class="flex items-center font-semibold text-sm uppercase tracking-wide opacity-90">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
                         Pages du site
@@ -186,12 +186,7 @@
                     <a href="{% url 'dashboard:contact_settings' %}" 
                        class="flex items-center px-3 py-2.5 text-white text-sm rounded-lg transition-all duration-200 group {% if current_view == 'dashboard:contact_settings' %}bg-white bg-opacity-20 shadow-sm{% else %}hover:bg-white hover:bg-opacity-10{% endif %}">
                         <svg class="w-5 h-5 mr-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        <span class="font-medium">Contact</span>
-                    </a>
-                    <a href="{% url 'dashboard:site_links' %}" 
-                       class="flex items-center px-3 py-2.5 text-white text-sm rounded-lg transition-all duration-200 group {% if current_view == 'dashboard:site_links' %}bg-white bg-opacity-20 shadow-sm{% else %}hover:bg-white hover:bg-opacity-10{% endif %}">
-                        <svg class="w-5 h-5 mr-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                        <span class="font-medium">Liens</span>
+                        <span class="font-medium">Contact & liens</span>
                     </a>
                 </div>
             </div>

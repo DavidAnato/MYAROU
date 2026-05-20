@@ -211,13 +211,12 @@
                 
                 <!-- Réseaux sociaux -->
                 <div class="bg-white dark:bg-[#1E1E1E] rounded-3xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
-                    <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">{% page_text contact_page "social_title" "site.contact.social.title" %}</h3>
+                    <h3 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6" data-preview="social_title">{% page_text contact_page "social_title" "site.contact.social.title" %}</h3>
                     
-                    <div class="flex flex-wrap gap-3">
+                    <div class="flex flex-wrap gap-3" data-preview-social-grid data-social-preview="large">
                         {% include 'includes/social_links.html' with size_class='w-12 h-12' extra_class='rounded-xl shadow-lg' %}
                     </div>
-                    {% if footer_links %}
-                    <ul class="mt-6 space-y-2 border-t border-gray-100 dark:border-gray-700 pt-6">
+                    <ul class="mt-6 space-y-2 border-t border-gray-100 dark:border-gray-700 pt-6 {% if not footer_links %}hidden{% endif %}" data-preview-footer-text-links>
                         {% for link in footer_links %}
                         <li>
                             <a href="{{ link.url }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
@@ -227,7 +226,6 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    {% endif %}
                 </div>
             </div>
         </div>

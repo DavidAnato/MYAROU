@@ -1,0 +1,52 @@
+{{ links_formset.management_form }}
+{% if links_formset.non_form_errors %}
+<div class="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 text-sm">
+    {{ links_formset.non_form_errors }}
+</div>
+{% endif %}
+<p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
+    <strong>Réseaux sociaux</strong> : icônes (footer + bloc Contact). <strong>Liens footer</strong> : colonne MY BARIKA. <strong>Liens utiles</strong> : sous MY BARIKA. URL avec <code class="text-emerald-600">https://</code>, cochez <strong>Actif</strong>.
+</p>
+<div class="space-y-4" data-links-list>
+    {% for form in links_formset %}
+    <div class="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 p-4" data-link-card data-link-pk="{{ form.instance.pk|default:'' }}">
+        {{ form.id }}
+        <div class="hidden">{{ form.DELETE }}</div>
+        {% if form.errors %}
+        <div class="mb-3 p-2 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 text-xs">
+            {% for field, errs in form.errors.items %}<p>{{ field }} : {{ errs|join:", " }}</p>{% endfor %}
+        </div>
+        {% endif %}
+        <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="text-sm font-bold text-gray-900 dark:text-white">Lien {% if form.instance.pk %}#{{ form.instance.pk }}{% else %}<span class="text-emerald-600">nouveau</span>{% endif %}</span>
+            <button type="button" class="text-xs font-bold text-red-600 hover:underline" data-delete-link data-link-pk="{{ form.instance.pk|default:'' }}" {% if not form.instance.pk %}data-delete-new-link{% endif %}>Supprimer</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Catégorie</label>
+                {{ form.category }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Plateforme</label>
+                {{ form.platform }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Libellé</label>
+                {{ form.label }}
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Ordre</label>
+                {{ form.order }}
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">URL</label>
+                {{ form.url }}
+            </div>
+            <div class="sm:col-span-2 flex flex-wrap gap-4">
+                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">{{ form.is_active }} Actif</label>
+                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">{{ form.open_in_new_tab }} Nouvel onglet</label>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

@@ -403,7 +403,7 @@
                     <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
                         {% if site_settings.footer_bio %}{{ site_settings.footer_bio }}{% else %}{% t "site.footer.bio" %}{% endif %}
                     </p>
-                    <div class="flex gap-3 pt-4">
+                    <div class="flex gap-3 pt-4" data-preview-social-grid data-social-preview="compact">
                         {% include 'includes/social_links.html' %}
                     </div>
                 </div>

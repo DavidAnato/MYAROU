@@ -370,23 +370,34 @@ def gallery_settings_edit(request):
 def contact_settings_edit(request):
     contact_page = ContactPageSettings.get_solo()
     site = SiteSettings.get_solo()
+    links_queryset = SiteLink.objects.all()
     preview_url = f"{reverse('blog:contact')}?dashboard_preview=1"
 
     if request.method == 'POST':
         form = ContactPageSettingsForm(request.POST, instance=contact_page)
         site_form = SiteSettingsForm(request.POST, instance=site)
-        if form.is_valid() and site_form.is_valid():
+        links_formset = SiteLinkFormSet(request.POST, queryset=links_queryset)
+        if form.is_valid() and site_form.is_valid() and links_formset.is_valid():
             form.save()
             site_form.save()
-            messages.success(request, "Page Contact et coordonnées mises à jour.")
+            links_formset.save()
+            messages.success(request, "Page Contact, coordonnées et liens mis à jour.")
             return redirect('dashboard:contact_settings')
+        if not links_formset.is_valid():
+            messages.error(
+                request,
+                "Liens : vérifiez les URLs (https://…) et corrigez les erreurs dans la section Liens.",
+            )
     else:
         form = ContactPageSettingsForm(instance=contact_page)
         site_form = SiteSettingsForm(instance=site)
+        links_formset = SiteLinkFormSet(queryset=links_queryset)
 
     return render(request, 'dashboard/page_settings_form.html', {
         'form': form,
         'site_form': site_form,
+        'links_formset': links_formset,
+        'links_formset_label': 'Liens du site',
         'site_form_note': "E-mail public, localisation et destinataire des messages du formulaire.",
         'site_section_layouts': build_section_layout(site_form, SITE_FORM_SECTIONS),
         'section_layouts': build_section_layout(form, CONTACT_SECTIONS),
@@ -398,25 +409,8 @@ def contact_settings_edit(request):
 @login_required(login_url='dashboard:login')
 @user_passes_test(is_staff, login_url='dashboard:login')
 def site_links_edit(request):
-    queryset = SiteLink.objects.all()
-
-    if request.method == 'POST':
-        formset = SiteLinkFormSet(request.POST, queryset=queryset)
-        if formset.is_valid():
-            formset.save()
-            messages.success(request, "Liens du site mis à jour.")
-            return redirect('dashboard:site_links')
-        messages.error(
-            request,
-            "Enregistrement impossible : vérifiez les URLs (ex. https://…) et les erreurs ci-dessous.",
-        )
-    else:
-        formset = SiteLinkFormSet(queryset=queryset)
-
-    return render(request, 'dashboard/site_links_form.html', {
-        'formset': formset,
-        'page_title': 'Liens du site',
-    })
+    """Redirection : les liens sont gérés depuis la page Contact."""
+    return redirect('dashboard:contact_settings')
 
 
 @login_required(login_url='dashboard:login')

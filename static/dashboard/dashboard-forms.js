@@ -348,6 +348,30 @@
         window.addEventListener('resize', applyDeviceLayout);
         applyDeviceLayout();
 
+        const getSiteLinksFromForm = () => {
+            const links = [];
+            form.querySelectorAll('[data-link-card]').forEach((card) => {
+                if (card.classList.contains('hidden')) return;
+                const del = card.querySelector('input[name$="-DELETE"]');
+                if (del && del.checked) return;
+                const url = (card.querySelector('input[name$="-url"]')?.value || '').trim();
+                if (!url) return;
+                const active = card.querySelector('input[name$="-is_active"]');
+                if (active && !active.checked) return;
+                const newTab = card.querySelector('input[name$="-open_in_new_tab"]');
+                links.push({
+                    url,
+                    platform: card.querySelector('select[name$="-platform"]')?.value || 'other',
+                    label: card.querySelector('input[name$="-label"]')?.value || '',
+                    category: card.querySelector('select[name$="-category"]')?.value || 'social',
+                    open_in_new_tab: !newTab || newTab.checked,
+                    order: parseInt(card.querySelector('input[name$="-order"]')?.value || '0', 10) || 0,
+                });
+            });
+            links.sort((a, b) => a.order - b.order);
+            return links;
+        };
+
         const buildPayload = () => {
             const payload = {};
             form.querySelectorAll('input, textarea, select').forEach((el) => {
@@ -356,6 +380,7 @@
                 if (el.type === 'checkbox') return;
                 payload[el.name] = el.value;
             });
+            payload.site_links = getSiteLinksFromForm();
             const profile = form.querySelector('input[type="file"][name="profile_image"]');
             if (profile && profile.files && profile.files[0]) {
                 payload.profile_image_url = URL.createObjectURL(profile.files[0]);
@@ -416,6 +441,7 @@
         initMediaDropzones(form);
         const gallery = initGallerySection(form);
         bindDeleteButtons(form, gallery && gallery.model);
+        if (form.querySelector('[data-link-card]')) initSiteLinksForm(form);
         initPagePreview(form, iframe, deviceFrame, previewType);
     }
 
@@ -430,9 +456,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const pageForm = document.getElementById('pageSettingsForm');
         const homeForm = document.getElementById('homeSettingsForm');
-        const linksForm = document.getElementById('siteLinksForm');
         if (pageForm) initForm(pageForm);
         if (homeForm) bindDeleteButtons(homeForm, 'home');
-        if (linksForm) initSiteLinksForm(linksForm);
     });
 })(window);
