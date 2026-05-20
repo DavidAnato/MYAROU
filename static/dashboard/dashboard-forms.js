@@ -90,8 +90,34 @@
         input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
+    function triggerPreviewUpdate(form) {
+        if (form) form.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    function getGalleryUrlsFromForm(form) {
+        const urls = [];
+        if (!form) return urls;
+        form.querySelectorAll('[data-gallery-form]').forEach((row) => {
+            if (row.classList.contains('hidden')) return;
+            const del = row.querySelector('input[name$="-DELETE"]');
+            if (del && del.checked) return;
+            const inp = row.querySelector('input[type="file"][name$="-image"]');
+            const preview = row.querySelector('[data-preview-image]');
+            const existing = row.querySelector('[data-existing-image]');
+            if (preview && !preview.classList.contains('hidden') && preview.src) {
+                urls.push(preview.src);
+            } else if (existing && !existing.classList.contains('hidden') && existing.src) {
+                urls.push(existing.src);
+            } else if (inp && inp.files && inp.files[0]) {
+                urls.push(URL.createObjectURL(inp.files[0]));
+            }
+        });
+        return urls;
+    }
+
     function initMediaDropzones(form) {
         if (!form) return;
+        const formRoot = form;
         form.querySelectorAll('[data-media-container]').forEach((container) => {
             const input = container.querySelector('input[type="file"]');
             const zone = container.querySelector('.media-dropzone');
@@ -132,7 +158,10 @@
                     const f = e.dataTransfer.files && e.dataTransfer.files[0];
                     if (f) setSingleFile(input, f);
                 });
-                input.addEventListener('change', refresh);
+                input.addEventListener('change', () => {
+                    refresh();
+                    triggerPreviewUpdate(formRoot);
+                });
             }
             if (clearBtn) {
                 clearBtn.addEventListener('click', () => {
@@ -141,6 +170,7 @@
                     const existing = container.querySelector('[data-existing-image]');
                     if (existing) existing.classList.add('hidden');
                     refresh();
+                    triggerPreviewUpdate(formRoot);
                 });
             }
             refresh();
@@ -196,11 +226,16 @@
                     if (!node) return;
                     const inp = node.querySelector('input[type="file"][name$="-image"]');
                     setSingleFile(inp, file);
+                    triggerPreviewUpdate(form);
                 });
                 multiInput.value = '';
+                triggerPreviewUpdate(form);
             });
         }
-        if (addBtn) addBtn.addEventListener('click', () => addForm());
+        if (addBtn) addBtn.addEventListener('click', () => {
+            addForm();
+            triggerPreviewUpdate(form);
+        });
         if (dropzone) {
             dropzone.addEventListener('dragover', (e) => { e.preventDefault(); setDropzoneActive(dropzone, true); });
             dropzone.addEventListener('dragleave', () => setDropzoneActive(dropzone, false));
@@ -213,6 +248,7 @@
                     if (!node) return;
                     setSingleFile(node.querySelector('input[type="file"][name$="-image"]'), file);
                 });
+                triggerPreviewUpdate(form);
             });
         }
 
@@ -327,18 +363,7 @@
                 const ex = form.querySelector('[data-existing-file="profile_image"]');
                 if (ex) payload.profile_image_url = ex.src;
             }
-            const urls = [];
-            form.querySelectorAll('[data-gallery-form]:not(.hidden)').forEach((row) => {
-                const del = row.querySelector('input[name$="-DELETE"]');
-                if (del && del.checked) return;
-                const inp = row.querySelector('input[type="file"][name$="-image"]');
-                if (inp && inp.files && inp.files[0]) urls.push(URL.createObjectURL(inp.files[0]));
-                else {
-                    const img = row.querySelector('[data-existing-image]');
-                    if (img && img.src) urls.push(img.src);
-                }
-            });
-            if (urls.length) payload.gallery_image_urls = urls;
+            payload.gallery_image_urls = getGalleryUrlsFromForm(form);
             return payload;
         };
 
@@ -354,6 +379,9 @@
         form.addEventListener('input', schedule);
         form.addEventListener('change', schedule);
         iframe.addEventListener('load', schedule);
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'page-preview-ready') schedule();
+        });
     }
 
     function initSiteLinksForm(form) {

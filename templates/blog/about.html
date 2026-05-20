@@ -201,15 +201,16 @@
                 {% t "site.about.gallery.description" %}
             </p>
         </div>
-        {% if about_images %}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10 {% if not about_images and not request.GET.dashboard_preview %}hidden{% endif %}" data-gallery-preview-grid>
             {% for img in about_images %}
             <button type="button" @click="open=true; i={{ forloop.counter0 }}" class="group rounded-2xl overflow-hidden shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 <img src="{{ img.image.url }}" alt="" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" data-preview-gallery="{{ forloop.counter0 }}">
             </button>
             {% endfor %}
         </div>
-        {% endif %}
+        <p data-gallery-empty-msg class="text-center text-gray-500 dark:text-gray-400 text-sm mb-10 {% if about_images %}hidden{% endif %}">
+            {% t "site.gallery.empty" %}
+        </p>
         <div class="text-center">
             <a href="{% url 'blog:gallery' %}" class="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
                 {% t "site.home.gallery.view_all" %}

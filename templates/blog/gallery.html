@@ -30,25 +30,22 @@
 {% with images=gallery.images.all %}
 <section class="py-20 bg-white dark:bg-[#121212]" data-page-gallery x-data="{ open: false, i: 0, imgs: [{% for img in images %}'{{ img.image.url }}'{% if not forloop.last %}, {% endif %}{% endfor %}] }" @keydown.window.escape="open=false">
     <div class="container mx-auto px-4 max-w-7xl">
-        {% if images %}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 {% if not images and not request.GET.dashboard_preview %}hidden{% endif %}" data-gallery-preview-grid>
             {% for img in images %}
             <button type="button" @click="open=true; i={{ forloop.counter0 }}" class="group text-left rounded-2xl overflow-hidden shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 <img src="{{ img.image.url }}" alt="{{ img.caption }}" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300" data-preview-gallery="{{ forloop.counter0 }}">
                 {% if img.caption %}
-                <p class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#1E1E1E]">{{ img.caption }}</p>
+                <p class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#1E1E1E] group-hover:bg-gray-100 dark:group-hover:bg-[#252525] transition-colors">{{ img.caption }}</p>
                 {% endif %}
             </button>
             {% endfor %}
         </div>
-        {% else %}
-        <p class="text-center text-gray-500 dark:text-gray-400 text-lg py-16">
+        <p data-gallery-empty-msg class="text-center text-gray-500 dark:text-gray-400 text-lg py-16 {% if images %}hidden{% endif %}">
             {% t "site.gallery.empty" %}
         </p>
-        {% endif %}
     </div>
 
-    <div x-show="open" x-transition.opacity class="fixed inset-0 z-50" style="display: none;">
+    <div x-show="open && imgs.length" x-transition.opacity class="fixed inset-0 z-50" style="display: none;">
         <div class="absolute inset-0 bg-black/80" @click="open=false"></div>
         <div class="relative h-full flex items-center justify-center px-4">
             <img :src="imgs[i]" alt="" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl object-contain" />
