@@ -50,13 +50,13 @@
                         <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-800 dark:to-emerald-900 rounded-3xl transform rotate-3"></div>
                         <div class="relative transform -rotate-3 hover:rotate-0 transition-transform duration-500">
                             {% if about.profile_image %}
-                            <img src="{{ about.profile_image.url }}" alt="Profil" class="w-full rounded-3xl shadow-2xl">
+                            <img src="{{ about.profile_image.url }}" alt="Profil" class="w-full rounded-3xl shadow-2xl" data-preview-src="profile_image_url">
                             {% else %}
-                            <img src="{% static 'images/profile.jpg' %}" alt="Profil" class="w-full rounded-3xl shadow-2xl">
+                            <img src="{% static 'images/profile.jpg' %}" alt="Profil" class="w-full rounded-3xl shadow-2xl" data-preview-src="profile_image_url">
                             {% endif %}
                         </div>
                         <div class="absolute -bottom-6 -right-6 bg-gradient-to-br from-teal-400 to-teal-500 text-white px-8 py-4 rounded-2xl shadow-xl transform rotate-3">
-                            <div class="font-bold text-2xl">{% if about.profile_years_number %}{{ about.profile_years_number }}+{% else %}15+{% endif %}</div>
+                            <div class="font-bold text-2xl"><span data-preview="profile_years_number">{% if about.profile_years_number %}{{ about.profile_years_number }}{% else %}15{% endif %}</span>+</div>
                             <div class="text-sm">{% page_text about "profile_years_label" "site.about.profile.years_experience" %}</div>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
 
 <!-- Galerie À propos -->
 {% with about_images=about.gallery_images.all %}
-<section class="py-24 bg-white dark:bg-[#121212] transition-colors duration-300" x-data="{ open: false, i: 0, imgs: [{% for img in about_images %}'{{ img.image.url }}'{% if not forloop.last %}, {% endif %}{% endfor %}] }" @keydown.window.escape="open=false">
+<section class="py-24 bg-white dark:bg-[#121212] transition-colors duration-300" data-page-gallery x-data="{ open: false, i: 0, imgs: [{% for img in about_images %}'{{ img.image.url }}'{% if not forloop.last %}, {% endif %}{% endfor %}] }" @keydown.window.escape="open=false">
     <div class="container mx-auto px-4 max-w-6xl">
         <div class="text-center mb-12">
             <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
@@ -205,7 +205,7 @@
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
             {% for img in about_images %}
             <button type="button" @click="open=true; i={{ forloop.counter0 }}" class="group rounded-2xl overflow-hidden shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                <img src="{{ img.image.url }}" alt="" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                <img src="{{ img.image.url }}" alt="" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" data-preview-gallery="{{ forloop.counter0 }}">
             </button>
             {% endfor %}
         </div>
@@ -246,7 +246,8 @@
                 <div class="relative aspect-video">
                     <iframe 
                         class="w-full h-full"
-                        src="{{ about.video_embed_url|default:'https://www.youtube.com/embed/MlCA-DC9WP8' }}" 
+                        src="{{ about.video_embed_url|default:'https://www.youtube.com/embed/MlCA-DC9WP8' }}"
+                        data-preview-iframe="video_embed_url"
                         title="{% t "site.about.video.iframe_title" %}" 
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -406,4 +407,7 @@
     animation: fade-in 0.8s ease-out;
 }
 </style>
+{% if request.GET.dashboard_preview %}
+{% include 'blog/includes/dashboard_page_preview.html' %}
+{% endif %}
 {% endblock %}

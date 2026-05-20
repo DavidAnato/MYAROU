@@ -97,18 +97,21 @@ def home_dashboard_preview(request):
     return render(request, 'blog/home.html', context)
 
 
+@xframe_options_sameorigin
 def about(request):
     """Page à propos"""
     about_page = AboutPageSettings.get_solo()
     return render(request, 'blog/about.html', {'about': about_page})
 
 
+@xframe_options_sameorigin
 def gallery(request):
     """Page galerie dédiée (toutes les photos)."""
     gallery_page = GalleryPageSettings.get_solo()
     return render(request, 'blog/gallery.html', {'gallery': gallery_page})
 
 
+@xframe_options_sameorigin
 def contact(request):
     """Page de contact avec enregistrement et notification e-mail."""
     contact_page = ContactPageSettings.get_solo()

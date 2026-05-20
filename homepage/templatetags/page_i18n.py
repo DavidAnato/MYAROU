@@ -1,4 +1,7 @@
 from django import template
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+
 from blog_project.utils.i18n import t as translate_func
 
 register = template.Library()
@@ -23,6 +26,11 @@ def page_text(context, page_settings, field_name, default_key):
             value = getattr(page_settings, field_name, '') or ''
 
     if value:
-        return value
+        text = value
+    else:
+        text = translate_func(default_key, lang=lang_short)
 
-    return translate_func(default_key, lang=lang_short)
+    if request and request.GET.get('dashboard_preview'):
+        return mark_safe(f'<span data-preview="{field_name}">{escape(text)}</span>')
+
+    return text

@@ -4,88 +4,257 @@
 {% block page_title %}{{ page_title }}{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+    <div class="xl:col-span-5 space-y-4">
         <p class="text-gray-600 dark:text-gray-300 text-sm">
             Les champs vides reprennent les textes par défaut (fichiers i18n).
             {% if page_note %}{{ page_note }}{% else %}Aperçu galerie accueil (max 4) : menu « Page d'accueil ». Page complète : menu « Galerie ».{% endif %}
         </p>
-        {% if preview_url %}
-        <a href="{{ preview_url }}" target="_blank" rel="noopener"
-           class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors">
-            Voir sur le site
-        </a>
-        {% endif %}
-    </div>
 
-    <form method="post" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700 space-y-8">
-        {% csrf_token %}
+        <form id="pageSettingsForm" method="post" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100 dark:border-gray-700 space-y-6 max-h-[calc(100vh-8rem)] overflow-y-auto">
+            {% csrf_token %}
 
-        {% if site_form %}
-        <div class="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/20 p-6 space-y-4">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Coordonnées & notifications</h3>
-            {% if site_form_note %}<p class="text-sm text-gray-600 dark:text-gray-400">{{ site_form_note }}</p>{% endif %}
-            {% for field in site_form %}
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}<p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}
-                {% for err in field.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+            {% if clear_image_field and form.instance.profile_image %}
+            <img src="{{ form.instance.profile_image.url }}" alt="" class="hidden" data-existing-file="profile_image">
+            {% endif %}
 
-        {% for section_title, section_fields in sections %}
-        <div class="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="px-5 py-3 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="font-bold text-gray-900 dark:text-white">{{ section_title }}</h3>
-            </div>
-            <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {% for field in section_fields %}
-                <div class="{% if 'description' in field.name or 'profile_p' in field.name or 'vision_quote' in field.name or 'faq_a' in field.name or 'journey_item' in field.name and '_desc' in field.name %}md:col-span-2{% endif %}">
+            {% if site_form %}
+            <div class="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/20 p-5 space-y-4">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Coordonnées & notifications</h3>
+                {% if site_form_note %}<p class="text-sm text-gray-600 dark:text-gray-400">{{ site_form_note }}</p>{% endif %}
+                {% for field in site_form %}
+                <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">{{ field.label }}</label>
-                    {% if field.name == clear_image_field %}
-                    <input type="hidden" name="clear_profile_image" value="0">
-                    <div class="flex flex-wrap items-center gap-3 mb-2">
-                        <button type="button" onclick="document.querySelector('[name=clear_profile_image]').value='1'; this.classList.add('ring-2');"
-                                class="text-xs font-bold px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200">
-                            Retirer l'image actuelle
-                        </button>
-                    </div>
-                    {% endif %}
                     {{ field }}
+                    {% if field.help_text %}<p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>{% endif %}
                     {% for err in field.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
                 </div>
                 {% endfor %}
             </div>
-        </div>
-        {% endfor %}
+            {% endif %}
 
-        {% if formset %}
-        <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-            <h3 class="font-bold text-gray-900 dark:text-white mb-4">{{ formset_label }}</h3>
-            {{ formset.management_form }}
-            <div class="space-y-4">
-                {% for f in formset %}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
-                    {% for field in f %}
-                    <div>
+            {% for section_title, section_fields in sections %}
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="px-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="font-bold text-gray-900 dark:text-white text-sm">{{ section_title }}</h3>
+                </div>
+                <div class="p-4 grid grid-cols-1 gap-3">
+                    {% for field in section_fields %}
+                    <div class="{% if 'description' in field.name or 'profile_p' in field.name or 'vision_quote' in field.name or 'faq_a' in field.name or 'journey_item' in field.name and '_desc' in field.name %}col-span-full{% endif %}">
                         <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{{ field.label }}</label>
+                        {% if field.name == clear_image_field %}
+                        <input type="hidden" name="clear_profile_image" value="0">
+                        <button type="button" onclick="document.querySelector('[name=clear_profile_image]').value='1'; this.classList.add('ring-2','ring-amber-500');"
+                                class="text-xs font-bold px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 mb-2">
+                            Retirer l'image actuelle
+                        </button>
+                        {% endif %}
                         {{ field }}
+                        {% for err in field.errors %}<p class="text-sm text-red-600 mt-1">{{ err }}</p>{% endfor %}
                     </div>
                     {% endfor %}
                 </div>
-                {% endfor %}
+            </div>
+            {% endfor %}
+
+            {% if formset %}
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 p-4" data-formset-gallery>
+                <h3 class="font-bold text-gray-900 dark:text-white mb-3 text-sm">{{ formset_label }}</h3>
+                {{ formset.management_form }}
+                <div class="space-y-3">
+                    {% for f in formset %}
+                    <div class="grid grid-cols-1 gap-3 p-3 bg-gray-50 dark:bg-gray-900/30 rounded-lg" data-formset-row>
+                        {% for field in f %}
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.name == 'image' and f.instance.pk and f.instance.image %}
+                            <img src="{{ f.instance.image.url }}" alt="" class="mt-2 h-20 rounded-lg object-cover" data-existing-formset-image>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="flex justify-end pt-2 border-t border-gray-200 dark:border-gray-700 sticky bottom-0 bg-white dark:bg-gray-800 py-3">
+                <button type="submit" class="px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if preview_url %}
+    <div class="xl:col-span-7 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl overflow-hidden flex flex-col xl:sticky xl:top-24 h-[calc(100vh-7rem)]">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
+            <div class="flex items-center justify-between gap-3">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white">Aperçu en temps réel</h3>
+                <a href="{{ preview_url }}" target="_blank" rel="noopener" class="text-emerald-600 dark:text-emerald-400 text-sm font-bold hover:underline whitespace-nowrap">Ouvrir</a>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-2">
+                <button type="button" data-device="desktop" class="device-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white">Desktop</button>
+                <button type="button" data-device="tablet" class="device-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white">Tablet</button>
+                <button type="button" data-device="mobile" class="device-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white">Mobile</button>
             </div>
         </div>
-        {% endif %}
-
-        <div class="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
-            <button type="submit" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors">
-                Enregistrer
-            </button>
+        <div class="flex-1 bg-gray-100 dark:bg-gray-900 p-3 overflow-hidden min-h-0">
+            <div class="h-full w-full flex items-center justify-center">
+                <div id="pageDeviceFrame" class="h-full w-full bg-white dark:bg-black rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="h-9 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-3">
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+                        </div>
+                        <div class="text-[10px] font-semibold text-gray-500 dark:text-gray-300 truncate max-w-[65%]">{{ preview_url }}</div>
+                        <div class="w-5"></div>
+                    </div>
+                    <iframe id="pagePreviewIframe" src="{{ preview_url }}" class="w-full h-[calc(100%-2.25rem)] bg-white" loading="lazy" title="Aperçu"></iframe>
+                </div>
+            </div>
         </div>
-    </form>
+    </div>
+    {% endif %}
 </div>
+
+{% if preview_url %}
+<script>
+(function() {
+    const form = document.getElementById('pageSettingsForm');
+    const iframe = document.getElementById('pagePreviewIframe');
+    const deviceFrame = document.getElementById('pageDeviceFrame');
+    if (!form || !iframe || !deviceFrame) return;
+
+    const previewArea = deviceFrame.parentElement;
+    let currentDevice = 'desktop';
+    const desktopZoom = 0.5;
+    const tabletZoom = 0.85;
+
+    const applyIframeZoom = (scale) => {
+        const s = Math.max(0.2, Math.min(scale, 1));
+        if (s === 1) {
+            iframe.style.transform = '';
+            iframe.style.transformOrigin = '';
+            iframe.style.width = '';
+            iframe.style.height = '';
+            return;
+        }
+        iframe.style.transformOrigin = '0 0';
+        iframe.style.transform = 'scale(' + s + ')';
+        iframe.style.width = 'calc(100% / ' + s + ')';
+        iframe.style.height = 'calc((100% - 2.25rem) / ' + s + ')';
+    };
+
+    const applyDeviceLayout = () => {
+        if (currentDevice === 'mobile') {
+            const w = 390, h = 844;
+            deviceFrame.style.width = w + 'px';
+            deviceFrame.style.height = h + 'px';
+            deviceFrame.style.transformOrigin = 'center center';
+            const scale = Math.min(previewArea.clientWidth / w, previewArea.clientHeight / h, 1);
+            deviceFrame.style.transform = 'scale(' + (scale || 1) + ')';
+            applyIframeZoom(1);
+            return;
+        }
+        deviceFrame.style.width = '100%';
+        deviceFrame.style.height = '100%';
+        deviceFrame.style.transform = '';
+        deviceFrame.style.transformOrigin = '';
+        applyIframeZoom(currentDevice === 'tablet' ? tabletZoom : desktopZoom);
+    };
+
+    document.querySelectorAll('.device-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            currentDevice = btn.getAttribute('data-device') || 'desktop';
+            document.querySelectorAll('.device-btn').forEach((b) => {
+                const active = b === btn;
+                b.classList.toggle('bg-emerald-600', active);
+                b.classList.toggle('text-white', active);
+                b.classList.toggle('bg-gray-100', !active);
+                b.classList.toggle('dark:bg-gray-700', !active);
+                b.classList.toggle('text-gray-800', !active);
+                b.classList.toggle('dark:text-white', !active);
+            });
+            applyDeviceLayout();
+        });
+    });
+    window.addEventListener('resize', applyDeviceLayout);
+    applyDeviceLayout();
+
+    const fileToUrl = (name) => {
+        const input = form.querySelector('input[type="file"][name="' + name + '"]');
+        if (input && input.files && input.files[0]) {
+            return URL.createObjectURL(input.files[0]);
+        }
+        const existing = form.querySelector('[data-existing-file="' + name + '"]');
+        if (existing) return existing.getAttribute('src');
+        return '';
+    };
+
+    const getFormsetGalleryUrls = () => {
+        const urls = [];
+        const totalInput = form.querySelector('input[name$="-TOTAL_FORMS"]');
+        if (!totalInput) return urls;
+        const prefix = totalInput.name.replace('-TOTAL_FORMS', '');
+        const total = parseInt(totalInput.value, 10) || 0;
+        for (let i = 0; i < total; i++) {
+            const del = form.querySelector('input[name="' + prefix + '-' + i + '-DELETE"]');
+            if (del && del.checked) continue;
+            const fileInput = form.querySelector('input[name="' + prefix + '-' + i + '-image"]');
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                urls.push(URL.createObjectURL(fileInput.files[0]));
+                continue;
+            }
+            const row = fileInput ? fileInput.closest('[data-formset-row]') : null;
+            const existing = row ? row.querySelector('[data-existing-formset-image]') : null;
+            if (existing && existing.src) {
+                urls.push(existing.src);
+            } else if (existing && existing.getAttribute('src')) {
+                urls.push(existing.getAttribute('src'));
+            }
+        }
+        return urls;
+    };
+
+    const buildPayload = () => {
+        const payload = {};
+        form.querySelectorAll('input, textarea, select').forEach((el) => {
+            if (!el.name || el.type === 'file' || el.type === 'hidden' && el.name.includes('-DELETE')) return;
+            if (el.type === 'checkbox') {
+                if (!el.name.includes('-DELETE')) payload[el.name] = el.checked ? 'on' : '';
+            } else if (el.type === 'radio') {
+                if (el.checked) payload[el.name] = el.value;
+            } else {
+                payload[el.name] = el.value;
+            }
+        });
+        const profileUrl = fileToUrl('profile_image');
+        if (profileUrl) payload.profile_image_url = profileUrl;
+        if (payload.video_embed_url) {
+            /* déjà dans payload */
+        }
+        const galleryUrls = getFormsetGalleryUrls();
+        if (galleryUrls.length) payload.gallery_image_urls = galleryUrls;
+        return payload;
+    };
+
+    let raf = null;
+    const sendPreview = () => {
+        if (!iframe.contentWindow) return;
+        iframe.contentWindow.postMessage({ type: 'page-preview', payload: buildPayload() }, '*');
+    };
+    const schedulePreview = () => {
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(sendPreview);
+    };
+
+    form.addEventListener('input', schedulePreview);
+    form.addEventListener('change', schedulePreview);
+    iframe.addEventListener('load', schedulePreview);
+})();
+</script>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,83 @@
+<script>
+(function() {
+    const initialText = new Map();
+    const initialSrc = new Map();
+
+    document.querySelectorAll('[data-preview]').forEach((el) => {
+        initialText.set(el, el.textContent);
+    });
+    document.querySelectorAll('[data-preview-src]').forEach((el) => {
+        initialSrc.set(el, el.getAttribute('src') || '');
+    });
+    document.querySelectorAll('[data-preview-gallery]').forEach((el) => {
+        initialSrc.set(el, el.getAttribute('src') || '');
+    });
+
+    const isEnglish = () => {
+        const lang = (document.documentElement.lang || '').toLowerCase();
+        return lang.startsWith('en');
+    };
+
+    const applyText = (key, value) => {
+        document.querySelectorAll(`[data-preview="${key}"]`).forEach((el) => {
+            const fallback = initialText.get(el) ?? '';
+            el.textContent = value ? value : fallback;
+        });
+    };
+
+    const applySrc = (key, value) => {
+        document.querySelectorAll(`[data-preview-src="${key}"]`).forEach((el) => {
+            const fallback = initialSrc.get(el) ?? '';
+            const url = value ? value : fallback;
+            if (url) el.setAttribute('src', url);
+        });
+        document.querySelectorAll(`[data-preview-iframe="${key}"]`).forEach((el) => {
+            const fallback = el.getAttribute('src') || '';
+            const url = value ? value : fallback;
+            if (url) el.setAttribute('src', url);
+        });
+    };
+
+    const applyGallery = (urls) => {
+        if (!Array.isArray(urls) || urls.length === 0) return;
+        document.querySelectorAll('[data-preview-gallery]').forEach((el) => {
+            const idx = parseInt(el.getAttribute('data-preview-gallery'), 10);
+            if (!Number.isFinite(idx) || !urls[idx]) return;
+            el.setAttribute('src', urls[idx]);
+        });
+        document.querySelectorAll('[data-page-gallery]').forEach((section) => {
+            if (!window.Alpine || typeof window.Alpine.$data !== 'function') return;
+            const data = window.Alpine.$data(section);
+            if (data && Array.isArray(data.imgs)) {
+                data.imgs = urls;
+            }
+        });
+    };
+
+    const applyPayload = (payload) => {
+        const en = isEnglish();
+        const seen = new Set();
+        Object.keys(payload).forEach((key) => {
+            if (key.endsWith('_en') || key.endsWith('_url') || key === 'gallery_image_urls') return;
+            if (seen.has(key)) return;
+            seen.add(key);
+            const value = en ? (payload[key + '_en'] || payload[key]) : payload[key];
+            if (value !== undefined && value !== null && value !== '') {
+                applyText(key, String(value));
+            }
+        });
+        Object.keys(payload).forEach((key) => {
+            if (!key.endsWith('_url')) return;
+            applySrc(key, payload[key]);
+        });
+        if (payload.profile_image_url) applySrc('profile_image_url', payload.profile_image_url);
+        if (payload.video_embed_url) applySrc('video_embed_url', payload.video_embed_url);
+        if (payload.gallery_image_urls) applyGallery(payload.gallery_image_urls);
+    };
+
+    window.addEventListener('message', (event) => {
+        if (!event || !event.data || event.data.type !== 'page-preview') return;
+        applyPayload(event.data.payload || {});
+    });
+})();
+</script>

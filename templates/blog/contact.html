@@ -345,4 +345,7 @@
     animation: fade-in 0.8s ease-out;
 }
 </style>
+{% if request.GET.dashboard_preview %}
+{% include 'blog/includes/dashboard_page_preview.html' %}
+{% endif %}
 {% endblock %}

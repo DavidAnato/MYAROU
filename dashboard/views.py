@@ -21,7 +21,13 @@ from .site_forms import (
     CONTACT_SECTIONS,
 )
 from homepage.models import HomeSettings
-from homepage.models_site import SiteSettings, AboutPageSettings, ContactPageSettings, GalleryPageSettings
+from homepage.models_site import (
+    SiteSettings,
+    SiteLink,
+    AboutPageSettings,
+    ContactPageSettings,
+    GalleryPageSettings,
+)
 from django.http import JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -293,7 +299,7 @@ def home_settings_edit(request):
 @user_passes_test(is_staff, login_url='dashboard:login')
 def about_settings_edit(request):
     about = AboutPageSettings.get_solo()
-    preview_url = reverse('blog:about')
+    preview_url = f"{reverse('blog:about')}?dashboard_preview=1"
 
     if request.method == 'POST':
         form = AboutPageSettingsForm(request.POST, request.FILES, instance=about)
@@ -328,7 +334,7 @@ def about_settings_edit(request):
 @user_passes_test(is_staff, login_url='dashboard:login')
 def gallery_settings_edit(request):
     gallery = GalleryPageSettings.get_solo()
-    preview_url = reverse('blog:gallery')
+    preview_url = f"{reverse('blog:gallery')}?dashboard_preview=1"
 
     if request.method == 'POST':
         form = GalleryPageSettingsForm(request.POST, instance=gallery)
@@ -358,7 +364,7 @@ def gallery_settings_edit(request):
 def contact_settings_edit(request):
     contact_page = ContactPageSettings.get_solo()
     site = SiteSettings.get_solo()
-    preview_url = reverse('blog:contact')
+    preview_url = f"{reverse('blog:contact')}?dashboard_preview=1"
 
     if request.method == 'POST':
         form = ContactPageSettingsForm(request.POST, instance=contact_page)
