@@ -16,17 +16,19 @@ from .site_forms import (
     GalleryPageImageFormSet,
     GALLERY_SECTIONS,
     ContactPageSettingsForm,
-    build_form_sections,
     ABOUT_SECTIONS,
     CONTACT_SECTIONS,
 )
-from homepage.models import HomeSettings
+from .form_layout import build_section_layout, SITE_FORM_SECTIONS
+from homepage.models import HomeSettings, HomeGalleryImage
 from homepage.models_site import (
     SiteSettings,
     SiteLink,
     AboutPageSettings,
+    AboutGalleryImage,
     ContactPageSettings,
     GalleryPageSettings,
+    GalleryPageImage,
 )
 from django.http import JsonResponse
 from django.urls import reverse
@@ -321,11 +323,13 @@ def about_settings_edit(request):
     return render(request, 'dashboard/page_settings_form.html', {
         'form': form,
         'formset': formset,
-        'formset_label': 'Photos galerie (affichées sur la page À propos)',
-        'sections': build_form_sections(form, ABOUT_SECTIONS),
+        'formset_label': 'Photos galerie (page À propos)',
+        'formset_type': 'about',
+        'section_layouts': build_section_layout(form, ABOUT_SECTIONS, clear_image_field='profile_image'),
         'page_title': 'Page À propos',
         'preview_url': preview_url,
         'clear_image_field': 'profile_image',
+        'gallery_max': 24,
         'page_note': 'Galerie complète : menu « Galerie » (/galerie/). Aperçu accueil : « Page d\'accueil ».',
     })
 
@@ -352,10 +356,12 @@ def gallery_settings_edit(request):
         'form': form,
         'formset': formset,
         'formset_label': 'Photos de la page Galerie (/galerie/)',
+        'formset_type': 'gallery',
         'page_note': 'Galerie sur À propos : menu « À propos ». Aperçu accueil (max 4) : « Page d\'accueil ».',
-        'sections': build_form_sections(form, GALLERY_SECTIONS),
+        'section_layouts': build_section_layout(form, GALLERY_SECTIONS),
         'page_title': 'Page Galerie',
         'preview_url': preview_url,
+        'gallery_max': 50,
     })
 
 
@@ -382,7 +388,8 @@ def contact_settings_edit(request):
         'form': form,
         'site_form': site_form,
         'site_form_note': "E-mail public, localisation et destinataire des messages du formulaire.",
-        'sections': build_form_sections(form, CONTACT_SECTIONS),
+        'site_section_layouts': build_section_layout(site_form, SITE_FORM_SECTIONS),
+        'section_layouts': build_section_layout(form, CONTACT_SECTIONS),
         'page_title': 'Page Contact',
         'preview_url': preview_url,
     })
@@ -406,6 +413,30 @@ def site_links_edit(request):
         'formset': formset,
         'page_title': 'Liens du site',
     })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def delete_site_link_api(request, pk):
+    link = get_object_or_404(SiteLink, pk=pk)
+    link.delete()
+    return JsonResponse({'ok': True})
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def delete_gallery_image_api(request, pk):
+    model_kind = request.POST.get('model', 'gallery')
+    if model_kind == 'about':
+        obj = get_object_or_404(AboutGalleryImage, pk=pk)
+    elif model_kind == 'home':
+        obj = get_object_or_404(HomeGalleryImage, pk=pk)
+    else:
+        obj = get_object_or_404(GalleryPageImage, pk=pk)
+    obj.delete()
+    return JsonResponse({'ok': True})
 
 
 @login_required(login_url='dashboard:login')

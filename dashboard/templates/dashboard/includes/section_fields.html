@@ -1,0 +1,34 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+{% for row in rows %}
+    {% if row.type == 'pair' %}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ row.label }} (FR)</label>
+        {{ row.fr_field }}
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">{{ row.label }} (EN)</label>
+        {{ row.en_field }}
+    </div>
+    {% elif row.type == 'stacked' %}
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ row.label }} (FR)</label>
+        {{ row.fr_field }}
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2 mt-3">{{ row.label }} (EN)</label>
+        {{ row.en_field }}
+    </div>
+    {% elif row.type == 'image' %}
+    <div class="md:col-span-2">
+        {% include 'dashboard/includes/media_field.html' with label=row.label field=row.field clear_flag=row.clear_flag %}
+    </div>
+    {% elif row.type == 'single_full' %}
+    <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ row.label }}</label>
+        {{ row.field }}
+    </div>
+    {% else %}
+    <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ row.label }}</label>
+        {{ row.field }}
+    </div>
+    {% endif %}
+    {% if row.fr_field %}{% for err in row.fr_field.errors %}<p class="text-sm text-red-600 md:col-span-2">{{ err }}</p>{% endfor %}{% elif row.field %}{% for err in row.field.errors %}<p class="text-sm text-red-600 md:col-span-2">{{ err }}</p>{% endfor %}{% endif %}
+{% endfor %}
+</div>

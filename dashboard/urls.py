@@ -32,4 +32,6 @@ urlpatterns = [
     
     # API
     path('api/stats/', views.stats_api, name='stats_api'),
+    path('api/links/<int:pk>/delete/', views.delete_site_link_api, name='delete_site_link'),
+    path('api/gallery-image/<int:pk>/delete/', views.delete_gallery_image_api, name='delete_gallery_image'),
 ]

@@ -5,34 +5,70 @@
 
 {% block content %}
 <div class="max-w-5xl mx-auto">
-    <p class="text-gray-600 dark:text-gray-300 text-sm mb-6">
-        Réseaux sociaux affichés dans le footer et sur la page contact. Catégorie « Footer » pour des liens texte dans le pied de page.
-        Laisser une ligne vide (sans URL) pour ne pas l'afficher.
+    <p class="text-gray-600 dark:text-gray-300 text-sm mb-6 flex items-start gap-2">
+        <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+        <span>Réseaux sociaux (footer, contact). Laissez l’URL vide pour masquer un lien. Utilisez « Ajouter » pour une nouvelle ligne.</span>
     </p>
 
-    <form method="post" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
+    <form id="siteLinksForm" method="post" class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100 dark:border-gray-700">
         {% csrf_token %}
         {{ formset.management_form }}
 
-        <div class="space-y-4">
+        <div class="space-y-4" data-links-list>
             {% for form in formset %}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-700 {% if form.DELETE.value %}opacity-50{% endif %}">
-                {% for field in form %}
-                {% if field.name != 'id' %}
-                <div class="{% if field.name == 'url' %}md:col-span-2{% endif %}">
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{{ field.label }}</label>
-                    {{ field }}
+            <div class="rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-50/50 dark:bg-gray-900/20" data-link-card data-link-pk="{{ form.instance.pk|default:'' }}">
+                <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/40">
+                    <div class="flex items-center gap-2 text-sm font-extrabold text-gray-900 dark:text-white">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"/></svg>
+                        Lien {% if form.instance.pk %}#{{ form.instance.pk }}{% else %}<span class="text-emerald-600 font-semibold">nouveau</span>{% endif %}
+                    </div>
+                    <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-red-600 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 transition-colors" data-delete-link data-link-pk="{{ form.instance.pk|default:'' }}" {% if not form.instance.pk %}data-delete-new-link{% endif %}>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Supprimer
+                    </button>
                 </div>
-                {% else %}
-                {{ field }}
-                {% endif %}
-                {% endfor %}
+                <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{ form.id }}
+                    <div class="hidden">{{ form.DELETE }}</div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Catégorie</label>
+                        {{ form.category }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Plateforme</label>
+                        {{ form.platform }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Libellé</label>
+                        {{ form.label }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Ordre</label>
+                        {{ form.order }}
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">URL</label>
+                        {{ form.url }}
+                    </div>
+                    <div class="flex flex-wrap gap-6 md:col-span-2">
+                        <label class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                            {{ form.is_active }}
+                            <span>Actif</span>
+                        </label>
+                        <label class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                            {{ form.open_in_new_tab }}
+                            <span>Nouvel onglet</span>
+                        </label>
+                    </div>
+                </div>
             </div>
             {% endfor %}
         </div>
 
-        <div class="flex justify-end mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <button type="submit" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700">
+        <div class="flex flex-wrap justify-between items-center gap-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <p class="text-xs text-gray-500">Enregistrez pour créer les nouvelles lignes vides.</p>
+            <button type="submit" class="inline-flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 Enregistrer les liens
             </button>
         </div>

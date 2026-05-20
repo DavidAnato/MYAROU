@@ -306,6 +306,17 @@
     {% block login_content %}{% endblock %}
     {% endif %}
     
+    {% if user.is_authenticated %}
+    {% include 'dashboard/includes/confirm_modal.html' %}
+    <script>
+    window.DASHBOARD_API = Object.assign({
+        csrf: '{{ csrf_token }}',
+        deleteGalleryImage: '{% url "dashboard:delete_gallery_image" pk=0 %}'.replace('/0/', '/'),
+        deleteSiteLink: '{% url "dashboard:delete_site_link" pk=0 %}'.replace('/0/', '/'),
+    }, window.DASHBOARD_API || {});
+    </script>
+    <script src="{% static 'dashboard/dashboard-forms.js' %}"></script>
+    {% endif %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>
