@@ -21,20 +21,29 @@
         .blob-shape {
             border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
         }
-        /* Titre hero : taille selon --hero-chars (préfixe + suffixe) */
+        /* Titre hero : mobile plus petit, desktop plus grand */
         .hero-title-adaptive {
             font-size: clamp(
-                5rem,
-                calc(3.75rem - (var(--hero-chars, 24) - 18) * 0.04rem),
-                3.75rem
+                1.75rem,
+                calc(2.75rem - (var(--hero-chars, 24) - 18) * 0.035rem),
+                2.75rem
             );
         }
         @media (min-width: 768px) {
             .hero-title-adaptive {
                 font-size: clamp(
+                    2rem,
+                    calc(3.75rem - (var(--hero-chars, 24) - 18) * 0.04rem),
+                    3.75rem
+                );
+            }
+        }
+        @media (min-width: 1024px) {
+            .hero-title-adaptive {
+                font-size: clamp(
                     2.25rem,
-                    calc(4.5rem - (var(--hero-chars, 24) - 18) * 0.045rem),
-                    4.5rem
+                    calc(5rem - (var(--hero-chars, 24) - 18) * 0.05rem),
+                    5rem
                 );
             }
         }
