@@ -219,7 +219,7 @@
                     <ul class="mt-6 space-y-2 border-t border-gray-100 dark:border-gray-700 pt-6 {% if not footer_links %}hidden{% endif %}" data-preview-footer-text-links>
                         {% for link in footer_links %}
                         <li>
-                            <a href="{{ link.url }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+                            <a href="{{ link.get_href }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
                                class="text-emerald-700 dark:text-emerald-400 font-semibold hover:underline">
                                 {{ link.label|default:link.get_platform_display }}
                             </a>

@@ -9,7 +9,6 @@ from django.views.generic import ListView, DetailView
 from .models import Article, Category
 from homepage.models import HomeSettings
 from homepage.models_site import AboutPageSettings, ContactPageSettings, ContactMessage, GalleryPageSettings
-from homepage.contact_mail import send_contact_notification
 
 
 class ArticleListView(ListView):
@@ -113,7 +112,7 @@ def gallery(request):
 
 @xframe_options_sameorigin
 def contact(request):
-    """Page de contact avec enregistrement et notification e-mail."""
+    """Page de contact — messages enregistrés dans le dashboard admin."""
     contact_page = ContactPageSettings.get_solo()
 
     if request.method == 'POST':
@@ -142,28 +141,17 @@ def contact(request):
             for err in errors:
                 messages.error(request, err)
         else:
-            contact_msg = ContactMessage.objects.create(
+            ContactMessage.objects.create(
                 name=name,
                 email=email,
                 request_type=request_type,
                 subject=subject,
                 message=body,
             )
-            sent = send_contact_notification(contact_msg)
-            contact_msg.email_sent = sent
-            contact_msg.save(update_fields=['email_sent'])
-
-            if sent:
-                messages.success(
-                    request,
-                    'Votre message a bien été envoyé. Nous vous répondrons dans les meilleurs délais.',
-                )
-            else:
-                messages.warning(
-                    request,
-                    'Votre message a été enregistré, mais la notification e-mail n\'a pas pu être envoyée. '
-                    'Vérifiez la configuration e-mail du serveur.',
-                )
+            messages.success(
+                request,
+                'Votre message a bien été envoyé. Nous vous répondrons dans les meilleurs délais.',
+            )
             return redirect('blog:contact')
 
     return render(request, 'blog/contact.html', {'contact_page': contact_page})

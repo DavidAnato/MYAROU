@@ -5,7 +5,7 @@
 </div>
 {% endif %}
 <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
-    <strong>Réseaux sociaux</strong> : icônes (footer + bloc Contact). <strong>Liens footer</strong> : colonne MY BARIKA. <strong>Liens utiles</strong> : sous MY BARIKA. URL avec <code class="text-emerald-600">https://</code>, cochez <strong>Actif</strong>.
+    <strong>Navigation (footer)</strong> : Accueil, À propos, Blog… — <strong>MY BARIKA (footer)</strong> : Nos programmes, Soutiens… — <strong>Réseaux sociaux</strong> : icônes. Choisissez une <strong>page interne</strong> ou une URL <code class="text-emerald-600">https://</code>.
 </p>
 <div class="space-y-4" data-links-list>
     {% for form in links_formset %}
@@ -39,7 +39,11 @@
                 {{ form.order }}
             </div>
             <div class="sm:col-span-2">
-                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">URL</label>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Page interne</label>
+                {{ form.route_name }}
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">URL (si pas de page interne)</label>
                 {{ form.url }}
             </div>
             <div class="sm:col-span-2 flex flex-wrap gap-4">

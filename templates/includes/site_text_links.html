@@ -4,7 +4,7 @@ Variable : links (queryset SiteLink)
 {% endcomment %}
 {% for link in links %}
 <li>
-    <a href="{{ link.url }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+    <a href="{{ link.get_href }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
        class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

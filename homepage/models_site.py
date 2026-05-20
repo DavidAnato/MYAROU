@@ -46,12 +46,23 @@ class SiteSettings(models.Model):
 
 class SiteLink(models.Model):
     CATEGORY_SOCIAL = 'social'
+    CATEGORY_NAV = 'nav'
     CATEGORY_FOOTER = 'footer'
     CATEGORY_USEFUL = 'useful'
     CATEGORY_CHOICES = [
         (CATEGORY_SOCIAL, 'Réseaux sociaux'),
-        (CATEGORY_FOOTER, 'Liens footer'),
+        (CATEGORY_NAV, 'Navigation (footer)'),
+        (CATEGORY_FOOTER, 'MY BARIKA (footer)'),
         (CATEGORY_USEFUL, 'Liens utiles'),
+    ]
+
+    INTERNAL_ROUTE_CHOICES = [
+        ('', '— URL personnalisée —'),
+        ('blog:home', 'Accueil'),
+        ('blog:about', 'À propos'),
+        ('blog:article_list', 'Blog'),
+        ('blog:gallery', 'Galerie'),
+        ('blog:contact', 'Contact'),
     ]
 
     PLATFORM_CHOICES = [
@@ -68,6 +79,12 @@ class SiteLink(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default=CATEGORY_SOCIAL)
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, default='other')
     label = models.CharField(max_length=120, blank=True)
+    route_name = models.CharField(
+        max_length=80,
+        blank=True,
+        choices=INTERNAL_ROUTE_CHOICES,
+        help_text='Page interne du site (prioritaire sur l’URL si renseigné).',
+    )
     url = models.URLField(max_length=500, blank=True)
     order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
@@ -79,7 +96,16 @@ class SiteLink(models.Model):
         verbose_name_plural = "Liens du site"
 
     def __str__(self):
-        return self.label or self.get_platform_display() or self.url
+        return self.label or self.get_platform_display() or self.url or self.route_name
+
+    def get_href(self):
+        if self.route_name:
+            from django.urls import NoReverseMatch, reverse
+            try:
+                return reverse(self.route_name)
+            except NoReverseMatch:
+                pass
+        return self.url or '#'
 
 
 ABOUT_I18N_MAP = merge_fr_en_defaults({
@@ -443,7 +469,11 @@ class ContactMessage(models.Model):
     subject = models.CharField(max_length=300)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    email_sent = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False, verbose_name='Lu')
+    email_sent = models.BooleanField(
+        default=False,
+        help_text='Ancienne notification SMTP (non utilisée si e-mail désactivé).',
+    )
 
     class Meta:
         ordering = ['-created_at']
@@ -452,3 +482,6 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.name} — {self.subject[:40]}"
+
+    def get_request_type_label(self):
+        return dict(self.REQUEST_TYPE_CHOICES).get(self.request_type, self.request_type or '—')

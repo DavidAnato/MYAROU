@@ -40,7 +40,6 @@ class SiteSettingsForm(forms.ModelForm):
         fields = [
             'contact_email',
             'contact_location',
-            'contact_notify_email',
             'footer_bio',
             'footer_bio_en',
         ]
@@ -58,7 +57,8 @@ class SiteLinkForm(forms.ModelForm):
     class Meta:
         model = SiteLink
         fields = [
-            'category', 'platform', 'label', 'url', 'order', 'is_active', 'open_in_new_tab',
+            'category', 'platform', 'label', 'route_name', 'url',
+            'order', 'is_active', 'open_in_new_tab',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -66,13 +66,19 @@ class SiteLinkForm(forms.ModelForm):
         self.fields['url'].required = False
         _style_form(self)
 
+    def clean(self):
+        cleaned = super().clean()
+        url = (cleaned.get('url') or '').strip()
+        route_name = cleaned.get('route_name') or ''
+        if not url and not route_name:
+            raise forms.ValidationError('Indiquez une page interne ou une URL.')
+        if url and not url.startswith(('http://', 'https://', 'mailto:', '/')):
+            if not route_name:
+                cleaned['url'] = f'https://{url}'
+        return cleaned
+
     def clean_url(self):
-        url = (self.cleaned_data.get('url') or '').strip()
-        if not url:
-            return ''
-        if not url.startswith(('http://', 'https://', 'mailto:')):
-            url = f'https://{url}'
-        return url
+        return (self.cleaned_data.get('url') or '').strip()
 
 
 class BaseSiteLinkFormSet(forms.BaseModelFormSet):
@@ -91,7 +97,8 @@ class BaseSiteLinkFormSet(forms.BaseModelFormSet):
             if not form.cleaned_data:
                 continue
             url = (form.cleaned_data.get('url') or '').strip()
-            if not url:
+            route_name = form.cleaned_data.get('route_name') or ''
+            if not url and not route_name:
                 continue
             saved.append(form.save())
         return saved

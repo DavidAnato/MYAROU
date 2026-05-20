@@ -28,6 +28,11 @@ urlpatterns = [
     path('about/', views.about_settings_edit, name='about_settings'),
     path('gallery/', views.gallery_settings_edit, name='gallery_settings'),
     path('contact/', views.contact_settings_edit, name='contact_settings'),
+    path('messages/', views.contact_message_list, name='contact_message_list'),
+    path('messages/<int:pk>/', views.contact_message_detail, name='contact_message_detail'),
+    path('messages/<int:pk>/toggle-read/', views.contact_message_toggle_read, name='contact_message_toggle_read'),
+    path('messages/<int:pk>/delete/', views.contact_message_delete, name='contact_message_delete'),
+    path('messages/mark-all-read/', views.contact_message_mark_all_read, name='contact_message_mark_all_read'),
     path('links/', views.site_links_edit, name='site_links'),
     
     # API

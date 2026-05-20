@@ -355,12 +355,21 @@
                 const del = card.querySelector('input[name$="-DELETE"]');
                 if (del && del.checked) return;
                 const url = (card.querySelector('input[name$="-url"]')?.value || '').trim();
-                if (!url) return;
+                const routeName = card.querySelector('select[name$="-route_name"]')?.value || '';
+                if (!url && !routeName) return;
                 const active = card.querySelector('input[name$="-is_active"]');
                 if (active && !active.checked) return;
                 const newTab = card.querySelector('input[name$="-open_in_new_tab"]');
+                const routes = global.SITE_ROUTE_URLS || {};
+                let href = url;
+                if (routeName && routes[routeName]) {
+                    href = routes[routeName];
+                } else if (routeName && !href) {
+                    href = '#';
+                }
                 links.push({
-                    url,
+                    url: href,
+                    route_name: routeName,
                     platform: card.querySelector('select[name$="-platform"]')?.value || 'other',
                     label: card.querySelector('input[name$="-label"]')?.value || '',
                     category: card.querySelector('select[name$="-category"]')?.value || 'social',

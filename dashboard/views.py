@@ -21,17 +21,21 @@ from .site_forms import (
 )
 from .form_layout import build_section_layout, SITE_FORM_SECTIONS
 from homepage.models import HomeSettings, HomeGalleryImage
+import json
+
+from django.urls import NoReverseMatch, reverse
+
 from homepage.models_site import (
     SiteSettings,
     SiteLink,
     AboutPageSettings,
     AboutGalleryImage,
     ContactPageSettings,
+    ContactMessage,
     GalleryPageSettings,
     GalleryPageImage,
 )
 from django.http import JsonResponse
-from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 
@@ -81,7 +85,9 @@ def index(request):
     
     week_ago = timezone.now() - timedelta(days=7)
     recent_count = Article.objects.filter(created_at__gte=week_ago).count()
-    
+    unread_messages = ContactMessage.objects.filter(is_read=False).count()
+    total_messages = ContactMessage.objects.count()
+
     context = {
         'total_articles': total_articles,
         'published_articles': published_articles,
@@ -91,6 +97,8 @@ def index(request):
         'popular_articles': popular_articles,
         'categories_stats': categories_stats,
         'recent_count': recent_count,
+        'unread_messages': unread_messages,
+        'total_messages': total_messages,
     }
     
     return render(request, 'dashboard/index.html', context)
@@ -365,9 +373,24 @@ def gallery_settings_edit(request):
     })
 
 
+def _site_route_urls_json():
+    urls = {}
+    for route_name, _label in SiteLink.INTERNAL_ROUTE_CHOICES:
+        if not route_name:
+            continue
+        try:
+            urls[route_name] = reverse(route_name)
+        except NoReverseMatch:
+            continue
+    return json.dumps(urls)
+
+
 @login_required(login_url='dashboard:login')
 @user_passes_test(is_staff, login_url='dashboard:login')
 def contact_settings_edit(request):
+    from homepage.site_links_defaults import ensure_default_site_links
+
+    ensure_default_site_links()
     contact_page = ContactPageSettings.get_solo()
     site = SiteSettings.get_solo()
     links_queryset = SiteLink.objects.all()
@@ -398,12 +421,91 @@ def contact_settings_edit(request):
         'site_form': site_form,
         'links_formset': links_formset,
         'links_formset_label': 'Liens du site',
-        'site_form_note': "E-mail public, localisation et destinataire des messages du formulaire.",
+        'site_form_note': "E-mail et adresse affichés sur la page Contact. Les messages du formulaire arrivent dans Messages (menu).",
         'site_section_layouts': build_section_layout(site_form, SITE_FORM_SECTIONS),
         'section_layouts': build_section_layout(form, CONTACT_SECTIONS),
         'page_title': 'Page Contact',
         'preview_url': preview_url,
+        'site_route_urls_json': _site_route_urls_json(),
     })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def contact_message_list(request):
+    qs = ContactMessage.objects.all()
+    status = request.GET.get('status', '')
+    if status == 'unread':
+        qs = qs.filter(is_read=False)
+    elif status == 'read':
+        qs = qs.filter(is_read=True)
+
+    search = request.GET.get('q', '').strip()
+    if search:
+        qs = qs.filter(
+            Q(name__icontains=search)
+            | Q(email__icontains=search)
+            | Q(subject__icontains=search)
+            | Q(message__icontains=search)
+        )
+
+    request_type = request.GET.get('type', '')
+    if request_type:
+        qs = qs.filter(request_type=request_type)
+
+    context = {
+        'messages_list': qs[:200],
+        'total_count': ContactMessage.objects.count(),
+        'unread_count': ContactMessage.objects.filter(is_read=False).count(),
+        'search': search,
+        'status': status,
+        'request_type': request_type,
+        'request_type_choices': ContactMessage.REQUEST_TYPE_CHOICES,
+        'page_title': 'Messages reçus',
+    }
+    return render(request, 'dashboard/contact_message_list.html', context)
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def contact_message_detail(request, pk):
+    msg = get_object_or_404(ContactMessage, pk=pk)
+    if not msg.is_read:
+        msg.is_read = True
+        msg.save(update_fields=['is_read'])
+    return render(request, 'dashboard/contact_message_detail.html', {
+        'msg': msg,
+        'page_title': f'Message — {msg.subject[:50]}',
+    })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def contact_message_toggle_read(request, pk):
+    msg = get_object_or_404(ContactMessage, pk=pk)
+    msg.is_read = not msg.is_read
+    msg.save(update_fields=['is_read'])
+    return redirect('dashboard:contact_message_detail', pk=pk)
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def contact_message_delete(request, pk):
+    msg = get_object_or_404(ContactMessage, pk=pk)
+    msg.delete()
+    messages.success(request, 'Message supprimé.')
+    return redirect('dashboard:contact_message_list')
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def contact_message_mark_all_read(request):
+    updated = ContactMessage.objects.filter(is_read=False).update(is_read=True)
+    messages.success(request, f'{updated} message(s) marqué(s) comme lu(s).')
+    return redirect('dashboard:contact_message_list')
 
 
 @login_required(login_url='dashboard:login')

@@ -58,21 +58,26 @@
         </div>
     </div>
     
-    <!-- Categories -->
-    <div class="bg-gradient-to-br from-emerald-500 to-emerald-500 dark:from-emerald-900 dark:to-emerald-950 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 cursor-pointer">
+    <!-- Messages contact -->
+    <a href="{% url 'dashboard:contact_message_list' %}" class="bg-gradient-to-br from-emerald-500 to-teal-600 dark:from-emerald-900 dark:to-teal-950 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-200 block">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-emerald-100 dark:text-emerald-300 text-sm font-medium">Catégories</p>
-                <h3 class="text-4xl font-bold mt-2">{{ total_categories }}</h3>
-                <p class="text-emerald-100 dark:text-emerald-300 text-xs mt-2"></p>
+                <p class="text-emerald-100 dark:text-emerald-300 text-sm font-medium">Messages contact</p>
+                <h3 class="text-4xl font-bold mt-2">{{ total_messages }}</h3>
+                <p class="text-emerald-100 dark:text-emerald-300 text-xs mt-2">
+                    {% if unread_messages %}{{ unread_messages }} non lu{{ unread_messages|pluralize:"s" }}{% else %}Tout lu{% endif %}
+                </p>
             </div>
-            <div class="bg-white bg-opacity-20 rounded-2xl p-4">
+            <div class="bg-white bg-opacity-20 rounded-2xl p-4 relative">
+                {% if unread_messages %}
+                <span class="absolute -top-1 -right-1 w-5 h-5 bg-amber-400 text-amber-950 text-xs font-bold rounded-full flex items-center justify-center">{{ unread_messages }}</span>
+                {% endif %}
                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                 </svg>
             </div>
         </div>
-    </div>
+    </a>
 </div>
 
 <!-- Charts Row -->

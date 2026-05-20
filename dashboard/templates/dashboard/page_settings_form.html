@@ -114,3 +114,9 @@
 </div>
 
 {% endblock %}
+
+{% block extra_js %}
+{% if site_route_urls_json %}
+<script>window.SITE_ROUTE_URLS = {{ site_route_urls_json|safe }};</script>
+{% endif %}
+{% endblock %}

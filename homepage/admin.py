@@ -76,8 +76,9 @@ class SiteLinkAdmin(admin.ModelAdmin):
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'subject', 'request_type', 'created_at', 'email_sent')
-    list_filter = ('request_type', 'email_sent', 'created_at')
+    list_display = ('name', 'email', 'subject', 'request_type', 'is_read', 'created_at')
+    list_filter = ('request_type', 'is_read', 'created_at')
+    list_editable = ('is_read',)
     readonly_fields = ('name', 'email', 'request_type', 'subject', 'message', 'created_at', 'email_sent')
     search_fields = ('name', 'email', 'subject', 'message')
 

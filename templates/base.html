@@ -411,81 +411,16 @@
                 <!-- Navigation -->
                 <div>
                     <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">{% t "site.footer.nav.title" %}</h3>
-                    <ul class="space-y-3">
-                        <li>
-                            <a href="{% url 'blog:home' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {% t "site.footer.nav.home" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'blog:about' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {% t "site.footer.nav.about" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'blog:article_list' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {% t "site.footer.nav.blog" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'blog:gallery' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {% t "site.menu.gallery" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'blog:contact' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {% t "site.footer.nav.contact" %}
-                            </a>
-                        </li>
+                    <ul class="space-y-3" data-preview-nav-links>
+                        {% include 'includes/site_text_links.html' with links=nav_links %}
                     </ul>
                 </div>
                 
                 <!-- MY BARIKA -->
                 <div>
                     <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">MY BARIKA</h3>
-                    <ul class="space-y-3">
+                    <ul class="space-y-3" data-preview-barika-links>
                         {% include 'includes/site_text_links.html' with links=footer_links %}
-                        {% if not footer_links %}
-                        <li>
-                            <a href="{% url 'blog:contact' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {% t "site.footer.nav.programs" %}
-                            </a>
-                        </li>
-                        {% endif %}
-                        <li>
-                            <a href="{% url 'blog:contact' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {% t "site.footer.nav.support" %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'blog:contact' %}" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                                {% t "site.footer.nav.volunteer" %}
-                            </a>
-                        </li>
                     </ul>
                     {% if useful_links %}
                     <h4 class="text-lg font-bold mt-8 mb-4 text-gray-900 dark:text-white">{% t "site.footer.useful.title" %}</h4>

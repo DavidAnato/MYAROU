@@ -12,8 +12,8 @@ IMAGE_FIELDS = frozenset({
 })
 
 SITE_FORM_SECTIONS = [
-    ('Coordonnées & notifications', [
-        'contact_email', 'contact_location', 'contact_notify_email',
+    ('Coordonnées affichées', [
+        'contact_email', 'contact_location',
         'footer_bio', 'footer_bio_en',
     ]),
 ]
@@ -29,7 +29,7 @@ SECTION_META = {
     'Formulaire': {'icon': 'mail', 'subtitle': 'Textes du formulaire', 'open': True},
     'Encadrés latéraux': {'icon': 'layout', 'subtitle': 'Blocs latéraux', 'open': False},
     'FAQ': {'icon': 'help', 'subtitle': 'Questions fréquentes', 'open': False},
-    'Coordonnées & notifications': {'icon': 'settings', 'subtitle': 'E-mails et pied de page', 'open': True},
+    'Coordonnées affichées': {'icon': 'settings', 'subtitle': 'E-mail public, adresse, bio footer', 'open': True},
 }
 
 

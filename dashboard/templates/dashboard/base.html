@@ -133,6 +133,7 @@
         
         <!-- Navigation -->
         <nav class="mt-8 px-4 space-y-2">
+            {% load dashboard_nav %}
             {% with current_view=request.resolver_match.view_name %}
             <a href="{% url 'dashboard:index' %}" 
                class="flex items-center px-4 py-3 text-white rounded-lg transition-all duration-200 group {% if current_view == 'dashboard:index' %}bg-white bg-opacity-20 shadow-sm{% else %}hover:bg-white hover:bg-opacity-10{% endif %}">
@@ -156,6 +157,20 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                 </svg>
                 <span class="font-medium">Catégories</span>
+            </a>
+
+            <a href="{% url 'dashboard:contact_message_list' %}"
+               class="flex items-center justify-between px-4 py-3 text-white rounded-lg transition-all duration-200 group {% if 'dashboard:contact_message' in current_view %}bg-white bg-opacity-20 shadow-sm{% else %}hover:bg-white hover:bg-opacity-10{% endif %}">
+                <span class="flex items-center">
+                    <svg class="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <span class="font-medium">Messages</span>
+                </span>
+                {% unread_contact_messages_count as unread_msg %}
+                {% if unread_msg %}
+                <span class="min-w-[1.5rem] h-6 px-2 flex items-center justify-center rounded-full bg-amber-400 text-amber-950 text-xs font-extrabold">{{ unread_msg }}</span>
+                {% endif %}
             </a>
 
             <div x-data="{ pagesOpen: {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' %}true{% else %}false{% endif %} }" class="space-y-1">
