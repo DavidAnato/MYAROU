@@ -1,5 +1,6 @@
 from django import template
 from blog_project.utils.i18n import t as translate_func
+from homepage.hero_title import home_hero_title_char_count
 
 register = template.Library()
 
@@ -25,4 +26,12 @@ def home_text(context, home, field_name, default_key):
         return value
 
     return translate_func(default_key, lang=lang_short)
+
+
+@register.simple_tag(takes_context=True)
+def home_hero_title_chars(context, home):
+    """Longueur du titre hero pour --hero-chars (CSS adaptatif)."""
+    request = context.get('request')
+    lang = (getattr(request, 'LANGUAGE_CODE', None) or 'fr').split('-')[0].lower()
+    return home_hero_title_char_count(home, lang)
 

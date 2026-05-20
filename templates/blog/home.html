@@ -21,6 +21,23 @@
         .blob-shape {
             border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
         }
+        /* Titre hero : taille selon --hero-chars (préfixe + suffixe) */
+        .hero-title-adaptive {
+            font-size: clamp(
+                1.375rem,
+                calc(3rem - (var(--hero-chars, 24) - 14) * 0.065rem),
+                3rem
+            );
+        }
+        @media (min-width: 768px) {
+            .hero-title-adaptive {
+                font-size: clamp(
+                    1.5rem,
+                    calc(3.5rem - (var(--hero-chars, 24) - 14) * 0.075rem),
+                    3.5rem
+                );
+            }
+        }
     </style>
 
     <section class="relative bg-gradient-to-br from-emerald-900 via-emerald-800 to-matte-black dark:from-emerald-950 dark:via-emerald-900 dark:to-teal-900 text-white min-h-screen flex items-center pt-10 lg:pt-0">
@@ -40,7 +57,7 @@
                         </span>
                     </div>
                     
-                    <h1 class="text-6xl md:text-7xl font-extrabold leading-[1.1] tracking-tight">
+                    <h1 id="home-hero-title" class="hero-title-adaptive font-extrabold leading-[1.1] tracking-tight" style="--hero-chars: {% home_hero_title_chars home %};">
                         <span data-preview="hero_title_prefix">{% home_text home "hero_title_prefix" "site.home.hero.title_prefix" %}</span> <br>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-emerald-300">
                             <span data-preview="hero_title_suffix">{% home_text home "hero_title_suffix" "site.home.hero.title_suffix" %}</span>
@@ -484,6 +501,7 @@
 
 </style>
 
+<script src="{% static 'js/home-hero-title.js' %}"></script>
 {% if request.GET.dashboard_preview %}
 <script>
 (function() {
@@ -538,6 +556,7 @@
         applyText('hero_badge', isEn ? payload.hero_badge_en : payload.hero_badge);
         applyText('hero_title_prefix', isEn ? payload.hero_title_prefix_en : payload.hero_title_prefix);
         applyText('hero_title_suffix', isEn ? payload.hero_title_suffix_en : payload.hero_title_suffix);
+        if (window.HomeHeroTitle) window.HomeHeroTitle.adjust();
         applyText('hero_description', isEn ? payload.hero_description_en : payload.hero_description);
         applyText('hero_stats_youth_mentored', payload.hero_stats_youth_mentored);
         applyText('hero_stats_years_experience', payload.hero_stats_years_experience);
