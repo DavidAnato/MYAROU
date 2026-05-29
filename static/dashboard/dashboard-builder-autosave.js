@@ -44,6 +44,15 @@
         if (viewLink) {
             viewLink.classList.toggle('hidden', !isPublished);
         }
+        const draftBtn = document.querySelector('[data-builder-draft]');
+        if (draftBtn) {
+            draftBtn.classList.toggle('hidden', !isPublished);
+        }
+        const publishBtn = document.querySelector('[data-builder-publish]');
+        if (publishBtn) {
+            const label = publishBtn.querySelector('[data-builder-publish-label]');
+            if (label) label.textContent = isPublished ? 'Mettre à jour' : 'Publier';
+        }
     }
 
     function reloadPreviewIframe(previewUrl) {
@@ -56,10 +65,14 @@
     function applyBlockMapping(form, blocks) {
         if (!blocks || !blocks.length) return;
         blocks.forEach((item) => {
-            const card = form.querySelector(`[data-block-form][data-form-prefix="${item.form_prefix}"]`);
+            let card = form.querySelector(`[data-block-form][data-form-prefix="${item.form_prefix}"]`);
+            if (!card && item.id) {
+                card = form.querySelector(`[data-block-form][data-block-pk="${item.id}"]`);
+            }
             if (!card) return;
 
             card.setAttribute('data-block-pk', String(item.id));
+            card.setAttribute('data-form-prefix', String(item.form_prefix));
             const idInput = card.querySelector('input[name$="-id"]');
             if (idInput) idInput.value = item.id;
 
@@ -101,6 +114,7 @@
 
         const statusEl = document.querySelector('[data-builder-save-status]');
         const publishBtn = document.querySelector('[data-builder-publish]');
+        const draftBtn = document.querySelector('[data-builder-draft]');
         const publishedInput = document.getElementById('builderIsPublished');
         let timer = null;
         let inflight = null;
@@ -133,14 +147,19 @@
             return Promise.resolve();
         };
 
-        const syncNow = async (publish) => {
+        const syncNow = async (action) => {
+            const publish = action === 'publish';
+            const draft = action === 'draft';
+
             if (inflight) {
-                if (publish) await inflight;
+                if (publish || draft) await inflight;
                 else return inflight;
             }
 
             if (publish && publishedInput) {
                 publishedInput.value = 'on';
+            } else if (draft && publishedInput) {
+                publishedInput.value = '';
             }
 
             try {
@@ -150,9 +169,15 @@
             }
 
             const fd = new FormData(form);
-            fd.set('builder_action', publish ? 'publish' : 'autosave');
+            if (publish) {
+                fd.set('builder_action', 'publish');
+            } else if (draft) {
+                fd.set('builder_action', 'draft');
+            } else {
+                fd.set('builder_action', 'autosave');
+            }
 
-            setStatus(statusEl, 'saving', publish ? 'Publication…' : 'Enregistrement…');
+            setStatus(statusEl, 'saving', publish ? 'Publication…' : (draft ? 'Brouillon…' : 'Enregistrement…'));
 
             inflight = fetch(config.saveUrl, {
                 method: 'POST',
@@ -180,8 +205,8 @@
                     statusEl,
                     'saved',
                     data.is_published
-                        ? `Publiée · ${time}`
-                        : `Synchronisé · ${time}`,
+                        ? (publish ? `Publiée · ${time}` : `Publiée · ${time}`)
+                        : (draft ? `Brouillon · ${time}` : `Synchronisé · ${time}`),
                 );
 
                 if (publishedInput) {
@@ -190,6 +215,10 @@
                 updatePublishedBadge(data.is_published);
                 applyBlockMapping(form, data.blocks);
                 applyImageMapping(form, data.images);
+                window.DashboardBlockEditor?.refreshGallerySections?.(form);
+                if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
+                    window.DashboardForms.initMediaDropzones(form);
+                }
 
                 requestAnimationFrame(() => {
                     requestAnimationFrame(() => {
@@ -199,6 +228,11 @@
 
                 if (publish) {
                     reloadPreviewIframe(data.preview_url);
+                }
+
+                if (draft) {
+                    const viewLink = document.querySelector('[data-builder-view-live]');
+                    if (viewLink) viewLink.classList.add('hidden');
                 }
 
                 form.dispatchEvent(new CustomEvent('builder:saved', { detail: data }));
@@ -241,7 +275,7 @@
             e.preventDefault();
             if (timer) clearTimeout(timer);
             timer = null;
-            syncNow(true);
+            syncNow('publish');
         });
 
         if (publishBtn) {
@@ -249,7 +283,16 @@
                 e.preventDefault();
                 if (timer) clearTimeout(timer);
                 timer = null;
-                syncNow(true);
+                syncNow('publish');
+            });
+        }
+
+        if (draftBtn) {
+            draftBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (timer) clearTimeout(timer);
+                timer = null;
+                syncNow('draft');
             });
         }
 

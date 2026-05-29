@@ -1,4 +1,23 @@
-/* Page builder — styles dédiés */
+/* Masquer le widget ClearableFileInput Django (on utilise Retirer + preview) */
+.media-dropzone > a,
+.media-dropzone > .file-upload,
+.media-dropzone input[type="checkbox"][name$="-clear"],
+.media-dropzone label[for$="-clear"] {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.builder-image-row.sortable-ghost {
+    opacity: 0.45;
+}
+
 
 .builder-toolbar {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(59, 130, 246, 0.04) 100%);

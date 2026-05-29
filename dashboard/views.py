@@ -625,15 +625,18 @@ def _formset_errors_json(formset):
     return payload
 
 
-def _save_custom_page_builder(request, page, *, publish=False):
+def _save_custom_page_builder(request, page, *, publish=False, unpublish=False):
     """
     Enregistre meta + blocs + images.
-    publish=True met la page en ligne sans toucher aux autres champs via le formulaire.
+    publish=True met la page en ligne.
+    unpublish=True repasse la page en brouillon.
     """
     image_qs = CustomPageBlockImage.objects.filter(block__page=page).select_related('block')
     post = request.POST.copy()
 
-    if publish:
+    if unpublish:
+        post['is_published'] = ''
+    elif publish:
         post['is_published'] = 'on'
     elif page.pk and 'is_published' not in post:
         post['is_published'] = 'on' if page.is_published else ''
@@ -656,7 +659,10 @@ def _save_custom_page_builder(request, page, *, publish=False):
         return False, page, errors, None
 
     page = form.save()
-    if publish and not page.is_published:
+    if unpublish and page.is_published:
+        page.is_published = False
+        page.save(update_fields=['is_published', 'updated_at'])
+    elif publish and not page.is_published:
         page.is_published = True
         page.save(update_fields=['is_published', 'updated_at'])
 
@@ -744,7 +750,10 @@ def custom_page_save_api(request, pk):
     """Sauvegarde AJAX (auto-save ou publication)."""
     page = get_object_or_404(CustomPage, pk=pk)
     publish = request.POST.get('builder_action') == 'publish'
-    ok, page, errors, mapping = _save_custom_page_builder(request, page, publish=publish)
+    unpublish = request.POST.get('builder_action') == 'draft'
+    ok, page, errors, mapping = _save_custom_page_builder(
+        request, page, publish=publish, unpublish=unpublish,
+    )
 
     if not ok:
         return JsonResponse({'ok': False, 'errors': errors}, status=400)

@@ -2,7 +2,9 @@
     {% if clear_flag %}
     <input type="hidden" name="{{ clear_flag }}" value="0">
     {% endif %}
+    {% if label %}
     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">{{ label }}</label>
+    {% endif %}
     <div class="media-dropzone relative overflow-hidden rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-3 bg-white dark:bg-gray-800 transition-colors">
         <div class="flex items-center justify-between gap-3 mb-2">
             <div class="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-300">

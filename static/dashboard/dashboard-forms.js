@@ -163,6 +163,23 @@
         input.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
+    function clearDjangoFileField(container, input) {
+        if (input) {
+            try {
+                input.files = new DataTransfer().files;
+            } catch (e) {
+                input.value = '';
+            }
+        }
+        const clearCheckbox = container.querySelector('input[type="checkbox"][name$="-clear"]');
+        if (clearCheckbox) clearCheckbox.checked = true;
+    }
+
+    function resetDjangoFileClear(container) {
+        const clearCheckbox = container.querySelector('input[type="checkbox"][name$="-clear"]');
+        if (clearCheckbox) clearCheckbox.checked = false;
+    }
+
     function clearFileInput(input) {
         if (!input) return;
         try {
@@ -218,8 +235,11 @@
         const existing = container.querySelector('[data-existing-image]');
 
         if (input && input.files && input.files[0]) {
+            resetDjangoFileClear(container);
             await applyFileToMediaPreview(container, input.files[0]);
             if (existing) existing.classList.add('hidden');
+        } else if (input && (!input.files || !input.files.length)) {
+            clearMediaPreviewSrc(container);
         }
 
         if (zone && input) {
@@ -283,11 +303,7 @@
                 clearBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    try {
-                        input.files = new DataTransfer().files;
-                    } catch (err) {
-                        input.value = '';
-                    }
+                    clearDjangoFileField(container, input);
                     if (flagInput) flagInput.value = '1';
                     clearMediaPreviewSrc(container);
                     if (zone) {
@@ -583,9 +599,15 @@
                     const imageSelector = blockId
                         ? `[data-block-image-form][data-block-id="${blockId}"]`
                         : `[data-block-image-form][data-block-card-index="${cardIndex}"]`;
-                    form.querySelectorAll(`${imageSelector}:not(.hidden)`).forEach((row) => {
-                        if (row.closest('[data-block-image-empty-template]')) return;
-                        if (row.querySelector('input[name$="-DELETE"]')?.checked) return;
+                    const galleryRows = [...form.querySelectorAll(`${imageSelector}:not(.hidden)`)].filter((row) => {
+                        if (row.closest('[data-block-image-empty-template]')) return false;
+                        if (row.querySelector('input[name$="-DELETE"]')?.checked) return false;
+                        return true;
+                    }).map((row) => ({
+                        row,
+                        order: parseInt(row.querySelector('input[name$="-order"]')?.value || '0', 10) || 0,
+                    })).sort((a, b) => a.order - b.order);
+                    galleryRows.forEach(({ row }) => {
                         const url = getImageUrl(row);
                         if (url) block.gallery_urls.push(url);
                     });
@@ -687,6 +709,7 @@
         setMediaPreviewSrc,
         getMediaPreviewUrl,
         toAbsoluteMediaUrl,
+        setSingleFile,
     };
 
     document.addEventListener('DOMContentLoaded', () => {

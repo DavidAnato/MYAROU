@@ -40,7 +40,7 @@
                 <ul class="text-xs space-y-0.5 list-disc list-inside text-gray-500 dark:text-gray-400">
                     <li>Choisissez un type ci-dessous pour insérer un bloc</li>
                     <li>L’aperçu à droite se met à jour en direct</li>
-                    <li>Pour une galerie, enregistrez une fois avant d’ajouter des photos</li>
+                    <li>Pour une galerie : plusieurs images en glisser-déposer (comme la page Galerie)</li>
                 </ul>
             </div>
             <button type="button" @click="dismissTips()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 shrink-0" title="Masquer">✕</button>
@@ -76,16 +76,24 @@
     </div>
 
     <div class="hidden" data-block-empty-template>
+        <fieldset disabled>
         {% with bf=block_formset.empty_form block_index='__prefix__' gallery_images_by_block=gallery_images_by_block %}
         {% include 'dashboard/includes/block_form_card.html' %}
         {% endwith %}
+        </fieldset>
     </div>
 
     {% if image_formset %}
     <div class="hidden" data-block-image-empty-template>
+        <fieldset disabled>
         {% with imgf=image_formset.empty_form %}
         {% include 'dashboard/includes/block_image_row.html' %}
         {% endwith %}
+        </fieldset>
+    </div>
+    <div class="hidden" data-block-gallery-ui-template>
+        {% include 'dashboard/includes/block_gallery_controls.html' %}
+        <div data-gallery-images-list class="space-y-2"></div>
     </div>
     {% endif %}
 </div>

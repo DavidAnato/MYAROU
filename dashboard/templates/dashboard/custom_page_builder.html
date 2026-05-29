@@ -96,10 +96,15 @@
                         </a>
                         {% endif %}
                         {% if save_api_url %}
+                        <button type="button" data-builder-draft
+                                class="inline-flex items-center gap-2 px-5 py-3 border border-amber-300 dark:border-amber-600 text-amber-800 dark:text-amber-200 rounded-xl font-semibold text-sm hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors{% if not page.is_published %} hidden{% endif %}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Repasser en brouillon
+                        </button>
                         <button type="button" data-builder-publish
                                 class="inline-flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 shadow-lg transition-all hover:shadow-xl">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            Publier
+                            <span data-builder-publish-label>{% if page.is_published %}Mettre à jour{% else %}Publier{% endif %}</span>
                         </button>
                         {% else %}
                         <button type="submit" class="inline-flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 shadow-lg">

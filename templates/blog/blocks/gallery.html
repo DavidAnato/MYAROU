@@ -3,17 +3,32 @@
         {% if title %}
         <h2 class="text-2xl md:text-3xl font-extrabold text-center text-gray-900 dark:text-white mb-8" data-preview="block-{{ block.pk }}-title">{{ title }}</h2>
         {% endif %}
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4" data-gallery-preview-grid data-block-gallery="{{ block.pk }}">
-            {% for img in images %}
-            <figure class="rounded-2xl overflow-hidden shadow-lg bg-gray-100 dark:bg-gray-800">
-                <img src="{{ img.image.url }}" alt="{{ img.get_caption|default:'' }}" class="w-full h-48 md:h-56 object-cover">
-                {% if img.caption or img.caption_en %}
-                <figcaption class="p-3 text-sm text-gray-600 dark:text-gray-400">{% if lang == 'en' and img.caption_en %}{{ img.caption_en }}{% else %}{{ img.caption }}{% endif %}</figcaption>
-                {% endif %}
-            </figure>
-            {% empty %}
-            <p class="col-span-full text-center text-gray-500 dark:text-gray-400" data-gallery-empty-msg>Aucune image</p>
-            {% endfor %}
+        {% with images=images %}
+        <div x-data="{ open: false, i: 0, imgs: [{% for img in images %}'{{ img.image.url }}'{% if not forloop.last %}, {% endif %}{% endfor %}] }" @keydown.window.escape="open=false">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4" data-gallery-preview-grid data-block-gallery="{{ block.pk }}">
+                {% for img in images %}
+                <button type="button" @click="open=true; i={{ forloop.counter0 }}" class="group text-left rounded-2xl overflow-hidden shadow-lg bg-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <img src="{{ img.image.url }}" alt="{{ img.get_caption|default:'' }}" class="w-full h-48 md:h-56 object-cover group-hover:scale-105 transition-transform duration-300">
+                    {% if img.caption or img.caption_en %}
+                    <p class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-[#1E1E1E] group-hover:bg-gray-100 dark:group-hover:bg-[#252525] transition-colors">
+                        {% if lang == 'en' and img.caption_en %}{{ img.caption_en }}{% else %}{{ img.caption }}{% endif %}
+                    </p>
+                    {% endif %}
+                </button>
+                {% empty %}
+                <p class="col-span-full text-center text-gray-500 dark:text-gray-400" data-gallery-empty-msg>Aucune image</p>
+                {% endfor %}
+            </div>
+            <div x-show="open && imgs.length" x-transition.opacity class="fixed inset-0 z-50" style="display: none;">
+                <div class="absolute inset-0 bg-black/80" @click="open=false"></div>
+                <div class="relative h-full flex items-center justify-center px-4">
+                    <img :src="imgs[i]" alt="" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl object-contain" />
+                    <button type="button" @click="open=false" class="absolute top-6 right-6 w-12 h-12 rounded-full bg-white text-gray-900 font-bold">✕</button>
+                    <button type="button" @click="i = (i - 1 + imgs.length) % imgs.length" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 text-gray-900 font-bold">‹</button>
+                    <button type="button" @click="i = (i + 1) % imgs.length" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 text-gray-900 font-bold">›</button>
+                </div>
+            </div>
         </div>
+        {% endwith %}
     </div>
 </section>

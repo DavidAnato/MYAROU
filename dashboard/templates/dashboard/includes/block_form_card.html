@@ -8,7 +8,52 @@
          blockType: '{{ bf.instance.block_type|default:'richtext'|escapejs }}',
          collapsed: {% if block_index == '__prefix__' %}false{% else %}true{% endif %},
          locale: 'fr',
-         get meta() { return (window.BUILDER_CATALOG && window.BUILDER_CATALOG[this.blockType]) || {}; }
+         get meta() { return (window.BUILDER_CATALOG && window.BUILDER_CATALOG[this.blockType]) || {}; },
+         usesI18nTabs() {
+             return ['hero','richtext','image','image_text','gallery','video','cta','faq'].includes(this.blockType);
+         },
+         showBadge() { return this.blockType === 'hero'; },
+         showTitle() {
+             return ['hero','image','image_text','gallery','video','cta','faq'].includes(this.blockType);
+         },
+         titleLabelFr() {
+             if (this.blockType === 'image') return 'Légende';
+             if (this.blockType === 'faq') return 'Titre de section';
+             return 'Titre';
+         },
+         titleLabelEn() {
+             if (this.blockType === 'image') return 'Caption';
+             if (this.blockType === 'faq') return 'Section title';
+             return 'Title';
+         },
+         showSubtitle() { return ['hero','video','cta'].includes(this.blockType); },
+         subtitleLabelFr() {
+             if (this.blockType === 'video') return 'Description';
+             if (this.blockType === 'cta') return 'Texte';
+             return 'Sous-titre';
+         },
+         subtitleLabelEn() {
+             if (this.blockType === 'video') return 'Description';
+             if (this.blockType === 'cta') return 'Text';
+             return 'Subtitle';
+         },
+         showContent() { return ['richtext','image_text'].includes(this.blockType); },
+         showImage() { return ['hero','image','image_text'].includes(this.blockType); },
+         imageLabel() {
+             if (this.blockType === 'hero') return 'Image de fond';
+             return 'Image';
+         },
+         showImageAlt() { return this.blockType === 'image'; },
+         showVideoUrl() { return this.blockType === 'video'; },
+         showCtaFields() { return this.blockType === 'cta'; },
+         showLayout() { return ['image_text','cta','spacer'].includes(this.blockType); },
+         layoutLabel() {
+             if (this.blockType === 'spacer') return 'Hauteur de l\'espace';
+             if (this.blockType === 'cta') return 'Style';
+             return 'Disposition';
+         },
+         showGallery() { return this.blockType === 'gallery'; },
+         showFaq() { return this.blockType === 'faq'; }
      }">
     <div class="builder-card-header flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 bg-gray-50/90 dark:bg-gray-900/60 border-b border-gray-200 dark:border-gray-700"
          @click="collapsed = !collapsed">
@@ -50,106 +95,80 @@
     </div>
 
     <div class="p-4 sm:p-5 space-y-4" x-show="!collapsed">
-        <div class="builder-locale-tabs" x-show="['hero','richtext','image','image_text','gallery','video','cta','faq'].includes(blockType)">
+        <div class="builder-locale-tabs" x-show="usesI18nTabs()" x-cloak>
             <div class="builder-locale-pills">
                 <button type="button" class="builder-locale-pill" :class="locale === 'fr' && 'is-active'" @click="locale = 'fr'">FR</button>
                 <button type="button" class="builder-locale-pill" :class="locale === 'en' && 'is-active'" @click="locale = 'en'">EN</button>
             </div>
         </div>
 
-        <div x-show="blockType === 'hero'" x-cloak class="builder-field-group builder-field-group--2" data-block-media-for="hero">
-            <div class="builder-field" x-show="locale === 'fr'"><label>Badge</label>{{ bf.badge }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Badge</label>{{ bf.badge_en }}</div>
-            <div class="builder-field" x-show="locale === 'fr'"><label>Titre</label>{{ bf.title }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Titre</label>{{ bf.title_en }}</div>
-            <div class="builder-field md:col-span-2" x-show="locale === 'fr'"><label>Sous-titre</label>{{ bf.subtitle }}</div>
-            <div class="builder-field md:col-span-2" x-show="locale === 'en'"><label>Sous-titre</label>{{ bf.subtitle_en }}</div>
-            <div class="builder-field md:col-span-2">
-                {% include 'dashboard/includes/media_field.html' with field=bf.image label="Image de fond" %}
+        <div class="builder-field-group builder-field-group--2">
+            <div class="builder-field" x-show="showBadge() && locale === 'fr'" x-cloak><label>Badge</label>{{ bf.badge }}</div>
+            <div class="builder-field" x-show="showBadge() && locale === 'en'" x-cloak><label>Badge</label>{{ bf.badge_en }}</div>
+
+            <div class="builder-field" x-show="showTitle() && locale === 'fr'" x-cloak>
+                <label x-text="titleLabelFr()">Titre</label>{{ bf.title }}
+            </div>
+            <div class="builder-field" x-show="showTitle() && locale === 'en'" x-cloak>
+                <label x-text="titleLabelEn()">Titre</label>{{ bf.title_en }}
+            </div>
+
+            <div class="builder-field md:col-span-2" x-show="showSubtitle() && locale === 'fr'" x-cloak>
+                <label x-text="subtitleLabelFr()">Sous-titre</label>{{ bf.subtitle }}
+            </div>
+            <div class="builder-field md:col-span-2" x-show="showSubtitle() && locale === 'en'" x-cloak>
+                <label x-text="subtitleLabelEn()">Sous-titre</label>{{ bf.subtitle_en }}
+            </div>
+
+            <div class="builder-field md:col-span-2" x-show="showContent() && locale === 'fr'" x-cloak><label>Contenu</label>{{ bf.content }}</div>
+            <div class="builder-field md:col-span-2" x-show="showContent() && locale === 'en'" x-cloak><label>Contenu</label>{{ bf.content_en }}</div>
+
+            <div class="builder-field md:col-span-2" x-show="showImage()" x-cloak :data-block-media-for="blockType">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2" x-text="imageLabel()">Image</label>
+                {% include 'dashboard/includes/media_field.html' with field=bf.image label="" %}
+            </div>
+
+            <div class="builder-field" x-show="showImageAlt()" x-cloak><label>Texte alternatif</label>{{ bf.image_alt }}</div>
+
+            <div class="builder-field md:col-span-2" x-show="showVideoUrl()" x-cloak><label>URL embed (YouTube, Vimeo…)</label>{{ bf.video_url }}</div>
+
+            <div class="builder-field" x-show="showCtaFields() && locale === 'fr'" x-cloak><label>Libellé bouton</label>{{ bf.button_text }}</div>
+            <div class="builder-field" x-show="showCtaFields() && locale === 'en'" x-cloak><label>Libellé bouton</label>{{ bf.button_text_en }}</div>
+            <div class="builder-field md:col-span-2" x-show="showCtaFields()" x-cloak><label>Lien du bouton</label>{{ bf.button_url }}</div>
+
+            <div class="builder-field md:col-span-2" x-show="showLayout()" x-cloak>
+                <label x-text="layoutLabel()">Disposition</label>{{ bf.layout }}
             </div>
         </div>
 
-        <div x-show="blockType === 'richtext'" x-cloak class="space-y-3">
-            <div class="builder-field" x-show="locale === 'fr'"><label>Contenu</label>{{ bf.content }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Contenu</label>{{ bf.content_en }}</div>
-        </div>
-
-        <div x-show="blockType === 'image'" x-cloak class="space-y-3" data-block-media-for="image">
-            <div class="builder-field md:col-span-2">
-                {% include 'dashboard/includes/media_field.html' with field=bf.image label="Image" %}
-            </div>
-            <div class="builder-field"><label>Texte alternatif</label>{{ bf.image_alt }}</div>
-            <div class="builder-field" x-show="locale === 'fr'"><label>Légende</label>{{ bf.title }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Légende</label>{{ bf.title_en }}</div>
-        </div>
-
-        <div x-show="blockType === 'image_text'" x-cloak class="builder-field-group builder-field-group--2" data-block-media-for="image_text">
-            <div class="builder-field" x-show="locale === 'fr'"><label>Titre</label>{{ bf.title }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Titre</label>{{ bf.title_en }}</div>
-            <div class="builder-field md:col-span-2" x-show="locale === 'fr'"><label>Contenu</label>{{ bf.content }}</div>
-            <div class="builder-field md:col-span-2" x-show="locale === 'en'"><label>Contenu</label>{{ bf.content_en }}</div>
-            <div class="builder-field md:col-span-2">
-                {% include 'dashboard/includes/media_field.html' with field=bf.image label="Image" %}
-            </div>
-            <div class="builder-field md:col-span-2"><label>Disposition</label>{{ bf.layout }}</div>
-        </div>
-
-        <div x-show="blockType === 'gallery'" x-cloak class="space-y-3">
-            <div class="builder-field" x-show="locale === 'fr'"><label>Titre</label>{{ bf.title }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Titre</label>{{ bf.title_en }}</div>
-            <div data-block-gallery-images data-block-id="{{ bf.instance.pk|default:'' }}" data-block-card-index="{{ block_index }}" class="builder-gallery-zone space-y-2">
+        <div x-show="showGallery()" x-cloak class="space-y-3">
+            <div data-block-gallery-section
+                 data-block-id="{{ bf.instance.pk|default:'' }}"
+                 data-block-card-index="{{ block_index }}"
+                 data-gallery-max="50"
+                 class="builder-gallery-zone space-y-3">
                 {% if bf.instance.pk %}
-                <p class="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Images de la galerie</p>
+                {% include 'dashboard/includes/block_gallery_controls.html' %}
                 <div data-gallery-images-list class="space-y-2">
                     {% for img_prefix, imgf in gallery_images_by_block|dict_get:bf.instance.pk %}
                     {% include 'dashboard/includes/block_image_row.html' with imgf=imgf img_form_prefix=img_prefix %}
                     {% endfor %}
                 </div>
-                <button type="button" data-add-block-image data-target-block="{{ bf.instance.pk }}"
-                        class="mt-2 inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Ajouter une image
-                </button>
                 {% else %}
-                <p class="text-xs text-gray-500 dark:text-gray-400" data-gallery-pending>
-                    Sauvegarde automatique en cours… Vous pourrez ajouter des photos dès que le bloc sera enregistré.
+                <p class="text-xs text-gray-500 dark:text-gray-400 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 p-4" data-gallery-pending>
+                    Enregistrement automatique du bloc… Vous pourrez ensuite glisser-déposer plusieurs photos comme sur la page Galerie.
                 </p>
                 {% endif %}
             </div>
         </div>
 
-        <div x-show="blockType === 'video'" x-cloak class="builder-field-group builder-field-group--2">
-            <div class="builder-field" x-show="locale === 'fr'"><label>Titre</label>{{ bf.title }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Titre</label>{{ bf.title_en }}</div>
-            <div class="builder-field md:col-span-2" x-show="locale === 'fr'"><label>Description</label>{{ bf.subtitle }}</div>
-            <div class="builder-field md:col-span-2" x-show="locale === 'en'"><label>Description</label>{{ bf.subtitle_en }}</div>
-            <div class="builder-field md:col-span-2"><label>URL embed (YouTube, Vimeo…)</label>{{ bf.video_url }}</div>
-        </div>
-
-        <div x-show="blockType === 'cta'" x-cloak class="builder-field-group builder-field-group--2">
-            <div class="builder-field" x-show="locale === 'fr'"><label>Titre</label>{{ bf.title }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Titre</label>{{ bf.title_en }}</div>
-            <div class="builder-field md:col-span-2" x-show="locale === 'fr'"><label>Texte</label>{{ bf.subtitle }}</div>
-            <div class="builder-field md:col-span-2" x-show="locale === 'en'"><label>Texte</label>{{ bf.subtitle_en }}</div>
-            <div class="builder-field" x-show="locale === 'fr'"><label>Libellé bouton</label>{{ bf.button_text }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Libellé bouton</label>{{ bf.button_text_en }}</div>
-            <div class="builder-field md:col-span-2"><label>Lien du bouton</label>{{ bf.button_url }}</div>
-            <div class="builder-field md:col-span-2"><label>Style</label>{{ bf.layout }}</div>
-        </div>
-
-        <div x-show="blockType === 'faq'" x-cloak class="space-y-3" data-faq-editor>
-            <div class="builder-field" x-show="locale === 'fr'"><label>Titre de section</label>{{ bf.title }}</div>
-            <div class="builder-field" x-show="locale === 'en'"><label>Titre de section</label>{{ bf.title_en }}</div>
+        <div x-show="showFaq()" x-cloak class="space-y-3" data-faq-editor>
             {{ bf.faq_json }}
             <div data-faq-rows class="space-y-2"></div>
             <button type="button" data-add-faq-row class="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Question / réponse
             </button>
-        </div>
-
-        <div x-show="blockType === 'spacer'" x-cloak class="builder-field">
-            <label>Hauteur de l'espace</label>{{ bf.layout }}
         </div>
 
         {% if bf.errors %}

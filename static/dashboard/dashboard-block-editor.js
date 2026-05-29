@@ -132,31 +132,167 @@
         }
     }
 
-    function enableGalleryBlock(form, card, blockId) {
-        const zone = card.querySelector('[data-block-gallery-images]');
-        if (!zone) return;
+    function updateBlockGalleryIndices(section) {
+        const list = section && section.querySelector('[data-gallery-images-list]');
+        if (!list) return;
+        const rows = [...list.querySelectorAll('[data-block-image-form]:not(.hidden)')];
+        rows.forEach((row, idx) => {
+            const label = row.querySelector('[data-block-gallery-index]');
+            if (label) label.textContent = String(idx + 1);
+            const orderInput = row.querySelector('input[name$="-order"]');
+            if (orderInput) orderInput.value = String(idx * 10);
+        });
+        const countEl = section.querySelector('[data-block-gallery-count]');
+        const max = parseInt(section.getAttribute('data-gallery-max') || '50', 10);
+        if (countEl) countEl.textContent = `(${rows.length}/${max})`;
+    }
 
-        zone.setAttribute('data-block-id', String(blockId));
+    function addBlockImageRow(form, section, file) {
+        const blockId = section.getAttribute('data-block-id');
+        if (!blockId) return null;
+
+        const template = form.querySelector('[data-block-image-empty-template]');
+        const list = section.querySelector('[data-gallery-images-list]');
+        const totalInput = getTotalInput(form, 'images');
+        if (!template || !list || !totalInput) return null;
+
+        const max = parseInt(section.getAttribute('data-gallery-max') || '50', 10);
+        const visibleCount = list.querySelectorAll('[data-block-image-form]:not(.hidden)').length;
+        if (visibleCount >= max) return null;
+
+        const index = parseInt(totalInput.value, 10);
+        let html = getTemplateHtml(template).replace(/images-__prefix__/g, `images-${index}`).replace(/__prefix__/g, String(index));
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html.trim();
+        const row = wrapper.firstElementChild;
+        enableFormFields(row);
+        row.setAttribute('data-block-id', blockId);
+        row.setAttribute('data-form-prefix', String(index));
+        const cardIndex = section.getAttribute('data-block-card-index');
+        if (cardIndex !== null && cardIndex !== '') {
+            row.setAttribute('data-block-card-index', cardIndex);
+        }
+        const blockInput = row.querySelector('input[name$="-block"]');
+        if (blockInput) blockInput.value = blockId;
+        const orderInput = row.querySelector('input[name$="-order"]');
+        if (orderInput) orderInput.value = String(visibleCount * 10);
+
+        list.appendChild(row);
+        totalInput.value = index + 1;
+
+        if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
+            window.DashboardForms.initMediaDropzones(form);
+        }
+
+        if (file && window.DashboardForms && typeof window.DashboardForms.setSingleFile === 'function') {
+            const inp = row.querySelector('input[type="file"][name$="-image"]');
+            window.DashboardForms.setSingleFile(inp, file);
+        }
+
+        updateBlockGalleryIndices(section);
+        return row;
+    }
+
+    function initBlockGallerySection(section, form) {
+        if (!section || section.dataset.blockGalleryBound === '1') return;
+        const blockId = section.getAttribute('data-block-id');
+        if (!blockId) return;
+        section.dataset.blockGalleryBound = '1';
+
+        updateBlockGalleryIndices(section);
+
+        const multiInput = section.querySelector('[data-block-gallery-multi-input]');
+        const multiBtn = section.querySelector('[data-block-gallery-multi-button]');
+        const addBtn = section.querySelector('[data-block-gallery-add-one]');
+        const dropzone = section.querySelector('[data-block-gallery-dropzone]');
+
+        const addFiles = (files) => {
+            let added = false;
+            Array.from(files || []).forEach((f) => {
+                if (!f.type || !f.type.startsWith('image/')) return;
+                const row = addBlockImageRow(form, section, f);
+                if (row) added = true;
+            });
+            if (added) builderNotify(form, true);
+        };
+
+        if (multiBtn && multiInput) {
+            multiBtn.addEventListener('click', () => multiInput.click());
+            multiInput.addEventListener('change', () => {
+                addFiles(multiInput.files);
+                multiInput.value = '';
+            });
+        }
+        if (addBtn) {
+            addBtn.addEventListener('click', () => {
+                if (addBlockImageRow(form, section)) builderNotify(form, true);
+            });
+        }
+        if (dropzone) {
+            const setGalleryDropzoneActive = (active) => {
+                dropzone.classList.toggle('border-emerald-500', active);
+                dropzone.classList.toggle('bg-emerald-50', active);
+                dropzone.classList.toggle('dark:bg-emerald-900/20', active);
+                dropzone.classList.toggle('border-gray-300', !active);
+                dropzone.classList.toggle('dark:border-gray-600', !active);
+            };
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                setGalleryDropzoneActive(true);
+            });
+            dropzone.addEventListener('dragleave', () => setGalleryDropzoneActive(false));
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                setGalleryDropzoneActive(false);
+                addFiles(e.dataTransfer.files);
+            });
+        }
+
+        const list = section.querySelector('[data-gallery-images-list]');
+        if (list && window.Sortable && !list.dataset.sortableBound) {
+            list.dataset.sortableBound = '1';
+            Sortable.create(list, {
+                handle: '.builder-image-row-handle',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: () => {
+                    updateBlockGalleryIndices(section);
+                    builderNotify(form, true);
+                },
+            });
+        }
+    }
+
+    function initAllBlockGallerySections(form) {
+        if (!form) return;
+        form.querySelectorAll('[data-block-gallery-section]').forEach((section) => {
+            if (section.getAttribute('data-block-id')) {
+                initBlockGallerySection(section, form);
+            }
+        });
+    }
+
+    function enableGalleryBlock(form, card, blockId) {
+        const section = card.querySelector('[data-block-gallery-section]');
+        if (!section) return;
+
+        section.setAttribute('data-block-id', String(blockId));
         card.setAttribute('data-block-pk', String(blockId));
 
-        const pending = zone.querySelector('[data-gallery-pending]');
-        if (!pending) return;
+        const pending = section.querySelector('[data-gallery-pending]');
+        if (pending) {
+            const tpl = form.querySelector('[data-block-gallery-ui-template]');
+            if (tpl) {
+                section.innerHTML = tpl.innerHTML;
+            } else {
+                pending.remove();
+            }
+            delete section.dataset.blockGalleryBound;
+        }
 
-        const list = document.createElement('div');
-        list.className = 'space-y-2';
-        list.setAttribute('data-gallery-images-list', '');
-        pending.replaceWith(list);
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.setAttribute('data-add-block-image', '');
-        btn.setAttribute('data-target-block', String(blockId));
-        btn.className = 'mt-2 inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-bold hover:underline';
-        btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Ajouter une image';
-        zone.appendChild(btn);
-
-        const section = form.querySelector('[data-block-section]');
-        bindBlockCard(card, form, section);
+        initBlockGallerySection(section, form);
+        const blockSection = form.querySelector('[data-block-section]');
+        bindBlockCard(card, form, blockSection);
     }
 
     function setAllBlocksCollapsed(form, collapsed) {
@@ -229,6 +365,20 @@
         if (typeSelect) typeSelect.value = blockType;
     }
 
+    function enableFormFields(root) {
+        if (!root) return;
+        root.querySelectorAll('fieldset[disabled]').forEach((fs) => { fs.disabled = false; });
+        root.querySelectorAll('input[disabled], select[disabled], textarea[disabled], button[disabled]').forEach((el) => {
+            el.disabled = false;
+        });
+    }
+
+    function getTemplateHtml(template) {
+        if (!template) return '';
+        const fieldset = template.querySelector('fieldset');
+        return fieldset ? fieldset.innerHTML : template.innerHTML;
+    }
+
     function addBlockFromTemplate(section, form, blockType) {
         const template = section.querySelector('[data-block-empty-template]');
         const list = section.querySelector('[data-block-forms]');
@@ -237,12 +387,13 @@
 
         const index = parseInt(totalInput.value, 10);
         const type = blockType || 'richtext';
-        let html = template.innerHTML.replace(/__prefix__/g, String(index));
+        let html = getTemplateHtml(template).replace(/__prefix__/g, String(index));
         html = html.replace(/blocks-__prefix__/g, `blocks-${index}`);
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html.trim();
         const card = wrapper.firstElementChild;
         card.setAttribute('data-form-prefix', String(index));
+        enableFormFields(card);
         list.appendChild(card);
 
         totalInput.value = index + 1;
@@ -380,55 +531,38 @@
     }
 
     function addBlockImage(form, blockId) {
-        const template = form.querySelector('[data-block-image-empty-template]');
-        const gallery = form.querySelector(`[data-block-gallery-images][data-block-id="${blockId}"]`);
-        const list = gallery && gallery.querySelector('[data-gallery-images-list]');
-        const totalInput = getTotalInput(form, 'images');
-        if (!template || !list || !totalInput) return;
-
-        const index = parseInt(totalInput.value, 10);
-        let html = template.innerHTML.replace(/images-__prefix__/g, `images-${index}`).replace(/__prefix__/g, String(index));
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = html.trim();
-        const row = wrapper.firstElementChild;
-        row.setAttribute('data-block-id', blockId);
-        row.setAttribute('data-form-prefix', String(index));
-        const cardIndex = gallery.getAttribute('data-block-card-index');
-        if (cardIndex !== null && cardIndex !== '') {
-            row.setAttribute('data-block-card-index', cardIndex);
-        }
-        const blockInput = row.querySelector('input[name$="-block"]');
-        if (blockInput) blockInput.value = blockId;
-        list.appendChild(row);
-        totalInput.value = index + 1;
-        if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
-            window.DashboardForms.initMediaDropzones(form);
-        }
-        builderNotify(form, true);
+        const section = form.querySelector(`[data-block-gallery-section][data-block-id="${blockId}"]`);
+        if (!section) return;
+        if (addBlockImageRow(form, section)) builderNotify(form, true);
     }
 
     async function handleDeleteBlockImage(btn, form) {
         if (window.DashboardForms && window.DashboardForms.confirm) {
             const ok = await window.DashboardForms.confirm({
                 title: 'Supprimer cette image ?',
-                message: 'Cette image sera retirée de la galerie.',
+                message: 'Cette image sera retirée de la galerie du bloc.',
             });
             if (!ok) return;
         }
         const row = btn.closest('[data-block-image-form]');
-        const pk = btn.getAttribute('data-image-pk');
-        if (pk && !btn.hasAttribute('data-delete-new')) {
-            const url = (window.DASHBOARD_API.deleteBlockImage || '') + pk + '/';
-            try {
-                await fetch(url, {
-                    method: 'POST',
-                    headers: { 'X-CSRFToken': window.DASHBOARD_API.csrf },
-                });
-            } catch (e) { /* ignore */ }
+        if (!row) return;
+        const section = row.closest('[data-block-gallery-section]');
+        const isNew = btn.hasAttribute('data-delete-new');
+
+        if (isNew) {
+            row.remove();
+            const totalInput = getTotalInput(form, 'images');
+            if (totalInput) {
+                totalInput.value = Math.max(0, parseInt(totalInput.value, 10) - 1);
+            }
+            renumberImageFormPrefixes(form);
+        } else {
+            const del = row.querySelector('input[name$="-DELETE"]');
+            if (del) del.checked = true;
+            row.classList.add('hidden');
         }
-        const del = row && row.querySelector('input[name$="-DELETE"]');
-        if (del) del.checked = true;
-        if (row) row.classList.add('hidden');
+
+        if (section) updateBlockGalleryIndices(section);
         builderNotify(form, true);
     }
 
@@ -469,10 +603,6 @@
             });
         }
 
-        card.querySelector('[data-add-block-image]')?.addEventListener('click', (e) => {
-            const blockId = e.currentTarget.getAttribute('data-target-block');
-            if (blockId) addBlockImage(form, blockId);
-        });
     }
 
     function initBlockEditor(form) {
@@ -520,6 +650,7 @@
         if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
             window.DashboardForms.initMediaDropzones(form);
         }
+        initAllBlockGallerySections(form);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -547,14 +678,20 @@
         },
         prepareForSave(form) {
             syncCKEditors();
-            syncAllFaqEditors(form);
+            if (form) syncAllFaqEditors(form);
             const list = form.querySelector('[data-block-forms]');
             if (list) renumberBlockFormPrefixes(form, list);
             renumberImageFormPrefixes(form);
+            syncCKEditors();
         },
         enableGalleryBlock,
         updateMediaUrl,
         renumberBlockFormPrefixes,
+        refreshGallerySections(form) {
+            initAllBlockGallerySections(form);
+            if (!form) return;
+            form.querySelectorAll('[data-block-gallery-section]').forEach(updateBlockGalleryIndices);
+        },
         notify: builderNotify,
     };
 })();
