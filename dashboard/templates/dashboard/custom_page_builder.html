@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="{% static 'dashboard/dashboard-block-editor.css' %}">
 <style>
     .django-ckeditor-widget { width: 100% !important; }
+    .cke_notifications_area,
+    .cke_notification { display: none !important; visibility: hidden !important; opacity: 0 !important; height: 0 !important; pointer-events: none !important; }
 </style>
 {% endblock %}
 
@@ -31,7 +33,7 @@
             <div class="mb-6">
                 <h2 class="text-lg font-extrabold text-gray-900 dark:text-white">Page builder</h2>
                 <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                    Vos modifications sont enregistrées automatiquement. Publiez quand la page est prête.
+                    Aperçu instantané à droite · sauvegarde automatique à chaque modification.
                 </p>
             </div>
 
@@ -133,4 +135,5 @@ window.BUILDER_CATALOG = {{ block_catalog_json|safe }};
 <script src="{% static 'dashboard/dashboard-preview-resize.js' %}"></script>
 {{ form.media }}
 {% if block_formset %}{{ block_formset.media }}{% endif %}
+<script src="{% static 'dashboard/dashboard-ckeditor-fix.js' %}"></script>
 {% endblock %}

@@ -1,10 +1,16 @@
 (function () {
     'use strict';
 
-    const DEBOUNCE_MS = 1200;
+    const DEBOUNCE_MS = 600;
 
     function getCsrf() {
         return window.DASHBOARD_API?.csrf || '';
+    }
+
+    function triggerLivePreview(form) {
+        if (window.DashboardForms && typeof window.DashboardForms.triggerPreviewUpdate === 'function') {
+            window.DashboardForms.triggerPreviewUpdate(form);
+        }
     }
 
     function setStatus(el, state, message) {
@@ -100,13 +106,19 @@
 
         const markDirty = () => {
             dirty = true;
-            if (!inflight) setStatus(statusEl, 'idle', 'Modifications non synchronisées…');
+            triggerLivePreview(form);
+            if (!inflight) {
+                setStatus(statusEl, 'idle', 'Synchronisation…');
+            }
         };
 
-        const schedule = () => {
+        const scheduleSave = () => {
             markDirty();
             if (timer) clearTimeout(timer);
-            timer = setTimeout(() => save(false), DEBOUNCE_MS);
+            timer = setTimeout(() => {
+                timer = null;
+                save(false);
+            }, DEBOUNCE_MS);
         };
 
         const save = async (publish) => {
@@ -153,7 +165,7 @@
                     'saved',
                     data.is_published
                         ? `Publiée · ${time}`
-                        : `Brouillon enregistré · ${time}`,
+                        : `Synchronisé · ${time}`,
                 );
 
                 if (publishedInput) {
@@ -162,7 +174,13 @@
                 updatePublishedBadge(data.is_published);
                 applyBlockMapping(form, data.blocks);
                 applyImageMapping(form, data.images);
-                reloadPreviewIframe(data.preview_url);
+
+                triggerLivePreview(form);
+
+                if (publish) {
+                    reloadPreviewIframe(data.preview_url);
+                }
+
                 form.dispatchEvent(new CustomEvent('builder:saved', { detail: data }));
 
                 if (publish && data.page_href) {
@@ -171,24 +189,24 @@
                 }
 
                 return data;
-            }).catch((err) => {
+            }).catch(() => {
                 if (statusEl?.dataset.state !== 'error') {
                     setStatus(statusEl, 'error', 'Erreur réseau');
                 }
-                throw err;
             }).finally(() => {
                 inflight = null;
-                if (dirty && !timer) schedule();
+                if (dirty && !timer) scheduleSave();
             });
 
             return inflight;
         };
 
-        form.addEventListener('input', schedule);
-        form.addEventListener('change', schedule);
+        form.addEventListener('input', scheduleSave);
+        form.addEventListener('change', scheduleSave);
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            if (timer) clearTimeout(timer);
             save(true);
         });
 
@@ -201,9 +219,10 @@
         }
 
         setStatus(statusEl, 'saved', 'Prêt');
-        setTimeout(() => save(false), 400);
+        triggerLivePreview(form);
+        setTimeout(() => save(false), 300);
 
-        return { save, schedule };
+        return { save, scheduleSave };
     }
 
     document.addEventListener('DOMContentLoaded', () => {

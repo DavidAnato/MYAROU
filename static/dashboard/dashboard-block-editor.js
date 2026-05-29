@@ -51,12 +51,23 @@
 
     function initCKEditorIn(root) {
         if (!window.CKEDITOR) return;
+        const form = root.closest('form') || document.getElementById('pageSettingsForm');
         root.querySelectorAll('textarea[id]').forEach((ta) => {
             if (ta.closest('[data-block-empty-template]')) return;
-            if (CKEDITOR.instances[ta.id]) return;
             if (!ta.id.includes('content')) return;
+
+            if (CKEDITOR.instances[ta.id]) {
+                window.DashboardCKEditorFix?.setupEditor?.(CKEDITOR.instances[ta.id]);
+                return;
+            }
+
             try {
-                CKEDITOR.replace(ta.id);
+                const editor = CKEDITOR.replace(ta.id);
+                if (editor) {
+                    editor.on('instanceReady', () => {
+                        window.DashboardCKEditorFix?.setupEditor?.(editor);
+                    });
+                }
             } catch (e) { /* ignore */ }
         });
     }
@@ -245,6 +256,8 @@
             window.DashboardForms.initMediaDropzones(card);
         }
         initCKEditorIn(card);
+        window.DashboardCKEditorFix?.hideCkeNotifications?.();
+        form.dispatchEvent(new Event('input', { bubbles: true }));
         form.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
@@ -308,7 +321,10 @@
         });
 
         container.querySelectorAll('input, textarea').forEach((el) => {
-            el.addEventListener('input', () => syncFaqHidden(editor));
+            el.addEventListener('input', () => {
+                syncFaqHidden(editor);
+                formChange(editor);
+            });
         });
     }
 

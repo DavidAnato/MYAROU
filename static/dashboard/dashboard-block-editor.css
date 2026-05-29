@@ -427,3 +427,23 @@
     border-color: #10b981;
     background: rgba(16, 185, 129, 0.05);
 }
+
+/* Masquer les alertes CKEditor (version non sécurisée, etc.) */
+.cke_notifications_area,
+.cke_notification,
+.cke_notification_warning,
+.cke_notification_info,
+.cke_notification_success,
+.cke_notification_error {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    left: -9999px !important;
+}
+
+[x-cloak] { display: none !important; }

@@ -91,7 +91,11 @@
     }
 
     function triggerPreviewUpdate(form) {
-        if (form) form.dispatchEvent(new Event('change', { bubbles: true }));
+        if (form && typeof form._previewSchedule === 'function') {
+            form._previewSchedule();
+        } else if (form) {
+            form.dispatchEvent(new Event('change', { bubbles: true }));
+        }
     }
 
     function getGalleryUrlsFromForm(form) {
@@ -489,16 +493,18 @@
             if (!iframe.contentWindow) return;
             iframe.contentWindow.postMessage({ type: msgType, payload: buildPayload() }, '*');
         };
-        const schedule = () => {
+        const schedulePreview = () => {
             if (raf) cancelAnimationFrame(raf);
             raf = requestAnimationFrame(send);
         };
-        form.addEventListener('input', schedule);
-        form.addEventListener('change', schedule);
-        iframe.addEventListener('load', schedule);
+        form._previewSchedule = schedulePreview;
+        form.addEventListener('input', schedulePreview);
+        form.addEventListener('change', schedulePreview);
+        iframe.addEventListener('load', schedulePreview);
         window.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'page-preview-ready') schedule();
+            if (event.data && event.data.type === 'page-preview-ready') schedulePreview();
         });
+        schedulePreview();
     }
 
     function initSiteLinksForm(form) {
@@ -555,6 +561,7 @@
         initSiteLinks: initSiteLinksForm,
         initMediaDropzones,
         bindDeleteButtons,
+        triggerPreviewUpdate,
     };
 
     document.addEventListener('DOMContentLoaded', () => {
