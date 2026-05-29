@@ -25,7 +25,7 @@ from dashboard.page_block_forms import (
     CustomPageBlockFormSet,
     CustomPageBlockImageFormSet,
 )
-from homepage.page_blocks import BLOCK_TYPE_CHOICES
+from homepage.page_blocks import BLOCK_CATALOG, BLOCK_TYPE_CHOICES
 from .form_layout import build_section_layout, SITE_FORM_SECTIONS
 from homepage.models import HomeSettings, HomeGalleryImage
 import json
@@ -595,12 +595,18 @@ def custom_page_edit(request, pk):
             request.POST, request.FILES, queryset=image_qs, prefix='images',
         )
         if form.is_valid() and block_formset.is_valid() and image_formset.is_valid():
-            form.save()
+            page = form.save()
+            block_formset.instance = page
             block_formset.save()
             image_formset.save()
             messages.success(request, f'Page « {page.title} » enregistrée.')
             return redirect('dashboard:custom_page_edit', pk=page.pk)
-        messages.error(request, 'Corrigez les erreurs dans le formulaire ou les blocs.')
+        if not form.is_valid():
+            messages.error(request, f'Paramètres : {form.errors.as_text()}')
+        if not block_formset.is_valid():
+            messages.error(request, f'Blocs : {block_formset.errors.as_text()}')
+        if not image_formset.is_valid():
+            messages.error(request, f'Images : {image_formset.errors.as_text()}')
     else:
         form = CustomPageMetaForm(instance=page)
         block_formset = CustomPageBlockFormSet(instance=page)
@@ -618,6 +624,8 @@ def custom_page_edit(request, pk):
         'image_formset': image_formset,
         'gallery_images_by_block': gallery_images_by_block,
         'block_type_choices': BLOCK_TYPE_CHOICES,
+        'block_catalog': BLOCK_CATALOG,
+        'block_catalog_json': json.dumps({item['type']: item for item in BLOCK_CATALOG}, ensure_ascii=False),
         'action': 'Enregistrer',
         'page': page,
         'page_title': f'Page builder — {page.title}',

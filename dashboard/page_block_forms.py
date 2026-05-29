@@ -73,8 +73,12 @@ class CustomPageBlockForm(forms.ModelForm):
             'layout',
         ]
         widgets = {
-            'block_type': forms.Select(attrs={'class': WIDGET_CLASS, 'data-block-type-select': '1'}),
-            'order': forms.NumberInput(attrs={'min': 0, 'class': 'w-20 order-input'}),
+            'block_type': forms.Select(attrs={
+                'class': WIDGET_CLASS + ' builder-type-select',
+                'data-block-type-select': '1',
+                'x-on:change': 'blockType = $event.target.value',
+            }),
+            'order': forms.NumberInput(attrs={'min': 0, 'class': 'builder-order-hidden'}),
             'layout': forms.Select(choices=[]),
             'content': forms.Textarea(attrs={'rows': 4}),
             'content_en': forms.Textarea(attrs={'rows': 4}),
@@ -83,6 +87,10 @@ class CustomPageBlockForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         _style_form(self)
+        self.fields['order'].widget.attrs['class'] = 'builder-order-hidden'
+        self.fields['block_type'].widget.attrs['class'] = (
+            WIDGET_CLASS + ' builder-type-select'
+        )
         self.fields['layout'].widget.choices = [('', '—')] + list(
             LAYOUT_IMAGE_TEXT + LAYOUT_CTA + LAYOUT_SPACER
         )
@@ -119,7 +127,7 @@ class CustomPageBlockImageForm(forms.ModelForm):
         fields = ['block', 'image', 'caption', 'caption_en', 'order']
         widgets = {
             'block': forms.HiddenInput(),
-            'order': forms.NumberInput(attrs={'min': 0, 'class': 'w-16'}),
+            'order': forms.NumberInput(attrs={'min': 0, 'class': 'builder-order-hidden'}),
             'caption': forms.TextInput(attrs={'placeholder': 'Légende'}),
             'caption_en': forms.TextInput(attrs={'placeholder': 'Caption (EN)'}),
         }
@@ -127,6 +135,7 @@ class CustomPageBlockImageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         _style_form(self)
+        self.fields['order'].widget.attrs['class'] = 'builder-order-hidden'
 
 
 CustomPageBlockFormSet = inlineformset_factory(

@@ -46,6 +46,20 @@ BLOCK_FIELDS = {
 
 SPACER_HEIGHTS = {'sm': 'h-8', 'md': 'h-16', 'lg': 'h-28'}
 
+BLOCK_CATALOG = [
+    {'type': 'hero', 'label': 'Hero', 'description': 'Grande bannière en tête de page', 'color': 'emerald', 'icon': 'hero'},
+    {'type': 'richtext', 'label': 'Texte riche', 'description': 'Paragraphes, listes, liens', 'color': 'sky', 'icon': 'text'},
+    {'type': 'image', 'label': 'Image', 'description': 'Photo seule avec légende', 'color': 'violet', 'icon': 'image'},
+    {'type': 'image_text', 'label': 'Image + texte', 'description': 'Photo et contenu côte à côte', 'color': 'indigo', 'icon': 'columns'},
+    {'type': 'gallery', 'label': 'Galerie', 'description': 'Grille de plusieurs photos', 'color': 'pink', 'icon': 'gallery'},
+    {'type': 'video', 'label': 'Vidéo', 'description': 'Intégration YouTube / Vimeo', 'color': 'rose', 'icon': 'video'},
+    {'type': 'cta', 'label': 'Call-to-action', 'description': 'Encadré avec bouton', 'color': 'amber', 'icon': 'cta'},
+    {'type': 'faq', 'label': 'FAQ', 'description': 'Questions / réponses', 'color': 'teal', 'icon': 'faq'},
+    {'type': 'spacer', 'label': 'Espacement', 'description': 'Espace vertical entre sections', 'color': 'slate', 'icon': 'spacer'},
+]
+
+BLOCK_CATALOG_MAP = {item['type']: item for item in BLOCK_CATALOG}
+
 
 def block_uses_gallery(block_type):
     return block_type == 'gallery'

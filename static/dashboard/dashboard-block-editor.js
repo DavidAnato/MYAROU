@@ -5,52 +5,134 @@
         return form.querySelector(`input[name="${prefix}-TOTAL_FORMS"]`);
     }
 
-    function reindexOrders(list) {
-        list.querySelectorAll('[data-block-form]:not(.hidden)').forEach((card, idx) => {
-            const orderInput = card.querySelector('.order-input, input[name$="-order"]');
+    function getVisibleBlockCards(list) {
+        if (!list) return [];
+        return [...list.querySelectorAll('[data-block-form]:not(.hidden)')];
+    }
+
+    function updateBlockCount(section) {
+        const list = section?.querySelector('[data-block-forms]');
+        const countEl = section?.querySelector('[data-block-count]');
+        const emptyState = section?.querySelector('[data-block-empty-state]');
+        const count = getVisibleBlockCards(list).length;
+
+        if (countEl) {
+            countEl.textContent = count === 0 ? '0' : count === 1 ? '1 bloc' : `${count} blocs`;
+        }
+        if (emptyState) {
+            emptyState.classList.toggle('hidden', count > 0);
+        }
+    }
+
+    function reindexBlockCards(list) {
+        if (!list) return;
+        getVisibleBlockCards(list).forEach((card, idx) => {
+            card.setAttribute('data-block-index', String(idx));
+            const orderInput = card.querySelector('input[name$="-order"]');
             if (orderInput) orderInput.value = idx * 10;
         });
     }
 
-    function initSortable(list, form) {
-        if (!list || !window.Sortable) return;
-        Sortable.create(list, {
-            handle: '.block-drag-handle',
-            animation: 150,
-            ghostClass: 'sortable-ghost',
-            onEnd: () => reindexOrders(list),
+    function setAllBlocksCollapsed(form, collapsed) {
+        form.querySelectorAll('[data-block-form]:not(.hidden)').forEach((card) => {
+            if (window.Alpine && typeof Alpine.$data === 'function') {
+                try {
+                    const data = Alpine.$data(card);
+                    if (data) data.collapsed = collapsed;
+                } catch (e) { /* ignore */ }
+            }
         });
     }
 
-    function addBlockFromTemplate(section, form) {
+    function highlightBlock(card) {
+        if (!card) return;
+        card.classList.remove('builder-card--highlight');
+        void card.offsetWidth;
+        card.classList.add('builder-card--highlight');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        setTimeout(() => card.classList.remove('builder-card--highlight'), 2000);
+    }
+
+    function initSortable(list, form, section) {
+        if (!list || !window.Sortable) return;
+        Sortable.create(list, {
+            handle: '.block-drag-handle',
+            animation: 180,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: () => {
+                reindexBlockCards(list);
+                updateBlockCount(section);
+                form.dispatchEvent(new Event('change', { bubbles: true }));
+            },
+        });
+    }
+
+    function initAlpineCard(card, blockType) {
+        if (window.Alpine && typeof Alpine.initTree === 'function') {
+            Alpine.initTree(card);
+        }
+        if (window.Alpine && typeof Alpine.$data === 'function') {
+            try {
+                const data = Alpine.$data(card);
+                if (data) {
+                    data.blockType = blockType;
+                    data.collapsed = false;
+                    data.locale = 'fr';
+                }
+            } catch (e) { /* ignore */ }
+        }
+        const typeSelect = card.querySelector('[name$="-block_type"]');
+        if (typeSelect) typeSelect.value = blockType;
+    }
+
+    function addBlockFromTemplate(section, form, blockType) {
         const template = section.querySelector('[data-block-empty-template]');
         const list = section.querySelector('[data-block-forms]');
         const totalInput = getTotalInput(form, 'blocks');
-        const typeSelect = document.getElementById('newBlockType');
         if (!template || !list || !totalInput) return;
 
         const index = parseInt(totalInput.value, 10);
-        let html = template.innerHTML.replace(/__prefix__/g, index);
+        const type = blockType || 'richtext';
+        let html = template.innerHTML.replace(/__prefix__/g, String(index));
         html = html.replace(/blocks-__prefix__/g, `blocks-${index}`);
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html.trim();
         const card = wrapper.firstElementChild;
         list.appendChild(card);
 
-        const blockTypeSelect = card.querySelector('[name$="-block_type"]');
-        if (blockTypeSelect && typeSelect) blockTypeSelect.value = typeSelect.value;
-
         totalInput.value = index + 1;
+        initAlpineCard(card, type);
         bindBlockCard(card, form);
-        reindexOrders(list);
+        reindexBlockCards(list);
+        updateBlockCount(section);
+        highlightBlock(card);
+
+        if (window.Alpine && typeof Alpine.$data === 'function') {
+            try {
+                const sectionData = Alpine.$data(section);
+                if (sectionData && 'pickerOpen' in sectionData) sectionData.pickerOpen = false;
+            } catch (e) { /* ignore */ }
+        }
+
+        if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
+            window.DashboardForms.initMediaDropzones(card);
+        }
         form.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-    function removeBlockRow(btn, form) {
+    async function removeBlockRow(btn, form, section) {
+        if (window.DashboardForms && window.DashboardForms.confirm) {
+            const ok = await window.DashboardForms.confirm({
+                title: 'Supprimer ce bloc ?',
+                message: 'Le bloc sera retiré de la page après enregistrement.',
+            });
+            if (!ok) return;
+        }
         const card = btn.closest('[data-block-form]');
         if (!card) return;
         const del = card.querySelector('input[name$="-DELETE"]');
-        if (del) {
+        if (del && card.querySelector('input[name$="-id"]')?.value) {
             del.checked = true;
             card.classList.add('hidden');
         } else {
@@ -58,7 +140,9 @@
             const totalInput = getTotalInput(form, 'blocks');
             if (totalInput) totalInput.value = Math.max(0, parseInt(totalInput.value, 10) - 1);
         }
-        reindexOrders(form.querySelector('[data-block-forms]'));
+        const list = form.querySelector('[data-block-forms]');
+        reindexBlockCards(list);
+        updateBlockCount(section);
         form.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
@@ -77,12 +161,12 @@
 
         const items = parseFaqJson(hidden.value);
         container.innerHTML = items.map((item, idx) => (
-            `<div class="grid grid-cols-1 gap-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700" data-faq-index="${idx}">` +
+            `<div class="builder-faq-row grid grid-cols-1 gap-2" data-faq-index="${idx}">` +
             `<input type="text" data-faq-q placeholder="Question FR" value="${escapeAttr(item.q || '')}" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2">` +
             `<input type="text" data-faq-q-en placeholder="Question EN" value="${escapeAttr(item.q_en || '')}" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2">` +
             `<textarea data-faq-a rows="2" placeholder="Réponse FR" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2">${escapeHtml(item.a || '')}</textarea>` +
             `<textarea data-faq-a-en rows="2" placeholder="Réponse EN" class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2">${escapeHtml(item.a_en || '')}</textarea>` +
-            `<button type="button" data-remove-faq-row class="text-xs text-red-600 font-bold self-start">Retirer</button></div>`
+            `<button type="button" data-remove-faq-row class="text-xs text-red-600 font-bold self-start hover:underline">Retirer cette question</button></div>`
         )).join('');
 
         container.querySelectorAll('[data-remove-faq-row]').forEach((btn) => {
@@ -118,9 +202,22 @@
         formChange(editor);
     }
 
+    function syncAllFaqEditors(form) {
+        form.querySelectorAll('[data-faq-editor]').forEach(syncFaqHidden);
+    }
+
+    function syncCKEditors() {
+        if (!window.CKEDITOR) return;
+        Object.values(window.CKEDITOR.instances).forEach((inst) => {
+            try {
+                inst.updateElement();
+            } catch (e) { /* ignore */ }
+        });
+    }
+
     function escapeHtml(str) {
         const d = document.createElement('div');
-        d.textContent = str;
+        d.textContent = str || '';
         return d.innerHTML;
     }
 
@@ -133,68 +230,55 @@
         if (form) form.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-    function distributeGalleryImages(form) {
-        const pool = form.querySelector('[data-block-image-pool]');
-        if (!pool) return;
-        form.querySelectorAll('[data-block-gallery-images]').forEach((slot) => {
-            const blockId = slot.getAttribute('data-block-id');
-            const target = slot.querySelector('[data-gallery-slot]');
-            if (!target || !blockId) return;
-            target.innerHTML = '';
-            pool.querySelectorAll(`[data-block-image-form][data-block-id="${blockId}"]`).forEach((imgForm) => {
-                if (imgForm.querySelector('input[name$="-DELETE"]')?.checked) return;
-                target.appendChild(imgForm.cloneNode(true));
-            });
-        });
-    }
-
     function addBlockImage(form, blockId) {
         const template = form.querySelector('[data-block-image-empty-template]');
-        const pool = form.querySelector('[data-block-image-pool]');
+        const gallery = form.querySelector(`[data-block-gallery-images][data-block-id="${blockId}"]`);
+        const list = gallery && gallery.querySelector('[data-gallery-images-list]');
         const totalInput = getTotalInput(form, 'images');
-        if (!template || !pool || !totalInput) return;
+        if (!template || !list || !totalInput) return;
 
         const index = parseInt(totalInput.value, 10);
-        let html = template.innerHTML.replace(/images-__prefix__/g, `images-${index}`).replace(/__prefix__/g, index);
+        let html = template.innerHTML.replace(/images-__prefix__/g, `images-${index}`).replace(/__prefix__/g, String(index));
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html.trim();
         const row = wrapper.firstElementChild;
         row.setAttribute('data-block-id', blockId);
         const blockInput = row.querySelector('input[name$="-block"]');
         if (blockInput) blockInput.value = blockId;
-        pool.appendChild(row);
+        list.appendChild(row);
         totalInput.value = index + 1;
-        bindBlockImageRow(row, form);
-        distributeGalleryImages(form);
+        if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
+            window.DashboardForms.initMediaDropzones(row);
+        }
         form.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-    function bindBlockImageRow(row, form) {
-        const btn = row.querySelector('[data-delete-block-image]');
-        if (!btn) return;
-        btn.addEventListener('click', async () => {
-            const pk = btn.getAttribute('data-image-pk');
-            if (pk && window.DashboardForms && !btn.hasAttribute('data-delete-new')) {
-                const ok = await window.DashboardForms.confirm({
-                    title: 'Supprimer cette image ?',
-                    message: 'Action définitive.',
-                });
-                if (!ok) return;
-                const url = (window.DASHBOARD_API.deleteBlockImage || '') + pk + '/';
+    async function handleDeleteBlockImage(btn, form) {
+        if (window.DashboardForms && window.DashboardForms.confirm) {
+            const ok = await window.DashboardForms.confirm({
+                title: 'Supprimer cette image ?',
+                message: 'Cette image sera retirée de la galerie.',
+            });
+            if (!ok) return;
+        }
+        const row = btn.closest('[data-block-image-form]');
+        const pk = btn.getAttribute('data-image-pk');
+        if (pk && !btn.hasAttribute('data-delete-new')) {
+            const url = (window.DASHBOARD_API.deleteBlockImage || '') + pk + '/';
+            try {
                 await fetch(url, {
                     method: 'POST',
                     headers: { 'X-CSRFToken': window.DASHBOARD_API.csrf },
                 });
-            }
-            const del = row.querySelector('input[name$="-DELETE"]');
-            if (del) del.checked = true;
-            row.classList.add('hidden');
-            distributeGalleryImages(form);
-            form.dispatchEvent(new Event('change', { bubbles: true }));
-        });
+            } catch (e) { /* ignore */ }
+        }
+        const del = row && row.querySelector('input[name$="-DELETE"]');
+        if (del) del.checked = true;
+        if (row) row.classList.add('hidden');
+        form.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-    function bindBlockCard(card, form) {
+    function bindBlockCard(card, form, section) {
         const typeSelect = card.querySelector('[name$="-block_type"]');
         if (typeSelect) {
             typeSelect.addEventListener('change', () => {
@@ -208,8 +292,9 @@
             });
         }
 
-        const delBtn = card.querySelector('[data-delete-block-row]');
-        if (delBtn) delBtn.addEventListener('click', () => removeBlockRow(delBtn, form));
+        card.querySelector('[data-delete-block-row]')?.addEventListener('click', (e) => {
+            removeBlockRow(e.currentTarget, form, section);
+        });
 
         const faqEditor = card.querySelector('[data-faq-editor]');
         if (faqEditor) {
@@ -234,13 +319,38 @@
         if (!section) return;
 
         const list = section.querySelector('[data-block-forms]');
-        initSortable(list, form);
+        initSortable(list, form, section);
+        reindexBlockCards(list);
+        updateBlockCount(section);
 
-        section.querySelector('[data-add-block]')?.addEventListener('click', () => addBlockFromTemplate(section, form));
+        section.querySelectorAll('[data-add-block-type]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const blockType = btn.getAttribute('data-add-block-type');
+                addBlockFromTemplate(section, form, blockType);
+            });
+        });
 
-        form.querySelectorAll('[data-block-form]').forEach((card) => bindBlockCard(card, form));
-        form.querySelectorAll('[data-block-image-form]').forEach((row) => bindBlockImageRow(row, form));
-        distributeGalleryImages(form);
+        section.querySelector('[data-collapse-all-blocks]')?.addEventListener('click', () => {
+            setAllBlocksCollapsed(form, true);
+        });
+        section.querySelector('[data-expand-all-blocks]')?.addEventListener('click', () => {
+            setAllBlocksCollapsed(form, false);
+        });
+
+        form.querySelectorAll('[data-block-form]').forEach((card) => bindBlockCard(card, form, section));
+
+        form.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-delete-block-image]');
+            if (btn) {
+                e.preventDefault();
+                handleDeleteBlockImage(btn, form);
+            }
+        });
+
+        form.addEventListener('submit', () => {
+            syncCKEditors();
+            syncAllFaqEditors(form);
+        });
 
         if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
             window.DashboardForms.initMediaDropzones(form);

@@ -1,16 +1,29 @@
-<section class="relative bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-950 dark:to-emerald-950 text-white overflow-hidden py-20 md:py-28" data-preview-block="{{ block.pk }}" data-block-type="hero">
+<section class="relative bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-950 dark:via-emerald-950 dark:to-emerald-950 text-white overflow-hidden" data-preview-block="{{ block.pk }}" data-block-type="hero">
     {% if block.image %}
     <img src="{{ block.image.url }}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-30" data-preview-src="block-{{ block.pk }}-image">
     {% endif %}
-    <div class="container mx-auto px-4 relative z-10 text-center max-w-4xl">
+    <div class="absolute inset-0 overflow-hidden opacity-20">
+        <div class="absolute w-96 h-96 bg-white rounded-full -top-48 -left-48 animate-float"></div>
+        <div class="absolute w-64 h-64 bg-emerald-300 rounded-full top-20 right-10 animate-float-delayed"></div>
+        <div class="absolute w-80 h-80 bg-emerald-300 rounded-full top-1/3 left-1/4 animate-pulse-slow"></div>
+        <div class="absolute w-72 h-72 bg-white rounded-full bottom-20 right-1/4 animate-float"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-32 md:py-40 relative z-10 text-center max-w-4xl">
         {% if badge %}
-        <span class="inline-block px-4 py-1.5 rounded-full bg-white/20 text-sm font-bold mb-4" data-preview="block-{{ block.pk }}-badge">{{ badge }}</span>
+        <span class="inline-block px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-sm font-bold mb-4" data-preview="block-{{ block.pk }}-badge">{{ badge }}</span>
         {% endif %}
         {% if title %}
-        <h2 class="text-3xl md:text-5xl font-extrabold mb-4" data-preview="block-{{ block.pk }}-title">{{ title }}</h2>
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4" data-preview="block-{{ block.pk }}-title">{{ title }}</h1>
         {% endif %}
         {% if subtitle %}
-        <p class="text-lg md:text-xl text-white/90" data-preview="block-{{ block.pk }}-subtitle">{{ subtitle }}</p>
+        <p class="text-xl md:text-2xl text-white/90 leading-relaxed" data-preview="block-{{ block.pk }}-subtitle">{{ subtitle }}</p>
         {% endif %}
+    </div>
+
+    <div class="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+            <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" class="fill-white dark:fill-[#121212] transition-colors duration-300"/>
+        </svg>
     </div>
 </section>

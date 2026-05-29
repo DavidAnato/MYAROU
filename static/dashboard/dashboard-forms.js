@@ -393,31 +393,42 @@
                 payload.page_title = form.querySelector('[name="title"]')?.value || '';
                 payload.page_title_en = form.querySelector('[name="title_en"]')?.value || '';
                 payload.blocks = [];
-                form.querySelectorAll('[data-block-form]').forEach((card) => {
+
+                const getFieldVal = (card, suffix) => {
+                    const el = card.querySelector(`[name$="-${suffix}"]`);
+                    if (!el) return '';
+                    if (window.CKEDITOR && el.id && window.CKEDITOR.instances[el.id]) {
+                        return window.CKEDITOR.instances[el.id].getData();
+                    }
+                    return el.value || '';
+                };
+
+                form.querySelectorAll('[data-block-form]').forEach((card, idx) => {
                     if (card.classList.contains('hidden')) return;
                     const del = card.querySelector('input[name$="-DELETE"]');
                     if (del && del.checked) return;
-                    const pk = card.getAttribute('data-block-pk') || '';
-                    const prefix = pk ? `block-${pk}` : null;
-                    const getVal = (suffix) => card.querySelector(`[name$="-${suffix}"]`)?.value || '';
+
                     const block = {
-                        id: pk,
-                        block_type: getVal('block_type'),
-                        title: getVal('title'),
-                        title_en: getVal('title_en'),
-                        subtitle: getVal('subtitle'),
-                        subtitle_en: getVal('subtitle_en'),
-                        badge: getVal('badge'),
-                        badge_en: getVal('badge_en'),
-                        content: getVal('content'),
-                        content_en: getVal('content_en'),
-                        video_url: getVal('video_url'),
-                        button_text: getVal('button_text'),
-                        button_text_en: getVal('button_text_en'),
-                        button_url: getVal('button_url'),
-                        layout: getVal('layout'),
-                        faq_json: getVal('faq_json'),
+                        id: card.getAttribute('data-block-pk') || '',
+                        index: idx,
+                        block_type: getFieldVal(card, 'block_type'),
+                        title: getFieldVal(card, 'title'),
+                        title_en: getFieldVal(card, 'title_en'),
+                        subtitle: getFieldVal(card, 'subtitle'),
+                        subtitle_en: getFieldVal(card, 'subtitle_en'),
+                        badge: getFieldVal(card, 'badge'),
+                        badge_en: getFieldVal(card, 'badge_en'),
+                        content: getFieldVal(card, 'content'),
+                        content_en: getFieldVal(card, 'content_en'),
+                        video_url: getFieldVal(card, 'video_url'),
+                        button_text: getFieldVal(card, 'button_text'),
+                        button_text_en: getFieldVal(card, 'button_text_en'),
+                        button_url: getFieldVal(card, 'button_url'),
+                        layout: getFieldVal(card, 'layout'),
+                        faq_json: getFieldVal(card, 'faq_json'),
+                        gallery_urls: [],
                     };
+
                     const imgInput = card.querySelector('input[type="file"][name$="-image"]');
                     if (imgInput && imgInput.files && imgInput.files[0]) {
                         block.image_url = URL.createObjectURL(imgInput.files[0]);
@@ -425,15 +436,22 @@
                         const ex = card.querySelector('[data-existing-image]');
                         if (ex) block.image_url = ex.src;
                     }
-                    payload.blocks.push(block);
-                    if (prefix) {
-                        ['title', 'subtitle', 'badge', 'content', 'button_text'].forEach((key) => {
-                            payload[`${prefix}-${key}`] = block[key];
-                            payload[`${prefix}-${key}_en`] = block[`${key}_en`];
+
+                    const blockId = card.getAttribute('data-block-pk');
+                    if (blockId) {
+                        form.querySelectorAll(`[data-block-image-form][data-block-id="${blockId}"]:not(.hidden)`).forEach((row) => {
+                            if (row.querySelector('input[name$="-DELETE"]')?.checked) return;
+                            const fileIn = row.querySelector('input[type="file"]');
+                            if (fileIn && fileIn.files && fileIn.files[0]) {
+                                block.gallery_urls.push(URL.createObjectURL(fileIn.files[0]));
+                            } else {
+                                const exImg = row.querySelector('[data-existing-image]');
+                                if (exImg) block.gallery_urls.push(exImg.src);
+                            }
                         });
-                        if (block.image_url) payload[`${prefix}-image`] = block.image_url;
-                        if (block.video_url) payload[`${prefix}-video`] = block.video_url;
                     }
+
+                    payload.blocks.push(block);
                 });
             } else {
                 payload.site_links = getSiteLinksFromForm();

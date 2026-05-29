@@ -1,72 +1,91 @@
-<div data-block-section>
+{% load dashboard_extras %}
+<div data-block-section
+     x-data="{
+         pickerOpen: false,
+         tipsOpen: localStorage.getItem('builderTipsDismissed') !== '1',
+         dismissTips() { this.tipsOpen = false; localStorage.setItem('builderTipsDismissed', '1'); }
+     }">
     {{ block_formset.management_form }}
     {% if image_formset %}{{ image_formset.management_form }}{% endif %}
 
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h3 class="text-base font-extrabold text-gray-900 dark:text-white">Blocs de contenu</h3>
-        <div class="flex flex-wrap gap-2 items-center">
-            <select id="newBlockType" class="text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                {% for value, label in block_type_choices %}
-                <option value="{{ value }}">{{ label }}</option>
-                {% endfor %}
-            </select>
-            <button type="button" data-add-block class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700">
-                + Ajouter un bloc
-            </button>
+    {% if block_formset.non_form_errors %}
+    <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg text-sm">{{ block_formset.non_form_errors }}</div>
+    {% endif %}
+
+    <div class="builder-toolbar rounded-2xl border border-emerald-200/60 dark:border-emerald-800/40 p-4 mb-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div>
+                <h3 class="text-base font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+                    Blocs de contenu
+                    <span data-block-count class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">0</span>
+                </h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Glissez ⠿ pour réordonner · Cliquez sur un bloc pour le déplier</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" data-collapse-all-blocks class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors">Tout replier</button>
+                <button type="button" data-expand-all-blocks class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors">Tout déplier</button>
+                <button type="button" @click="pickerOpen = !pickerOpen"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 shadow-md transition-all"
+                        :class="pickerOpen && 'ring-2 ring-emerald-400 ring-offset-2 dark:ring-offset-gray-800'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    Ajouter un bloc
+                </button>
+            </div>
         </div>
+
+        <div x-show="tipsOpen" x-transition class="builder-tips mb-4 p-3 rounded-xl bg-white/70 dark:bg-gray-900/50 text-sm text-gray-600 dark:text-gray-300 flex gap-3 items-start">
+            <svg class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-800 dark:text-gray-100 mb-1">Première utilisation ?</p>
+                <ul class="text-xs space-y-0.5 list-disc list-inside text-gray-500 dark:text-gray-400">
+                    <li>Choisissez un type ci-dessous pour insérer un bloc</li>
+                    <li>L’aperçu à droite se met à jour en direct</li>
+                    <li>Pour une galerie, enregistrez une fois avant d’ajouter des photos</li>
+                </ul>
+            </div>
+            <button type="button" @click="dismissTips()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 shrink-0" title="Masquer">✕</button>
+        </div>
+
+        <div x-show="pickerOpen" x-transition
+             class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-2xl bg-white/80 dark:bg-gray-900/60 border border-gray-200/80 dark:border-gray-700">
+            {% for item in block_catalog %}
+            <button type="button" data-add-block-type="{{ item.type }}"
+                    class="builder-block-tile builder-block-tile--{{ item.color }}">
+                <span class="builder-block-tile__icon">
+                    {% include 'dashboard/includes/block_icon.html' with icon=item.icon %}
+                </span>
+                <span class="font-bold text-sm text-gray-900 dark:text-white">{{ item.label }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400 leading-snug">{{ item.description }}</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div data-block-empty-state class="builder-empty-state rounded-2xl p-8 text-center mb-4 hidden">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 mb-3">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+        </div>
+        <p class="font-bold text-gray-800 dark:text-gray-100">Votre page est vide</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cliquez sur « Ajouter un bloc » pour commencer à composer la page.</p>
     </div>
 
     <div id="block-formset-list" class="space-y-4" data-block-forms>
         {% for bf in block_formset %}
-        {% include 'dashboard/includes/block_form_card.html' with bf=bf block_index=forloop.counter0 %}
+        {% include 'dashboard/includes/block_form_card.html' with bf=bf block_index=forloop.counter0 gallery_images_by_block=gallery_images_by_block %}
         {% endfor %}
     </div>
 
     <div class="hidden" data-block-empty-template>
-        {% with bf=block_formset.empty_form block_index='__prefix__' %}
+        {% with bf=block_formset.empty_form block_index='__prefix__' gallery_images_by_block=gallery_images_by_block %}
         {% include 'dashboard/includes/block_form_card.html' %}
         {% endwith %}
     </div>
 
     {% if image_formset %}
-    <div class="hidden" data-block-image-pool>
-        {% for imgf in image_formset %}
-        <div data-block-image-form data-block-id="{{ imgf.instance.block_id|default:'' }}" data-image-pk="{{ imgf.instance.pk|default:'' }}">
-            {{ imgf.id }}
-            {{ imgf.block }}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 mb-2">
-                <div class="md:col-span-2" data-media-container>
-                    {{ imgf.image }}
-                    {% if imgf.instance.pk and imgf.instance.image %}
-                    <img src="{{ imgf.instance.image.url }}" class="mt-2 max-w-xs rounded-lg" data-existing-image>
-                    {% endif %}
-                </div>
-                <div class="space-y-2">
-                    <label class="text-xs font-medium">Légende FR</label>{{ imgf.caption }}
-                    <label class="text-xs font-medium">Légende EN</label>{{ imgf.caption_en }}
-                    <label class="text-xs font-medium">Ordre</label>{{ imgf.order }}
-                    <button type="button" data-delete-block-image {% if imgf.instance.pk %}data-image-pk="{{ imgf.instance.pk }}"{% else %}data-delete-new{% endif %} class="text-xs text-red-600 font-bold">Supprimer</button>
-                </div>
-            </div>
-            <div class="hidden">{{ imgf.DELETE }}</div>
-        </div>
-        {% endfor %}
-    </div>
     <div class="hidden" data-block-image-empty-template>
-        <div data-block-image-form data-block-id="" data-image-pk="">
-            {{ image_formset.empty_form.id }}
-            {{ image_formset.empty_form.block }}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 mb-2">
-                <div class="md:col-span-2" data-media-container>{{ image_formset.empty_form.image }}</div>
-                <div class="space-y-2">
-                    <label class="text-xs font-medium">Légende FR</label>{{ image_formset.empty_form.caption }}
-                    <label class="text-xs font-medium">Légende EN</label>{{ image_formset.empty_form.caption_en }}
-                    <label class="text-xs font-medium">Ordre</label>{{ image_formset.empty_form.order }}
-                    <button type="button" data-delete-block-image data-delete-new class="text-xs text-red-600 font-bold">Supprimer</button>
-                </div>
-            </div>
-            <div class="hidden">{{ image_formset.empty_form.DELETE }}</div>
-        </div>
+        {% with imgf=image_formset.empty_form %}
+        {% include 'dashboard/includes/block_image_row.html' %}
+        {% endwith %}
     </div>
     {% endif %}
 </div>
