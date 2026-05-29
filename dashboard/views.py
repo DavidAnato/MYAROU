@@ -562,8 +562,17 @@ def site_page_list(request):
     })
 
 
-def _build_custom_page_save_mapping(block_formset, image_formset):
+def _build_custom_page_save_mapping(block_formset, image_formset, request=None):
     """Retourne les PK créées/mises à jour indexées par préfixe de formulaire Django."""
+
+    def media_url(file_field):
+        if not file_field:
+            return ''
+        url = file_field.url
+        if request:
+            return request.build_absolute_uri(url)
+        return url
+
     blocks = []
     for i, bf in enumerate(block_formset.forms):
         if not bf.cleaned_data or bf.cleaned_data.get('DELETE'):
@@ -575,7 +584,7 @@ def _build_custom_page_save_mapping(block_formset, image_formset):
             'form_prefix': i,
             'id': inst.pk,
             'block_type': inst.block_type,
-            'image_url': inst.image.url if inst.image else '',
+            'image_url': media_url(inst.image),
         })
 
     images = []
@@ -589,10 +598,31 @@ def _build_custom_page_save_mapping(block_formset, image_formset):
             'form_prefix': i,
             'id': inst.pk,
             'block_id': inst.block_id,
-            'image_url': inst.image.url if inst.image else '',
+            'image_url': media_url(inst.image),
         })
 
     return {'blocks': blocks, 'images': images}
+
+
+def _errors_to_json(errors):
+    """Sérialise ErrorDict ou ErrorList pour l'API JSON."""
+    if hasattr(errors, 'get_json_data'):
+        return errors.get_json_data()
+    if isinstance(errors, list):
+        return [item.get_json_data() if hasattr(item, 'get_json_data') else str(item) for item in errors]
+    return str(errors)
+
+
+def _formset_errors_json(formset):
+    """Erreurs d'un formset (liste par formulaire + non_form_errors)."""
+    payload = {}
+    non_form = formset.non_form_errors()
+    if non_form:
+        payload['__all__'] = _errors_to_json(non_form)
+    for i, bf in enumerate(formset.forms):
+        if bf.errors:
+            payload[str(i)] = bf.errors.get_json_data()
+    return payload
 
 
 def _save_custom_page_builder(request, page, *, publish=False):
@@ -618,9 +648,9 @@ def _save_custom_page_builder(request, page, *, publish=False):
     if not form.is_valid():
         errors['meta'] = form.errors.get_json_data()
     if not block_formset.is_valid():
-        errors['blocks'] = block_formset.errors.get_json_data()
+        errors['blocks'] = _formset_errors_json(block_formset)
     if not image_formset.is_valid():
-        errors['images'] = image_formset.errors.get_json_data()
+        errors['images'] = _formset_errors_json(image_formset)
 
     if errors:
         return False, page, errors, None
@@ -634,7 +664,7 @@ def _save_custom_page_builder(request, page, *, publish=False):
     block_formset.save()
     image_formset.save()
 
-    mapping = _build_custom_page_save_mapping(block_formset, image_formset)
+    mapping = _build_custom_page_save_mapping(block_formset, image_formset, request)
     page.refresh_from_db()
     return True, page, None, mapping
 

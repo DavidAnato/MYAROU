@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    const DEBOUNCE_MS = 600;
+    const DEBOUNCE_MS = 250;
 
     function getCsrf() {
         return window.DASHBOARD_API?.csrf || '';
@@ -102,7 +102,7 @@
         let timer = null;
         let inflight = null;
         let dirty = false;
-        let lastSavedAt = null;
+        let pendingImmediate = false;
 
         const markDirty = () => {
             dirty = true;
@@ -112,22 +112,28 @@
             }
         };
 
-        const scheduleSave = () => {
+        const scheduleSave = (immediate) => {
             markDirty();
+            if (immediate) {
+                pendingImmediate = true;
+                if (timer) {
+                    clearTimeout(timer);
+                    timer = null;
+                }
+                return syncNow(false);
+            }
             if (timer) clearTimeout(timer);
             timer = setTimeout(() => {
                 timer = null;
-                save(false);
+                syncNow(false);
             }, DEBOUNCE_MS);
+            return Promise.resolve();
         };
 
-        const save = async (publish) => {
+        const syncNow = async (publish) => {
             if (inflight) {
-                if (publish) {
-                    await inflight;
-                } else {
-                    return inflight;
-                }
+                if (publish) await inflight;
+                else return inflight;
             }
 
             if (publish && publishedInput) {
@@ -149,17 +155,20 @@
             }).then(async (res) => {
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok || !data.ok) {
-                    const errMsg = data.errors
-                        ? 'Erreur de validation — vérifiez les champs'
-                        : 'Échec de l’enregistrement';
+                    let errMsg = 'Échec de l’enregistrement';
+                    if (data.errors) {
+                        if (data.errors.meta) errMsg = 'Paramètres invalides';
+                        else if (data.errors.blocks) errMsg = 'Erreur dans un bloc';
+                        else if (data.errors.images) errMsg = 'Erreur dans une image';
+                    }
                     setStatus(statusEl, 'error', errMsg);
                     dirty = true;
                     throw new Error(errMsg);
                 }
 
                 dirty = false;
-                lastSavedAt = new Date();
-                const time = lastSavedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                pendingImmediate = false;
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 setStatus(
                     statusEl,
                     'saved',
@@ -175,7 +184,11 @@
                 applyBlockMapping(form, data.blocks);
                 applyImageMapping(form, data.images);
 
-                triggerLivePreview(form);
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        triggerLivePreview(form);
+                    });
+                });
 
                 if (publish) {
                     reloadPreviewIframe(data.preview_url);
@@ -195,44 +208,58 @@
                 }
             }).finally(() => {
                 inflight = null;
-                if (dirty && !timer) scheduleSave();
+                if (dirty && pendingImmediate && !timer) {
+                    syncNow(false);
+                } else if (dirty && !timer) {
+                    scheduleSave(false);
+                }
             });
 
             return inflight;
         };
 
-        form.addEventListener('input', scheduleSave);
-        form.addEventListener('change', scheduleSave);
+        const notify = (options) => {
+            const immediate = !!(options && options.immediate);
+            return scheduleSave(immediate);
+        };
+
+        const scheduleSaveFromEvent = (e) => {
+            if (e && e.target && e.target.type === 'file') return;
+            scheduleSave(false);
+        };
+        form.addEventListener('input', scheduleSaveFromEvent);
+        form.addEventListener('change', scheduleSaveFromEvent);
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (timer) clearTimeout(timer);
-            save(true);
+            timer = null;
+            syncNow(true);
         });
 
         if (publishBtn) {
             publishBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 if (timer) clearTimeout(timer);
-                save(true);
+                timer = null;
+                syncNow(true);
             });
         }
 
+        form._builderSync = { notify, syncNow };
+
         setStatus(statusEl, 'saved', 'Prêt');
         triggerLivePreview(form);
-        setTimeout(() => save(false), 300);
+        setTimeout(() => syncNow(false), 200);
 
-        return { save, scheduleSave };
+        return { notify, syncNow };
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('pageSettingsForm');
         if (!form || form.getAttribute('data-preview-type') !== 'custom-page') return;
         if (!form.getAttribute('data-autosave-url')) return;
-
-        initAutosave(form, {
-            saveUrl: form.getAttribute('data-autosave-url'),
-        });
+        initAutosave(form, { saveUrl: form.getAttribute('data-autosave-url') });
     });
 
     window.DashboardBuilderAutosave = { initAutosave };

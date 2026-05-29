@@ -118,27 +118,18 @@
 
     function updateMediaUrl(container, url) {
         if (!container || !url) return;
+        if (window.DashboardForms && typeof window.DashboardForms.setMediaPreviewSrc === 'function') {
+            window.DashboardForms.setMediaPreviewSrc(container, url);
+        }
         const media = container.querySelector('[data-media-container]') || container;
-        let wrap = media.querySelector('.mt-3');
-        if (!wrap) {
-            wrap = document.createElement('div');
-            wrap.className = 'mt-3';
-            media.appendChild(wrap);
-        }
-        let existing = wrap.querySelector('[data-existing-image]');
-        if (!existing) {
-            existing = document.createElement('img');
-            existing.className = 'w-full max-w-sm rounded-2xl shadow';
-            existing.setAttribute('data-existing-image', '');
-            existing.alt = '';
-            wrap.appendChild(existing);
-        }
-        existing.src = url;
-        existing.classList.remove('hidden');
-        const preview = media.querySelector('[data-preview-image]');
-        if (preview) preview.classList.add('hidden');
         const fileInput = media.querySelector('input[type="file"]');
-        if (fileInput) fileInput.value = '';
+        if (fileInput) {
+            try {
+                fileInput.files = new DataTransfer().files;
+            } catch (e) {
+                fileInput.value = '';
+            }
+        }
     }
 
     function enableGalleryBlock(form, card, blockId) {
@@ -189,6 +180,16 @@
         setTimeout(() => card.classList.remove('builder-card--highlight'), 2000);
     }
 
+    function builderNotify(form, immediate) {
+        triggerLivePreview(form);
+        if (form && form._builderSync) {
+            form._builderSync.notify({ immediate: !!immediate });
+        } else if (form) {
+            form.dispatchEvent(new Event('input', { bubbles: true }));
+            form.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+
     function initSortable(list, form, section) {
         if (!list || !window.Sortable) return;
         Sortable.create(list, {
@@ -199,7 +200,7 @@
             onEnd: () => {
                 reindexBlockCards(list);
                 updateBlockCount(section);
-                form.dispatchEvent(new Event('change', { bubbles: true }));
+                builderNotify(form, true);
             },
         });
     }
@@ -240,7 +241,7 @@
 
         totalInput.value = index + 1;
         initAlpineCard(card, type);
-        bindBlockCard(card, form);
+        bindBlockCard(card, form, section);
         reindexBlockCards(list);
         updateBlockCount(section);
         highlightBlock(card);
@@ -257,8 +258,7 @@
         }
         initCKEditorIn(card);
         window.DashboardCKEditorFix?.hideCkeNotifications?.();
-        form.dispatchEvent(new Event('input', { bubbles: true }));
-        form.dispatchEvent(new Event('change', { bubbles: true }));
+        builderNotify(form, true);
     }
 
     async function removeBlockRow(btn, form, section) {
@@ -283,7 +283,7 @@
         const list = form.querySelector('[data-block-forms]');
         reindexBlockCards(list);
         updateBlockCount(section);
-        form.dispatchEvent(new Event('change', { bubbles: true }));
+        builderNotify(form, true);
     }
 
     function parseFaqJson(raw) {
@@ -316,7 +316,7 @@
                 const next = parseFaqJson(hidden.value).filter((_, j) => j !== i);
                 hidden.value = JSON.stringify(next);
                 renderFaqRows(editor);
-                formChange(editor);
+                formChange(editor, true);
             });
         });
 
@@ -368,9 +368,9 @@
         return escapeHtml(str).replace(/"/g, '&quot;');
     }
 
-    function formChange(el) {
+    function formChange(el, immediate) {
         const form = el.closest('form');
-        if (form) form.dispatchEvent(new Event('change', { bubbles: true }));
+        if (form) builderNotify(form, immediate);
     }
 
     function addBlockImage(form, blockId) {
@@ -396,9 +396,9 @@
         list.appendChild(row);
         totalInput.value = index + 1;
         if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
-            window.DashboardForms.initMediaDropzones(row);
+            window.DashboardForms.initMediaDropzones(form);
         }
-        form.dispatchEvent(new Event('change', { bubbles: true }));
+        builderNotify(form, true);
     }
 
     async function handleDeleteBlockImage(btn, form) {
@@ -423,7 +423,7 @@
         const del = row && row.querySelector('input[name$="-DELETE"]');
         if (del) del.checked = true;
         if (row) row.classList.add('hidden');
-        form.dispatchEvent(new Event('change', { bubbles: true }));
+        builderNotify(form, true);
     }
 
     function bindBlockCard(card, form, section) {
@@ -436,8 +436,14 @@
                         if (data) data.blockType = typeSelect.value;
                     } catch (e) { /* ignore */ }
                 }
-                form.dispatchEvent(new Event('change', { bubbles: true }));
+                formChange(card, true);
             });
+        }
+
+        const visibility = card.querySelector('input[name$="-is_visible"]');
+        if (visibility && !visibility.dataset.builderBound) {
+            visibility.dataset.builderBound = '1';
+            visibility.addEventListener('change', () => builderNotify(form, true));
         }
 
         card.querySelector('[data-delete-block-row]')?.addEventListener('click', (e) => {
@@ -453,6 +459,7 @@
                 items.push({ q: '', q_en: '', a: '', a_en: '' });
                 if (hidden) hidden.value = JSON.stringify(items);
                 renderFaqRows(faqEditor);
+                formChange(faqEditor, true);
             });
         }
 
@@ -532,5 +539,6 @@
         enableGalleryBlock,
         updateMediaUrl,
         renumberBlockFormPrefixes,
+        notify: builderNotify,
     };
 })();

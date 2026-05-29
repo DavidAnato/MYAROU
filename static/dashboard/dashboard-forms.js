@@ -72,6 +72,89 @@
         zone.classList.toggle('dark:border-gray-600', !active);
     }
 
+    function toAbsoluteMediaUrl(url) {
+        if (!url) return '';
+        if (url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
+        }
+        try {
+            return new URL(url, window.location.origin).href;
+        } catch (e) {
+            return url;
+        }
+    }
+
+    function readFileAsDataUrl(file) {
+        return new Promise((resolve) => {
+            if (!file) {
+                resolve('');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result || '');
+            reader.onerror = () => resolve('');
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function getMediaContainer(root) {
+        if (!root) return null;
+        if (root.matches && root.matches('[data-media-container]')) return root;
+        return root.querySelector('[data-media-container]') || root;
+    }
+
+    function setMediaPreviewSrc(root, url) {
+        const container = getMediaContainer(root);
+        if (!container || !url) return;
+        const absolute = toAbsoluteMediaUrl(url);
+        container.dataset.previewSrc = absolute;
+        const preview = container.querySelector('[data-preview-image]');
+        const existing = container.querySelector('[data-existing-image]');
+        if (preview) {
+            preview.src = absolute;
+            preview.classList.remove('hidden');
+        }
+        if (existing) {
+            existing.src = absolute;
+            existing.classList.remove('hidden');
+        }
+    }
+
+    function clearMediaPreviewSrc(root) {
+        const container = getMediaContainer(root);
+        if (!container) return;
+        delete container.dataset.previewSrc;
+        container.querySelectorAll('[data-preview-image], [data-existing-image]').forEach((img) => {
+            img.removeAttribute('src');
+            img.classList.add('hidden');
+        });
+    }
+
+    function getMediaPreviewUrl(root) {
+        const container = getMediaContainer(root);
+        if (!container) return '';
+        if (container.dataset.previewSrc) {
+            return container.dataset.previewSrc;
+        }
+        const preview = container.querySelector('[data-preview-image]');
+        if (preview && preview.src && !preview.classList.contains('hidden')) {
+            return toAbsoluteMediaUrl(preview.src);
+        }
+        const existing = container.querySelector('[data-existing-image]');
+        if (existing && existing.src && !existing.classList.contains('hidden')) {
+            return toAbsoluteMediaUrl(existing.src);
+        }
+        return '';
+    }
+
+    async function applyFileToMediaPreview(container, file) {
+        if (!container || !file) return;
+        const dataUrl = await readFileAsDataUrl(file);
+        if (dataUrl) {
+            setMediaPreviewSrc(container, dataUrl);
+        }
+    }
+
     function setSingleFile(input, file) {
         if (!input || !file) return;
         const dt = new DataTransfer();
@@ -105,49 +188,61 @@
             if (row.classList.contains('hidden')) return;
             const del = row.querySelector('input[name$="-DELETE"]');
             if (del && del.checked) return;
-            const inp = row.querySelector('input[type="file"][name$="-image"]');
-            const preview = row.querySelector('[data-preview-image]');
-            const existing = row.querySelector('[data-existing-image]');
-            if (preview && !preview.classList.contains('hidden') && preview.src) {
-                urls.push(preview.src);
-            } else if (existing && !existing.classList.contains('hidden') && existing.src) {
-                urls.push(existing.src);
-            } else if (inp && inp.files && inp.files[0]) {
-                urls.push(URL.createObjectURL(inp.files[0]));
-            }
+            const url = getMediaPreviewUrl(row);
+            if (url) urls.push(url);
         });
         return urls;
     }
 
-    function initMediaDropzones(form) {
-        if (!form) return;
-        const formRoot = form;
-        form.querySelectorAll('[data-media-container]').forEach((container) => {
+    function notifyFormMediaChange(form) {
+        triggerPreviewUpdate(form);
+        if (form && form._builderSync) {
+            form._builderSync.notify({ immediate: true });
+        }
+    }
+
+    async function handleMediaInputChange(container, input, formRoot) {
+        const zone = container.querySelector('.media-dropzone');
+        const clearBtn = container.querySelector('[data-clear-file]');
+        const preview = container.querySelector('[data-preview-image]');
+        const existing = container.querySelector('[data-existing-image]');
+
+        if (input && input.files && input.files[0]) {
+            await applyFileToMediaPreview(container, input.files[0]);
+            if (existing) existing.classList.add('hidden');
+        }
+
+        if (zone && input) {
+            const fn = zone.querySelector('[data-filename]');
+            if (fn) fn.textContent = input.files && input.files[0] ? input.files[0].name : '';
+            const has = !!getMediaPreviewUrl(container);
+            if (clearBtn) {
+                clearBtn.disabled = !has;
+                clearBtn.classList.toggle('opacity-50', !has);
+                clearBtn.classList.toggle('cursor-not-allowed', !has);
+            }
+        }
+
+        if (formRoot.getAttribute('data-preview-type') === 'custom-page') {
+            notifyFormMediaChange(formRoot);
+        } else {
+            triggerPreviewUpdate(formRoot);
+        }
+    }
+
+    function initMediaDropzones(scope) {
+        if (!scope) return;
+        const formRoot = scope.closest('form') || scope;
+        const searchRoot = scope.matches('form') ? scope : scope;
+        searchRoot.querySelectorAll('[data-media-container]').forEach((container) => {
             const input = container.querySelector('input[type="file"]');
             const zone = container.querySelector('.media-dropzone');
             const clearBtn = container.querySelector('[data-clear-file]');
             const flagName = container.getAttribute('data-clear-flag-name');
             const flagInput = flagName ? form.querySelector(`input[name="${flagName}"]`) : null;
 
-            const refresh = () => {
-                if (zone && input) {
-                    const fn = zone.querySelector('[data-filename]');
-                    if (fn) fn.textContent = input.files && input.files[0] ? input.files[0].name : '';
-                    const has = !!(input.files && input.files[0]) || container.querySelector('[data-existing-image]:not(.hidden)');
-                    if (clearBtn) {
-                        clearBtn.disabled = !has;
-                        clearBtn.classList.toggle('opacity-50', !has);
-                        clearBtn.classList.toggle('cursor-not-allowed', !has);
-                    }
-                }
-                const preview = container.querySelector('[data-preview-image]');
-                const existing = container.querySelector('[data-existing-image]');
-                if (input && input.files && input.files[0] && preview) {
-                    preview.src = URL.createObjectURL(input.files[0]);
-                    preview.classList.remove('hidden');
-                    if (existing) existing.classList.add('hidden');
-                }
-            };
+            if (container.dataset.mediaDropzoneBound === '1') return;
+            container.dataset.mediaDropzoneBound = '1';
 
             if (zone && input) {
                 zone.addEventListener('click', (e) => {
@@ -162,22 +257,41 @@
                     const f = e.dataTransfer.files && e.dataTransfer.files[0];
                     if (f) setSingleFile(input, f);
                 });
-                input.addEventListener('change', () => {
-                    refresh();
-                    triggerPreviewUpdate(formRoot);
+                input.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    handleMediaInputChange(container, input, formRoot);
                 });
             }
             if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    clearFileInput(input);
+                clearBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                        input.files = new DataTransfer().files;
+                    } catch (err) {
+                        input.value = '';
+                    }
                     if (flagInput) flagInput.value = '1';
-                    const existing = container.querySelector('[data-existing-image]');
-                    if (existing) existing.classList.add('hidden');
-                    refresh();
-                    triggerPreviewUpdate(formRoot);
+                    clearMediaPreviewSrc(container);
+                    if (zone) {
+                        const fn = zone.querySelector('[data-filename]');
+                        if (fn) fn.textContent = '';
+                    }
+                    clearBtn.disabled = true;
+                    clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    if (formRoot.getAttribute('data-preview-type') === 'custom-page') {
+                        notifyFormMediaChange(formRoot);
+                    } else {
+                        triggerPreviewUpdate(formRoot);
+                    }
                 });
             }
-            refresh();
+            if (container.dataset.previewSrc || container.querySelector('[data-existing-image]')?.src) {
+                const existing = container.querySelector('[data-existing-image]');
+                if (existing && existing.src && !container.dataset.previewSrc) {
+                    setMediaPreviewSrc(container, existing.src);
+                }
+            }
         });
     }
 
@@ -230,10 +344,8 @@
                     if (!node) return;
                     const inp = node.querySelector('input[type="file"][name$="-image"]');
                     setSingleFile(inp, file);
-                    triggerPreviewUpdate(form);
                 });
                 multiInput.value = '';
-                triggerPreviewUpdate(form);
             });
         }
         if (addBtn) addBtn.addEventListener('click', () => {
@@ -252,7 +364,6 @@
                     if (!node) return;
                     setSingleFile(node.querySelector('input[type="file"][name$="-image"]'), file);
                 });
-                triggerPreviewUpdate(form);
             });
         }
 
@@ -411,22 +522,7 @@
                     return el.value || '';
                 };
 
-                const getImageUrl = (container) => {
-                    if (!container) return '';
-                    const preview = container.querySelector('[data-preview-image]');
-                    const existing = container.querySelector('[data-existing-image]');
-                    const imgInput = container.querySelector('input[type="file"][name$="-image"]');
-                    if (preview && !preview.classList.contains('hidden') && preview.src) {
-                        return preview.src;
-                    }
-                    if (imgInput && imgInput.files && imgInput.files[0]) {
-                        return URL.createObjectURL(imgInput.files[0]);
-                    }
-                    if (existing && !existing.classList.contains('hidden') && existing.src) {
-                        return existing.src;
-                    }
-                    return '';
-                };
+                const getImageUrl = (root) => getMediaPreviewUrl(root);
 
                 let blockIdx = 0;
                 form.querySelectorAll('[data-block-form]').forEach((card) => {
@@ -498,8 +594,12 @@
             raf = requestAnimationFrame(send);
         };
         form._previewSchedule = schedulePreview;
-        form.addEventListener('input', schedulePreview);
-        form.addEventListener('change', schedulePreview);
+        const schedulePreviewFromEvent = (e) => {
+            if (e && e.target && e.target.type === 'file') return;
+            schedulePreview();
+        };
+        form.addEventListener('input', schedulePreviewFromEvent);
+        form.addEventListener('change', schedulePreviewFromEvent);
         iframe.addEventListener('load', schedulePreview);
         window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'page-preview-ready') schedulePreview();
@@ -562,6 +662,9 @@
         initMediaDropzones,
         bindDeleteButtons,
         triggerPreviewUpdate,
+        setMediaPreviewSrc,
+        getMediaPreviewUrl,
+        toAbsoluteMediaUrl,
     };
 
     document.addEventListener('DOMContentLoaded', () => {
