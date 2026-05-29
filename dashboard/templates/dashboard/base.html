@@ -173,9 +173,9 @@
                 {% endif %}
             </a>
 
-            <div x-data="{ pagesOpen: {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' or current_view == 'dashboard:site_page_list' or current_view == 'dashboard:custom_page_create' or 'dashboard:custom_page_edit' in current_view %}true{% else %}false{% endif %} }" class="space-y-1">
+            <div x-data="{ pagesOpen: {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' or current_view == 'dashboard:site_page_list' or current_view == 'dashboard:custom_page_create' or 'custom_page_edit' in current_view %}true{% else %}false{% endif %} }" class="space-y-1">
                 <button type="button" @click="pagesOpen = !pagesOpen"
-                        class="w-full flex items-center justify-between px-4 py-3 text-white rounded-lg transition-all duration-200 hover:bg-white hover:bg-opacity-10 {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' or current_view == 'dashboard:site_page_list' or current_view == 'dashboard:custom_page_create' or 'dashboard:custom_page_edit' in current_view %}bg-white bg-opacity-10{% endif %}">
+                        class="w-full flex items-center justify-between px-4 py-3 text-white rounded-lg transition-all duration-200 hover:bg-white hover:bg-opacity-10 {% if current_view == 'dashboard:home_settings' or current_view == 'dashboard:gallery_settings' or current_view == 'dashboard:about_settings' or current_view == 'dashboard:contact_settings' or current_view == 'dashboard:site_page_list' or current_view == 'dashboard:custom_page_create' or 'custom_page_edit' in current_view %}bg-white bg-opacity-10{% endif %}">
                     <span class="flex items-center font-semibold text-sm uppercase tracking-wide opacity-90">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
                         Pages du site
@@ -184,7 +184,7 @@
                 </button>
                 <div x-show="pagesOpen" x-cloak class="space-y-1 ml-3 pl-3 border-l border-white border-opacity-25">
                     <a href="{% url 'dashboard:site_page_list' %}"
-                       class="flex items-center px-3 py-2.5 text-white text-sm rounded-lg transition-all duration-200 group {% if current_view == 'dashboard:site_page_list' or current_view == 'dashboard:custom_page_create' or 'dashboard:custom_page_edit' in current_view %}bg-white bg-opacity-20 shadow-sm{% else %}hover:bg-white hover:bg-opacity-10{% endif %}">
+                       class="flex items-center px-3 py-2.5 text-white text-sm rounded-lg transition-all duration-200 group {% if current_view == 'dashboard:site_page_list' or current_view == 'dashboard:custom_page_create' or 'custom_page_edit' in current_view %}bg-white bg-opacity-20 shadow-sm{% else %}hover:bg-white hover:bg-opacity-10{% endif %}">
                         <svg class="w-5 h-5 mr-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         <span class="font-medium">Visibilité & pages libres</span>
                     </a>
@@ -341,6 +341,7 @@
         csrf: '{{ csrf_token }}',
         deleteGalleryImage: '{% url "dashboard:delete_gallery_image" pk=0 %}'.replace('/0/', '/'),
         deleteSiteLink: '{% url "dashboard:delete_site_link" pk=0 %}'.replace('/0/', '/'),
+        deleteBlockImage: '{% url "dashboard:delete_block_image" pk=0 %}'.replace('/0/', '/'),
     }, window.DASHBOARD_API || {});
     </script>
     <script src="{% static 'dashboard/dashboard-forms.js' %}"></script>

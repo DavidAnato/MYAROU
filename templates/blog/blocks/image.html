@@ -1,0 +1,12 @@
+<section class="py-10 md:py-14" data-preview-block="{{ block.pk }}" data-block-type="image">
+    <div class="container mx-auto px-4 max-w-4xl text-center">
+        {% if block.image %}
+        <figure>
+            <img src="{{ block.image.url }}" alt="{{ block.image_alt }}" class="rounded-2xl shadow-xl mx-auto max-w-full" data-preview-src="block-{{ block.pk }}-image">
+            {% if title %}
+            <figcaption class="mt-4 text-gray-600 dark:text-gray-400" data-preview="block-{{ block.pk }}-title">{{ title }}</figcaption>
+            {% endif %}
+        </figure>
+        {% endif %}
+    </div>
+</section>

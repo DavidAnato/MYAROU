@@ -302,7 +302,7 @@
         if (!form || !iframe || !deviceFrame) return;
         const previewArea = deviceFrame.parentElement;
         let currentDevice = 'desktop';
-        const msgType = previewType === 'home' ? 'home-preview' : 'page-preview';
+        const msgType = previewType === 'home' ? 'home-preview' : (previewType === 'custom-page' ? 'custom-page-preview' : 'page-preview');
 
         const applyIframeZoom = (scale) => {
             const s = Math.max(0.2, Math.min(scale, 1));
@@ -389,15 +389,63 @@
                 if (el.type === 'checkbox') return;
                 payload[el.name] = el.value;
             });
-            payload.site_links = getSiteLinksFromForm();
-            const profile = form.querySelector('input[type="file"][name="profile_image"]');
-            if (profile && profile.files && profile.files[0]) {
-                payload.profile_image_url = URL.createObjectURL(profile.files[0]);
+            if (previewType === 'custom-page') {
+                payload.page_title = form.querySelector('[name="title"]')?.value || '';
+                payload.page_title_en = form.querySelector('[name="title_en"]')?.value || '';
+                payload.blocks = [];
+                form.querySelectorAll('[data-block-form]').forEach((card) => {
+                    if (card.classList.contains('hidden')) return;
+                    const del = card.querySelector('input[name$="-DELETE"]');
+                    if (del && del.checked) return;
+                    const pk = card.getAttribute('data-block-pk') || '';
+                    const prefix = pk ? `block-${pk}` : null;
+                    const getVal = (suffix) => card.querySelector(`[name$="-${suffix}"]`)?.value || '';
+                    const block = {
+                        id: pk,
+                        block_type: getVal('block_type'),
+                        title: getVal('title'),
+                        title_en: getVal('title_en'),
+                        subtitle: getVal('subtitle'),
+                        subtitle_en: getVal('subtitle_en'),
+                        badge: getVal('badge'),
+                        badge_en: getVal('badge_en'),
+                        content: getVal('content'),
+                        content_en: getVal('content_en'),
+                        video_url: getVal('video_url'),
+                        button_text: getVal('button_text'),
+                        button_text_en: getVal('button_text_en'),
+                        button_url: getVal('button_url'),
+                        layout: getVal('layout'),
+                        faq_json: getVal('faq_json'),
+                    };
+                    const imgInput = card.querySelector('input[type="file"][name$="-image"]');
+                    if (imgInput && imgInput.files && imgInput.files[0]) {
+                        block.image_url = URL.createObjectURL(imgInput.files[0]);
+                    } else {
+                        const ex = card.querySelector('[data-existing-image]');
+                        if (ex) block.image_url = ex.src;
+                    }
+                    payload.blocks.push(block);
+                    if (prefix) {
+                        ['title', 'subtitle', 'badge', 'content', 'button_text'].forEach((key) => {
+                            payload[`${prefix}-${key}`] = block[key];
+                            payload[`${prefix}-${key}_en`] = block[`${key}_en`];
+                        });
+                        if (block.image_url) payload[`${prefix}-image`] = block.image_url;
+                        if (block.video_url) payload[`${prefix}-video`] = block.video_url;
+                    }
+                });
             } else {
-                const ex = form.querySelector('[data-existing-file="profile_image"]');
-                if (ex) payload.profile_image_url = ex.src;
+                payload.site_links = getSiteLinksFromForm();
+                const profile = form.querySelector('input[type="file"][name="profile_image"]');
+                if (profile && profile.files && profile.files[0]) {
+                    payload.profile_image_url = URL.createObjectURL(profile.files[0]);
+                } else {
+                    const ex = form.querySelector('[data-existing-file="profile_image"]');
+                    if (ex) payload.profile_image_url = ex.src;
+                }
+                payload.gallery_image_urls = getGalleryUrlsFromForm(form);
             }
-            payload.gallery_image_urls = getGalleryUrlsFromForm(form);
             return payload;
         };
 
@@ -477,7 +525,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const pageForm = document.getElementById('pageSettingsForm');
         const homeForm = document.getElementById('homeSettingsForm');
-        if (pageForm) initForm(pageForm);
+        if (pageForm && pageForm.getAttribute('data-preview-type') !== 'custom-page') initForm(pageForm);
         if (homeForm) bindDeleteButtons(homeForm, 'home');
     });
 })(window);

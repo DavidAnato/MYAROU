@@ -11,6 +11,8 @@ from .models_site import (
     ContactMessage,
     SitePage,
     CustomPage,
+    CustomPageBlock,
+    CustomPageBlockImage,
 )
 
 
@@ -101,3 +103,16 @@ class CustomPageAdmin(admin.ModelAdmin):
     list_filter = ('is_published', 'show_in_nav')
     search_fields = ('title', 'slug')
     prepopulated_fields = {'slug': ('title',)}
+
+
+class CustomPageBlockImageInline(admin.TabularInline):
+    model = CustomPageBlockImage
+    extra = 0
+    fields = ('image', 'caption', 'caption_en', 'order')
+
+
+@admin.register(CustomPageBlock)
+class CustomPageBlockAdmin(admin.ModelAdmin):
+    list_display = ('block_type', 'page', 'order', 'is_visible')
+    list_filter = ('block_type', 'is_visible')
+    inlines = [CustomPageBlockImageInline]

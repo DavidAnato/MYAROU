@@ -1,0 +1,20 @@
+<section class="py-10 md:py-14 bg-gray-50 dark:bg-[#1a1a1a]" data-preview-block="{{ block.pk }}" data-block-type="faq">
+    <div class="container mx-auto px-4 max-w-3xl">
+        {% if title %}
+        <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mb-8 text-center" data-preview="block-{{ block.pk }}-title">{{ title }}</h2>
+        {% endif %}
+        <div class="space-y-4" data-faq-block="{{ block.pk }}">
+            {% for item in faq_items %}
+            <details class="group rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <summary class="px-6 py-4 cursor-pointer font-semibold text-gray-900 dark:text-white list-none flex justify-between items-center">
+                    <span>{{ item.q }}</span>
+                    <span class="text-emerald-600 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div class="px-6 pb-4 text-gray-600 dark:text-gray-300 prose dark:prose-invert max-w-none">{{ item.a|linebreaks }}</div>
+            </details>
+            {% empty %}
+            <p class="text-center text-gray-500">Aucune question.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>

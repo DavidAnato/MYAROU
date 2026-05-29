@@ -172,16 +172,30 @@ def contact(request):
 
 @xframe_options_sameorigin
 def custom_page(request, slug):
-    """Page libre créée depuis le dashboard."""
+    """Page libre — rendu par blocs (page builder) ou contenu legacy."""
     page = get_object_or_404(CustomPage, slug=slug)
     if not page.is_published and not is_staff_preview(request):
         raise Http404
     language_code = getattr(request, 'LANGUAGE_CODE', 'fr')
+    from homepage.page_blocks import get_block_context
+
+    blocks_qs = page.get_visible_blocks()
+    if is_staff_preview(request):
+        blocks_qs = page.blocks.prefetch_related('images').all()
+
+    block_contexts = [
+        get_block_context(block, language_code)
+        for block in blocks_qs
+        if block.is_visible or is_staff_preview(request)
+    ]
+
     return render(request, 'blog/custom_page.html', {
         'page': page,
         'page_title': page.get_title(language_code),
         'page_content': page.get_content(language_code),
         'page_meta_description': page.get_meta_description(language_code),
+        'blocks': block_contexts,
+        'lang': language_code,
     })
 
 

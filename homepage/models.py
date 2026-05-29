@@ -200,4 +200,6 @@ from .models_site import (  # noqa: E402
     ContactMessage,
     SitePage,
     CustomPage,
+    CustomPageBlock,
+    CustomPageBlockImage,
 )

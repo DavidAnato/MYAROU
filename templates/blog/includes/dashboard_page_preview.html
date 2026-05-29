@@ -144,6 +144,27 @@
         ul.innerHTML = items.map((link) => textLinkItemHtml(link, linkClass)).join('');
     };
 
+    const applyHtml = (key, html) => {
+        document.querySelectorAll(`[data-preview-html="${key}"]`).forEach((el) => {
+            el.innerHTML = html || el.innerHTML;
+        });
+    };
+
+    const applyCustomPagePreview = (payload) => {
+        if (payload.page_title) applyText('page-title', payload.page_title);
+        (payload.blocks || []).forEach((block) => {
+            const prefix = block.id ? `block-${block.id}` : null;
+            if (!prefix) return;
+            if (block.title) applyText(`${prefix}-title`, block.title);
+            if (block.subtitle) applyText(`${prefix}-subtitle`, block.subtitle);
+            if (block.badge) applyText(`${prefix}-badge`, block.badge);
+            if (block.content) applyHtml(`${prefix}-content`, block.content);
+            if (block.button_text) applyText(`${prefix}-button`, block.button_text);
+            if (block.image_url) applySrc(`${prefix}-image`, block.image_url);
+            if (block.video_url) applySrc(`${prefix}-video`, block.video_url);
+        });
+    };
+
     const applyPayload = (payload) => {
         const en = isEnglish();
         const seen = new Set();
@@ -182,7 +203,12 @@
     };
 
     window.addEventListener('message', (event) => {
-        if (!event || !event.data || event.data.type !== 'page-preview') return;
+        if (!event || !event.data) return;
+        if (event.data.type === 'custom-page-preview') {
+            applyCustomPagePreview(event.data.payload || {});
+            return;
+        }
+        if (event.data.type !== 'page-preview') return;
         applyPayload(event.data.payload || {});
     });
 

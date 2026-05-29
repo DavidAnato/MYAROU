@@ -1,0 +1,15 @@
+<section class="py-12 md:py-16" data-preview-block="{{ block.pk }}" data-block-type="cta">
+    <div class="container mx-auto px-4 max-w-3xl">
+        <div class="rounded-3xl p-8 md:p-12 text-center {% if block.layout == 'outline' %}border-2 border-emerald-500 bg-transparent{% else %}bg-gradient-to-br from-emerald-600 to-emerald-700 text-white shadow-xl{% endif %}">
+            {% if title %}
+            <h2 class="text-2xl md:text-3xl font-extrabold mb-3 {% if block.layout != 'outline' %}text-white{% else %}text-gray-900 dark:text-white{% endif %}" data-preview="block-{{ block.pk }}-title">{{ title }}</h2>
+            {% endif %}
+            {% if subtitle %}
+            <p class="mb-8 {% if block.layout != 'outline' %}text-white/90{% else %}text-gray-600 dark:text-gray-300{% endif %}" data-preview="block-{{ block.pk }}-subtitle">{{ subtitle }}</p>
+            {% endif %}
+            {% if block.button_url and button_text %}
+            <a href="{{ block.button_url }}" class="inline-flex px-8 py-3 rounded-full font-bold transition-transform hover:scale-105 {% if block.layout == 'outline' %}border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400{% else %}bg-white text-emerald-700{% endif %}" data-preview="block-{{ block.pk }}-button">{{ button_text }}</a>
+            {% endif %}
+        </div>
+    </div>
+</section>

@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from ckeditor_uploader.fields import RichTextUploadingField
 
 from .i18n_defaults import apply_i18n_defaults, merge_fr_en_defaults
+from .page_blocks import BLOCK_TYPE_CHOICES, BLOCK_TYPE_LABELS
 
 
 BUILTIN_PAGE_ROUTES = [
@@ -636,3 +637,124 @@ class CustomPage(models.Model):
 
     def get_href(self):
         return reverse('blog:custom_page', kwargs={'slug': self.slug})
+
+    def get_visible_blocks(self):
+        return self.blocks.filter(is_visible=True).prefetch_related('images')
+
+    def uses_block_builder(self):
+        return self.blocks.exists()
+
+
+class CustomPageBlock(models.Model):
+    """Section modulaire d'une page libre (page builder)."""
+
+    page = models.ForeignKey(
+        CustomPage,
+        on_delete=models.CASCADE,
+        related_name='blocks',
+    )
+    block_type = models.CharField(max_length=30, choices=BLOCK_TYPE_CHOICES)
+    order = models.PositiveIntegerField(default=0)
+    is_visible = models.BooleanField(default=True)
+
+    badge = models.CharField(max_length=120, blank=True)
+    badge_en = models.CharField(max_length=120, blank=True)
+    title = models.CharField(max_length=255, blank=True)
+    title_en = models.CharField(max_length=255, blank=True)
+    subtitle = models.CharField(max_length=500, blank=True)
+    subtitle_en = models.CharField(max_length=500, blank=True)
+    content = RichTextUploadingField(
+        blank=True,
+        config_name='awesome_ckeditor',
+        verbose_name='Contenu',
+    )
+    content_en = RichTextUploadingField(
+        blank=True,
+        config_name='awesome_ckeditor',
+        verbose_name='Contenu (EN)',
+    )
+    image = models.ImageField(upload_to='pages/blocks/', blank=True, null=True)
+    image_alt = models.CharField(max_length=255, blank=True)
+    video_url = models.URLField(max_length=500, blank=True)
+    button_text = models.CharField(max_length=120, blank=True)
+    button_text_en = models.CharField(max_length=120, blank=True)
+    button_url = models.CharField(max_length=500, blank=True)
+    layout = models.CharField(max_length=30, blank=True, default='')
+    config = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = 'Bloc de page'
+        verbose_name_plural = 'Blocs de page'
+
+    def __str__(self):
+        label = BLOCK_TYPE_LABELS.get(self.block_type, self.block_type)
+        return f'{label} #{self.pk or "?"}'
+
+    def save(self, *args, **kwargs):
+        if not self.config:
+            self.config = {}
+        super().save(*args, **kwargs)
+
+    def get_badge(self, language_code='fr'):
+        if language_code == 'en' and self.badge_en:
+            return self.badge_en
+        return self.badge
+
+    def get_title(self, language_code='fr'):
+        if language_code == 'en' and self.title_en:
+            return self.title_en
+        return self.title
+
+    def get_subtitle(self, language_code='fr'):
+        if language_code == 'en' and self.subtitle_en:
+            return self.subtitle_en
+        return self.subtitle
+
+    def get_content(self, language_code='fr'):
+        if language_code == 'en' and self.content_en:
+            return self.content_en
+        return self.content
+
+    def get_button_text(self, language_code='fr'):
+        if language_code == 'en' and self.button_text_en:
+            return self.button_text_en
+        return self.button_text
+
+    def get_faq_items(self, language_code='fr'):
+        items = (self.config or {}).get('items') or []
+        result = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            q = item.get('q_en') if language_code == 'en' and item.get('q_en') else item.get('q', '')
+            a = item.get('a_en') if language_code == 'en' and item.get('a_en') else item.get('a', '')
+            if q or a:
+                result.append({'q': q, 'a': a})
+        return result
+
+
+class CustomPageBlockImage(models.Model):
+    block = models.ForeignKey(
+        CustomPageBlock,
+        on_delete=models.CASCADE,
+        related_name='images',
+    )
+    image = models.ImageField(upload_to='pages/blocks/gallery/')
+    caption = models.CharField(max_length=255, blank=True)
+    caption_en = models.CharField(max_length=255, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = 'Image de bloc'
+        verbose_name_plural = 'Images de bloc'
+
+    def __str__(self):
+        return self.caption or f'Image #{self.pk}'
+
+    def get_caption(self, language_code='fr'):
+        if language_code == 'en' and self.caption_en:
+            return self.caption_en
+        return self.caption
+

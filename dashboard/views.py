@@ -19,8 +19,13 @@ from .site_forms import (
     ABOUT_SECTIONS,
     CONTACT_SECTIONS,
     SitePageFormSet,
-    CustomPageForm,
 )
+from dashboard.page_block_forms import (
+    CustomPageMetaForm,
+    CustomPageBlockFormSet,
+    CustomPageBlockImageFormSet,
+)
+from homepage.page_blocks import BLOCK_TYPE_CHOICES
 from .form_layout import build_section_layout, SITE_FORM_SECTIONS
 from homepage.models import HomeSettings, HomeGalleryImage
 import json
@@ -38,6 +43,8 @@ from homepage.models_site import (
     GalleryPageImage,
     SitePage,
     CustomPage,
+    CustomPageBlock,
+    CustomPageBlockImage,
 )
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -559,17 +566,18 @@ def site_page_list(request):
 @user_passes_test(is_staff, login_url='dashboard:login')
 def custom_page_create(request):
     if request.method == 'POST':
-        form = CustomPageForm(request.POST)
+        form = CustomPageMetaForm(request.POST)
         if form.is_valid():
             page = form.save()
-            messages.success(request, f'Page « {page.title} » créée.')
-            return redirect('dashboard:site_page_list')
+            messages.success(request, f'Page « {page.title} » créée. Ajoutez des blocs ci-dessous.')
+            return redirect('dashboard:custom_page_edit', pk=page.pk)
     else:
-        form = CustomPageForm()
-    return render(request, 'dashboard/custom_page_form.html', {
+        form = CustomPageMetaForm()
+    return render(request, 'dashboard/custom_page_builder.html', {
         'form': form,
         'action': 'Créer',
         'page_title': 'Nouvelle page',
+        'is_create': True,
     })
 
 
@@ -578,19 +586,41 @@ def custom_page_create(request):
 def custom_page_edit(request, pk):
     page = get_object_or_404(CustomPage, pk=pk)
     preview_url = f"{page.get_href()}?dashboard_preview=1"
+    image_qs = CustomPageBlockImage.objects.filter(block__page=page).select_related('block')
+
     if request.method == 'POST':
-        form = CustomPageForm(request.POST, instance=page)
-        if form.is_valid():
-            page = form.save()
-            messages.success(request, f'Page « {page.title} » mise à jour.')
-            return redirect('dashboard:site_page_list')
+        form = CustomPageMetaForm(request.POST, instance=page)
+        block_formset = CustomPageBlockFormSet(request.POST, request.FILES, instance=page)
+        image_formset = CustomPageBlockImageFormSet(
+            request.POST, request.FILES, queryset=image_qs, prefix='images',
+        )
+        if form.is_valid() and block_formset.is_valid() and image_formset.is_valid():
+            form.save()
+            block_formset.save()
+            image_formset.save()
+            messages.success(request, f'Page « {page.title} » enregistrée.')
+            return redirect('dashboard:custom_page_edit', pk=page.pk)
+        messages.error(request, 'Corrigez les erreurs dans le formulaire ou les blocs.')
     else:
-        form = CustomPageForm(instance=page)
-    return render(request, 'dashboard/custom_page_form.html', {
+        form = CustomPageMetaForm(instance=page)
+        block_formset = CustomPageBlockFormSet(instance=page)
+        image_formset = CustomPageBlockImageFormSet(queryset=image_qs, prefix='images')
+
+    gallery_images_by_block = {}
+    for img_form in image_formset:
+        block_id = img_form.instance.block_id
+        if block_id:
+            gallery_images_by_block.setdefault(block_id, []).append(img_form)
+
+    return render(request, 'dashboard/custom_page_builder.html', {
         'form': form,
-        'action': 'Modifier',
+        'block_formset': block_formset,
+        'image_formset': image_formset,
+        'gallery_images_by_block': gallery_images_by_block,
+        'block_type_choices': BLOCK_TYPE_CHOICES,
+        'action': 'Enregistrer',
         'page': page,
-        'page_title': f'Modifier — {page.title}',
+        'page_title': f'Page builder — {page.title}',
         'preview_url': preview_url,
     })
 
@@ -604,6 +634,15 @@ def custom_page_delete(request, pk):
     page.delete()
     messages.success(request, f'Page « {title} » supprimée.')
     return redirect('dashboard:site_page_list')
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def delete_block_image_api(request, pk):
+    obj = get_object_or_404(CustomPageBlockImage, pk=pk)
+    obj.delete()
+    return JsonResponse({'ok': True})
 
 
 @login_required(login_url='dashboard:login')

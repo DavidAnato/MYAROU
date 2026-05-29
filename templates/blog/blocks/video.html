@@ -1,0 +1,15 @@
+<section class="py-10 md:py-14" data-preview-block="{{ block.pk }}" data-block-type="video">
+    <div class="container mx-auto px-4 max-w-4xl">
+        {% if title %}
+        <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mb-2 text-center" data-preview="block-{{ block.pk }}-title">{{ title }}</h2>
+        {% endif %}
+        {% if subtitle %}
+        <p class="text-gray-600 dark:text-gray-400 text-center mb-8" data-preview="block-{{ block.pk }}-subtitle">{{ subtitle }}</p>
+        {% endif %}
+        {% if block.video_url %}
+        <div class="aspect-video rounded-2xl overflow-hidden shadow-xl bg-black">
+            <iframe src="{{ block.video_url }}" class="w-full h-full" allowfullscreen loading="lazy" data-preview-iframe="block-{{ block.pk }}-video"></iframe>
+        </div>
+        {% endif %}
+    </div>
+</section>

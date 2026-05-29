@@ -1,0 +1,19 @@
+<section class="py-10 md:py-14" data-preview-block="{{ block.pk }}" data-block-type="gallery">
+    <div class="container mx-auto px-4 max-w-6xl">
+        {% if title %}
+        <h2 class="text-2xl md:text-3xl font-extrabold text-center text-gray-900 dark:text-white mb-8" data-preview="block-{{ block.pk }}-title">{{ title }}</h2>
+        {% endif %}
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4" data-gallery-preview-grid data-block-gallery="{{ block.pk }}">
+            {% for img in images %}
+            <figure class="rounded-2xl overflow-hidden shadow-lg bg-gray-100 dark:bg-gray-800">
+                <img src="{{ img.image.url }}" alt="{{ img.get_caption|default:'' }}" class="w-full h-48 md:h-56 object-cover">
+                {% if img.caption or img.caption_en %}
+                <figcaption class="p-3 text-sm text-gray-600 dark:text-gray-400">{% if lang == 'en' and img.caption_en %}{{ img.caption_en }}{% else %}{{ img.caption }}{% endif %}</figcaption>
+                {% endif %}
+            </figure>
+            {% empty %}
+            <p class="col-span-full text-center text-gray-500 dark:text-gray-400" data-gallery-empty-msg>Aucune image</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
