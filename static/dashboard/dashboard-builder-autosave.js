@@ -97,6 +97,7 @@
 
     function initAutosave(form, config) {
         if (!form || !config.saveUrl) return null;
+        if (form._builderSync) return form._builderSync;
 
         const statusEl = document.querySelector('[data-builder-save-status]');
         const publishBtn = document.querySelector('[data-builder-publish]');
@@ -142,7 +143,11 @@
                 publishedInput.value = 'on';
             }
 
-            window.DashboardBlockEditor?.prepareForSave?.(form);
+            try {
+                window.DashboardBlockEditor?.prepareForSave?.(form);
+            } catch (err) {
+                console.error('[builder] prepareForSave', err);
+            }
 
             const fd = new FormData(form);
             fd.set('builder_action', publish ? 'publish' : 'autosave');

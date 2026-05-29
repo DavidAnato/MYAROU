@@ -180,6 +180,12 @@
         setTimeout(() => card.classList.remove('builder-card--highlight'), 2000);
     }
 
+    function triggerLivePreview(form) {
+        if (window.DashboardForms && typeof window.DashboardForms.triggerPreviewUpdate === 'function') {
+            window.DashboardForms.triggerPreviewUpdate(form);
+        }
+    }
+
     function builderNotify(form, immediate) {
         triggerLivePreview(form);
         if (form && form._builderSync) {
@@ -519,8 +525,18 @@
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('pageSettingsForm');
         if (form && form.getAttribute('data-preview-type') === 'custom-page') {
-            initBlockEditor(form);
-            if (window.DashboardForms) window.DashboardForms.init(form);
+            try {
+                initBlockEditor(form);
+            } catch (err) {
+                console.error('[builder] initBlockEditor', err);
+            }
+            if (window.DashboardForms) {
+                try {
+                    window.DashboardForms.init(form);
+                } catch (err) {
+                    console.error('[builder] DashboardForms.init', err);
+                }
+            }
         }
     });
 

@@ -194,11 +194,21 @@
         return urls;
     }
 
-    function notifyFormMediaChange(form) {
+    function getBuilderForm(el) {
+        if (!el) return null;
+        if (el.matches && el.matches('form')) return el;
+        return el.closest('form');
+    }
+
+    function notifyFormMediaChange(formEl) {
+        const form = getBuilderForm(formEl);
+        if (!form) return;
         triggerPreviewUpdate(form);
-        if (form && form._builderSync) {
+        if (form._builderSync && typeof form._builderSync.notify === 'function') {
             form._builderSync.notify({ immediate: true });
+            return;
         }
+        form.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
     async function handleMediaInputChange(container, input, formRoot) {
@@ -223,26 +233,37 @@
             }
         }
 
-        if (formRoot.getAttribute('data-preview-type') === 'custom-page') {
-            notifyFormMediaChange(formRoot);
-        } else {
-            triggerPreviewUpdate(formRoot);
+        const form = getBuilderForm(formRoot);
+        if (form && form.getAttribute('data-preview-type') === 'custom-page') {
+            notifyFormMediaChange(form);
+        } else if (form) {
+            triggerPreviewUpdate(form);
         }
     }
 
     function initMediaDropzones(scope) {
         if (!scope) return;
-        const formRoot = scope.closest('form') || scope;
+        const formRoot = getBuilderForm(scope) || scope;
         const searchRoot = scope.matches('form') ? scope : scope;
         searchRoot.querySelectorAll('[data-media-container]').forEach((container) => {
             const input = container.querySelector('input[type="file"]');
             const zone = container.querySelector('.media-dropzone');
             const clearBtn = container.querySelector('[data-clear-file]');
             const flagName = container.getAttribute('data-clear-flag-name');
-            const flagInput = flagName ? form.querySelector(`input[name="${flagName}"]`) : null;
+            const flagInput = flagName ? formRoot.querySelector(`input[name="${flagName}"]`) : null;
 
             if (container.dataset.mediaDropzoneBound === '1') return;
             container.dataset.mediaDropzoneBound = '1';
+
+            const onFileChange = (e) => {
+                if (e) e.stopPropagation();
+                handleMediaInputChange(container, input, formRoot);
+            };
+
+            if (input && input.dataset.mediaInputBound !== '1') {
+                input.dataset.mediaInputBound = '1';
+                input.addEventListener('change', onFileChange);
+            }
 
             if (zone && input) {
                 zone.addEventListener('click', (e) => {
@@ -256,10 +277,6 @@
                     setDropzoneActive(zone, false);
                     const f = e.dataTransfer.files && e.dataTransfer.files[0];
                     if (f) setSingleFile(input, f);
-                });
-                input.addEventListener('change', (e) => {
-                    e.stopPropagation();
-                    handleMediaInputChange(container, input, formRoot);
                 });
             }
             if (clearBtn) {
@@ -279,10 +296,11 @@
                     }
                     clearBtn.disabled = true;
                     clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                    if (formRoot.getAttribute('data-preview-type') === 'custom-page') {
-                        notifyFormMediaChange(formRoot);
-                    } else {
-                        triggerPreviewUpdate(formRoot);
+                    const form = getBuilderForm(formRoot);
+                    if (form && form.getAttribute('data-preview-type') === 'custom-page') {
+                        notifyFormMediaChange(form);
+                    } else if (form) {
+                        triggerPreviewUpdate(form);
                     }
                 });
             }

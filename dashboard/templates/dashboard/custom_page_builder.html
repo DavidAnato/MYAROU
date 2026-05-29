@@ -136,4 +136,23 @@ window.BUILDER_CATALOG = {{ block_catalog_json|safe }};
 {{ form.media }}
 {% if block_formset %}{{ block_formset.media }}{% endif %}
 <script src="{% static 'dashboard/dashboard-ckeditor-fix.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.getElementById('pageSettingsForm');
+    if (!form || form.getAttribute('data-preview-type') !== 'custom-page') return;
+
+    if (window.DashboardForms) {
+        if (!form._previewSchedule) {
+            try { window.DashboardForms.init(form); } catch (e) { console.error('[builder] forms init', e); }
+        } else {
+            window.DashboardForms.initMediaDropzones(form);
+        }
+    }
+
+    var saveUrl = form.getAttribute('data-autosave-url');
+    if (saveUrl && window.DashboardBuilderAutosave && !form._builderSync) {
+        window.DashboardBuilderAutosave.initAutosave(form, { saveUrl: saveUrl });
+    }
+});
+</script>
 {% endblock %}
