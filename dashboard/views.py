@@ -562,6 +562,83 @@ def site_page_list(request):
     })
 
 
+def _build_custom_page_save_mapping(block_formset, image_formset):
+    """Retourne les PK créées/mises à jour indexées par préfixe de formulaire Django."""
+    blocks = []
+    for i, bf in enumerate(block_formset.forms):
+        if not bf.cleaned_data or bf.cleaned_data.get('DELETE'):
+            continue
+        inst = bf.instance
+        if not inst.pk:
+            continue
+        blocks.append({
+            'form_prefix': i,
+            'id': inst.pk,
+            'block_type': inst.block_type,
+            'image_url': inst.image.url if inst.image else '',
+        })
+
+    images = []
+    for i, imgf in enumerate(image_formset.forms):
+        if not imgf.cleaned_data or imgf.cleaned_data.get('DELETE'):
+            continue
+        inst = imgf.instance
+        if not inst.pk:
+            continue
+        images.append({
+            'form_prefix': i,
+            'id': inst.pk,
+            'block_id': inst.block_id,
+            'image_url': inst.image.url if inst.image else '',
+        })
+
+    return {'blocks': blocks, 'images': images}
+
+
+def _save_custom_page_builder(request, page, *, publish=False):
+    """
+    Enregistre meta + blocs + images.
+    publish=True met la page en ligne sans toucher aux autres champs via le formulaire.
+    """
+    image_qs = CustomPageBlockImage.objects.filter(block__page=page).select_related('block')
+    post = request.POST.copy()
+
+    if publish:
+        post['is_published'] = 'on'
+    elif page.pk and 'is_published' not in post:
+        post['is_published'] = 'on' if page.is_published else ''
+
+    form = CustomPageMetaForm(post, request.FILES, instance=page)
+    block_formset = CustomPageBlockFormSet(request.POST, request.FILES, instance=page)
+    image_formset = CustomPageBlockImageFormSet(
+        request.POST, request.FILES, queryset=image_qs, prefix='images',
+    )
+
+    errors = {}
+    if not form.is_valid():
+        errors['meta'] = form.errors.get_json_data()
+    if not block_formset.is_valid():
+        errors['blocks'] = block_formset.errors.get_json_data()
+    if not image_formset.is_valid():
+        errors['images'] = image_formset.errors.get_json_data()
+
+    if errors:
+        return False, page, errors, None
+
+    page = form.save()
+    if publish and not page.is_published:
+        page.is_published = True
+        page.save(update_fields=['is_published', 'updated_at'])
+
+    block_formset.instance = page
+    block_formset.save()
+    image_formset.save()
+
+    mapping = _build_custom_page_save_mapping(block_formset, image_formset)
+    page.refresh_from_db()
+    return True, page, None, mapping
+
+
 @login_required(login_url='dashboard:login')
 @user_passes_test(is_staff, login_url='dashboard:login')
 def custom_page_create(request):
@@ -589,23 +666,20 @@ def custom_page_edit(request, pk):
     image_qs = CustomPageBlockImage.objects.filter(block__page=page).select_related('block')
 
     if request.method == 'POST':
+        ok, page, errors, _mapping = _save_custom_page_builder(request, page)
+        if ok:
+            messages.success(request, f'Page « {page.title} » enregistrée.')
+            return redirect('dashboard:custom_page_edit', pk=page.pk)
         form = CustomPageMetaForm(request.POST, instance=page)
         block_formset = CustomPageBlockFormSet(request.POST, request.FILES, instance=page)
         image_formset = CustomPageBlockImageFormSet(
             request.POST, request.FILES, queryset=image_qs, prefix='images',
         )
-        if form.is_valid() and block_formset.is_valid() and image_formset.is_valid():
-            page = form.save()
-            block_formset.instance = page
-            block_formset.save()
-            image_formset.save()
-            messages.success(request, f'Page « {page.title} » enregistrée.')
-            return redirect('dashboard:custom_page_edit', pk=page.pk)
-        if not form.is_valid():
+        if errors.get('meta'):
             messages.error(request, f'Paramètres : {form.errors.as_text()}')
-        if not block_formset.is_valid():
+        if errors.get('blocks'):
             messages.error(request, f'Blocs : {block_formset.errors.as_text()}')
-        if not image_formset.is_valid():
+        if errors.get('images'):
             messages.error(request, f'Images : {image_formset.errors.as_text()}')
     else:
         form = CustomPageMetaForm(instance=page)
@@ -613,10 +687,10 @@ def custom_page_edit(request, pk):
         image_formset = CustomPageBlockImageFormSet(queryset=image_qs, prefix='images')
 
     gallery_images_by_block = {}
-    for img_form in image_formset:
+    for img_index, img_form in enumerate(image_formset):
         block_id = img_form.instance.block_id
         if block_id:
-            gallery_images_by_block.setdefault(block_id, []).append(img_form)
+            gallery_images_by_block.setdefault(block_id, []).append((img_index, img_form))
 
     return render(request, 'dashboard/custom_page_builder.html', {
         'form': form,
@@ -626,11 +700,35 @@ def custom_page_edit(request, pk):
         'block_type_choices': BLOCK_TYPE_CHOICES,
         'block_catalog': BLOCK_CATALOG,
         'block_catalog_json': json.dumps({item['type']: item for item in BLOCK_CATALOG}, ensure_ascii=False),
-        'action': 'Enregistrer',
+        'save_api_url': reverse('dashboard:custom_page_save_api', kwargs={'pk': page.pk}),
         'page': page,
         'page_title': f'Page builder — {page.title}',
         'preview_url': preview_url,
     })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def custom_page_save_api(request, pk):
+    """Sauvegarde AJAX (auto-save ou publication)."""
+    page = get_object_or_404(CustomPage, pk=pk)
+    publish = request.POST.get('builder_action') == 'publish'
+    ok, page, errors, mapping = _save_custom_page_builder(request, page, publish=publish)
+
+    if not ok:
+        return JsonResponse({'ok': False, 'errors': errors}, status=400)
+
+    payload = {
+        'ok': True,
+        'is_published': page.is_published,
+        'preview_url': f"{page.get_href()}?dashboard_preview=1",
+        'updated_at': page.updated_at.isoformat(),
+        'page_href': page.get_href() if page.is_published else '',
+    }
+    if mapping:
+        payload.update(mapping)
+    return JsonResponse(payload)
 
 
 @login_required(login_url='dashboard:login')

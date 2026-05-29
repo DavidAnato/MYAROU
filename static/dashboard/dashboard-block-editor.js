@@ -37,6 +37,126 @@
         });
     }
 
+    function destroyCKEditorIn(root) {
+        if (!window.CKEDITOR) return;
+        root.querySelectorAll('textarea[id]').forEach((ta) => {
+            if (CKEDITOR.instances[ta.id]) {
+                try {
+                    CKEDITOR.instances[ta.id].updateElement();
+                    CKEDITOR.instances[ta.id].destroy(true);
+                } catch (e) { /* ignore */ }
+            }
+        });
+    }
+
+    function initCKEditorIn(root) {
+        if (!window.CKEDITOR) return;
+        root.querySelectorAll('textarea[id]').forEach((ta) => {
+            if (ta.closest('[data-block-empty-template]')) return;
+            if (CKEDITOR.instances[ta.id]) return;
+            if (!ta.id.includes('content')) return;
+            try {
+                CKEDITOR.replace(ta.id);
+            } catch (e) { /* ignore */ }
+        });
+    }
+
+    function renumberBlockFormPrefixes(form, list) {
+        const rows = [...list.querySelectorAll('[data-block-form]')].filter(
+            (row) => !row.closest('[data-block-empty-template]'),
+        );
+        const visible = rows.filter((r) => !r.classList.contains('hidden'));
+        const hidden = rows.filter((r) => r.classList.contains('hidden'));
+        const ordered = [...visible, ...hidden];
+
+        ordered.forEach((row, newIdx) => {
+            destroyCKEditorIn(row);
+            row.querySelectorAll('[name^="blocks-"]').forEach((el) => {
+                el.name = el.name.replace(/^blocks-\d+-/, `blocks-${newIdx}-`);
+                if (el.id) el.id = el.id.replace(/^id_blocks-\d+-/, `id_blocks-${newIdx}-`);
+            });
+            row.setAttribute('data-form-prefix', String(newIdx));
+            initCKEditorIn(row);
+        });
+
+        const totalInput = getTotalInput(form, 'blocks');
+        if (totalInput) totalInput.value = ordered.length;
+        reindexBlockCards(list);
+    }
+
+    function renumberImageFormPrefixes(form) {
+        const container = form;
+        const rows = [...form.querySelectorAll('[data-block-image-form]')].filter(
+            (r) => !r.closest('[data-block-image-empty-template]'),
+        );
+        const visible = rows.filter((r) => !r.classList.contains('hidden'));
+        const hidden = rows.filter((r) => r.classList.contains('hidden'));
+        const ordered = [...visible, ...hidden];
+
+        ordered.forEach((row, newIdx) => {
+            row.querySelectorAll('[name^="images-"]').forEach((el) => {
+                el.name = el.name.replace(/^images-\d+-/, `images-${newIdx}-`);
+                if (el.id) el.id = el.id.replace(/^id_images-\d+-/, `id_images-${newIdx}-`);
+            });
+            row.setAttribute('data-form-prefix', String(newIdx));
+        });
+
+        const totalInput = getTotalInput(form, 'images');
+        if (totalInput) totalInput.value = ordered.length;
+    }
+
+    function updateMediaUrl(container, url) {
+        if (!container || !url) return;
+        const media = container.querySelector('[data-media-container]') || container;
+        let wrap = media.querySelector('.mt-3');
+        if (!wrap) {
+            wrap = document.createElement('div');
+            wrap.className = 'mt-3';
+            media.appendChild(wrap);
+        }
+        let existing = wrap.querySelector('[data-existing-image]');
+        if (!existing) {
+            existing = document.createElement('img');
+            existing.className = 'w-full max-w-sm rounded-2xl shadow';
+            existing.setAttribute('data-existing-image', '');
+            existing.alt = '';
+            wrap.appendChild(existing);
+        }
+        existing.src = url;
+        existing.classList.remove('hidden');
+        const preview = media.querySelector('[data-preview-image]');
+        if (preview) preview.classList.add('hidden');
+        const fileInput = media.querySelector('input[type="file"]');
+        if (fileInput) fileInput.value = '';
+    }
+
+    function enableGalleryBlock(form, card, blockId) {
+        const zone = card.querySelector('[data-block-gallery-images]');
+        if (!zone) return;
+
+        zone.setAttribute('data-block-id', String(blockId));
+        card.setAttribute('data-block-pk', String(blockId));
+
+        const pending = zone.querySelector('[data-gallery-pending]');
+        if (!pending) return;
+
+        const list = document.createElement('div');
+        list.className = 'space-y-2';
+        list.setAttribute('data-gallery-images-list', '');
+        pending.replaceWith(list);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('data-add-block-image', '');
+        btn.setAttribute('data-target-block', String(blockId));
+        btn.className = 'mt-2 inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-bold hover:underline';
+        btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Ajouter une image';
+        zone.appendChild(btn);
+
+        const section = form.querySelector('[data-block-section]');
+        bindBlockCard(card, form, section);
+    }
+
     function setAllBlocksCollapsed(form, collapsed) {
         form.querySelectorAll('[data-block-form]:not(.hidden)').forEach((card) => {
             if (card.closest('[data-block-empty-template]')) return;
@@ -104,6 +224,7 @@
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html.trim();
         const card = wrapper.firstElementChild;
+        card.setAttribute('data-form-prefix', String(index));
         list.appendChild(card);
 
         totalInput.value = index + 1;
@@ -123,6 +244,7 @@
         if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
             window.DashboardForms.initMediaDropzones(card);
         }
+        initCKEditorIn(card);
         form.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
@@ -248,6 +370,7 @@
         wrapper.innerHTML = html.trim();
         const row = wrapper.firstElementChild;
         row.setAttribute('data-block-id', blockId);
+        row.setAttribute('data-form-prefix', String(index));
         const cardIndex = gallery.getAttribute('data-block-card-index');
         if (cardIndex !== null && cardIndex !== '') {
             row.setAttribute('data-block-card-index', cardIndex);
@@ -349,6 +472,7 @@
         form.querySelectorAll('[data-block-form]').forEach((card) => {
             if (card.closest('[data-block-empty-template]')) return;
             bindBlockCard(card, form, section);
+            initCKEditorIn(card);
         });
 
         form.addEventListener('click', (e) => {
@@ -382,5 +506,15 @@
             syncCKEditors();
             if (form) syncAllFaqEditors(form);
         },
+        prepareForSave(form) {
+            syncCKEditors();
+            syncAllFaqEditors(form);
+            const list = form.querySelector('[data-block-forms]');
+            if (list) renumberBlockFormPrefixes(form, list);
+            renumberImageFormPrefixes(form);
+        },
+        enableGalleryBlock,
+        updateMediaUrl,
+        renumberBlockFormPrefixes,
     };
 })();

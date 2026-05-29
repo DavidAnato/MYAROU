@@ -31,6 +31,7 @@ urlpatterns = [
     path('pages/', views.site_page_list, name='site_page_list'),
     path('pages/custom/create/', views.custom_page_create, name='custom_page_create'),
     path('pages/custom/<int:pk>/edit/', views.custom_page_edit, name='custom_page_edit'),
+    path('pages/custom/<int:pk>/save/', views.custom_page_save_api, name='custom_page_save_api'),
     path('pages/custom/<int:pk>/delete/', views.custom_page_delete, name='custom_page_delete'),
     path('messages/', views.contact_message_list, name='contact_message_list'),
     path('messages/<int:pk>/', views.contact_message_detail, name='contact_message_detail'),
