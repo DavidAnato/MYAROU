@@ -64,7 +64,9 @@
             if (idInput) idInput.value = item.id;
 
             if (item.image_url) {
-                window.DashboardBlockEditor?.updateMediaUrl?.(card, item.image_url);
+                const blockType = card.querySelector('[name$="-block_type"]')?.value || '';
+                const mediaSection = card.querySelector(`[data-block-media-for="${blockType}"]`);
+                window.DashboardBlockEditor?.updateMediaUrl?.(mediaSection || card, item.image_url);
             }
 
             window.DashboardBlockEditor?.enableGalleryBlock?.(form, card, item.id);

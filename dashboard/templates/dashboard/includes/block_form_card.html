@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <div x-show="blockType === 'hero'" x-cloak class="builder-field-group builder-field-group--2">
+        <div x-show="blockType === 'hero'" x-cloak class="builder-field-group builder-field-group--2" data-block-media-for="hero">
             <div class="builder-field" x-show="locale === 'fr'"><label>Badge</label>{{ bf.badge }}</div>
             <div class="builder-field" x-show="locale === 'en'"><label>Badge</label>{{ bf.badge_en }}</div>
             <div class="builder-field" x-show="locale === 'fr'"><label>Titre</label>{{ bf.title }}</div>
@@ -74,7 +74,7 @@
             <div class="builder-field" x-show="locale === 'en'"><label>Contenu</label>{{ bf.content_en }}</div>
         </div>
 
-        <div x-show="blockType === 'image'" x-cloak class="space-y-3">
+        <div x-show="blockType === 'image'" x-cloak class="space-y-3" data-block-media-for="image">
             <div class="builder-field md:col-span-2">
                 {% include 'dashboard/includes/media_field.html' with field=bf.image label="Image" %}
             </div>
@@ -83,7 +83,7 @@
             <div class="builder-field" x-show="locale === 'en'"><label>Légende</label>{{ bf.title_en }}</div>
         </div>
 
-        <div x-show="blockType === 'image_text'" x-cloak class="builder-field-group builder-field-group--2">
+        <div x-show="blockType === 'image_text'" x-cloak class="builder-field-group builder-field-group--2" data-block-media-for="image_text">
             <div class="builder-field" x-show="locale === 'fr'"><label>Titre</label>{{ bf.title }}</div>
             <div class="builder-field" x-show="locale === 'en'"><label>Titre</label>{{ bf.title_en }}</div>
             <div class="builder-field md:col-span-2" x-show="locale === 'fr'"><label>Contenu</label>{{ bf.content }}</div>

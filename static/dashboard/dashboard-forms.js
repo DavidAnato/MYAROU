@@ -531,10 +531,11 @@
                     const del = card.querySelector('input[name$="-DELETE"]');
                     if (del && del.checked) return;
 
+                    const blockType = getFieldVal(card, 'block_type');
                     const block = {
                         id: card.getAttribute('data-block-pk') || '',
                         index: blockIdx,
-                        block_type: getFieldVal(card, 'block_type'),
+                        block_type: blockType,
                         title: getFieldVal(card, 'title'),
                         title_en: getFieldVal(card, 'title_en'),
                         subtitle: getFieldVal(card, 'subtitle'),
@@ -553,7 +554,10 @@
                     };
                     blockIdx += 1;
 
-                    const mediaContainer = card.querySelector('[data-media-container]');
+                    const mediaSection = card.querySelector(`[data-block-media-for="${blockType}"]`);
+                    const mediaContainer = mediaSection
+                        ? mediaSection.querySelector('[data-media-container]')
+                        : card.querySelector('[data-media-container]');
                     block.image_url = getImageUrl(mediaContainer);
 
                     const blockId = card.getAttribute('data-block-pk');
