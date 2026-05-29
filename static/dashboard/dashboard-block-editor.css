@@ -406,4 +406,24 @@
     background: rgba(17, 24, 39, 0.4);
 }
 
-[x-cloak] { display: none !important; }
+.media-dropzone input[type="file"] {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.media-dropzone {
+    cursor: pointer;
+}
+
+.media-dropzone:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+}
+
+.media-dropzone.is-dragover {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+}

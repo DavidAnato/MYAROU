@@ -7,7 +7,9 @@
 
     function getVisibleBlockCards(list) {
         if (!list) return [];
-        return [...list.querySelectorAll('[data-block-form]:not(.hidden)')];
+        return [...list.querySelectorAll('[data-block-form]:not(.hidden)')].filter(
+            (card) => !card.closest('[data-block-empty-template]')
+        );
     }
 
     function updateBlockCount(section) {
@@ -30,11 +32,14 @@
             card.setAttribute('data-block-index', String(idx));
             const orderInput = card.querySelector('input[name$="-order"]');
             if (orderInput) orderInput.value = idx * 10;
+            const gallery = card.querySelector('[data-block-gallery-images]');
+            if (gallery) gallery.setAttribute('data-block-card-index', String(idx));
         });
     }
 
     function setAllBlocksCollapsed(form, collapsed) {
         form.querySelectorAll('[data-block-form]:not(.hidden)').forEach((card) => {
+            if (card.closest('[data-block-empty-template]')) return;
             if (window.Alpine && typeof Alpine.$data === 'function') {
                 try {
                     const data = Alpine.$data(card);
@@ -243,6 +248,10 @@
         wrapper.innerHTML = html.trim();
         const row = wrapper.firstElementChild;
         row.setAttribute('data-block-id', blockId);
+        const cardIndex = gallery.getAttribute('data-block-card-index');
+        if (cardIndex !== null && cardIndex !== '') {
+            row.setAttribute('data-block-card-index', cardIndex);
+        }
         const blockInput = row.querySelector('input[name$="-block"]');
         if (blockInput) blockInput.value = blockId;
         list.appendChild(row);
@@ -337,7 +346,10 @@
             setAllBlocksCollapsed(form, false);
         });
 
-        form.querySelectorAll('[data-block-form]').forEach((card) => bindBlockCard(card, form, section));
+        form.querySelectorAll('[data-block-form]').forEach((card) => {
+            if (card.closest('[data-block-empty-template]')) return;
+            bindBlockCard(card, form, section);
+        });
 
         form.addEventListener('click', (e) => {
             const btn = e.target.closest('[data-delete-block-image]');
@@ -364,4 +376,11 @@
             if (window.DashboardForms) window.DashboardForms.init(form);
         }
     });
+
+    window.DashboardBlockEditor = {
+        syncBeforePreview(form) {
+            syncCKEditors();
+            if (form) syncAllFaqEditors(form);
+        },
+    };
 })();

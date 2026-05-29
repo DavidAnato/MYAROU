@@ -152,13 +152,18 @@
 
     const heroWaveSvg = '<div class="absolute bottom-0 left-0 right-0"><svg viewBox="0 0 1440 120" fill="none" class="w-full h-auto"><path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" class="fill-white dark:fill-[#121212]"/></svg></div>';
 
+    const pickLocale = (fr, en) => {
+        const enMode = isEnglish();
+        return enMode ? (en || fr || '') : (fr || en || '');
+    };
+
     const renderPreviewBlock = (block, idx) => {
         const t = block.block_type || 'richtext';
-        const title = escapeHtml(block.title || '');
-        const subtitle = escapeHtml(block.subtitle || '');
-        const badge = escapeHtml(block.badge || '');
-        const content = block.content || '';
-        const btn = escapeHtml(block.button_text || '');
+        const title = escapeHtml(pickLocale(block.title, block.title_en));
+        const subtitle = escapeHtml(pickLocale(block.subtitle, block.subtitle_en));
+        const badge = escapeHtml(pickLocale(block.badge, block.badge_en));
+        const content = pickLocale(block.content, block.content_en);
+        const btn = escapeHtml(pickLocale(block.button_text, block.button_text_en));
         const btnUrl = escapeHtml(block.button_url || '#');
         const img = block.image_url ? `<img src="${escapeHtml(block.image_url)}" class="absolute inset-0 w-full h-full object-cover opacity-30" alt="">` : '';
         const imgBlock = block.image_url ? `<img src="${escapeHtml(block.image_url)}" class="rounded-2xl shadow-xl mx-auto max-w-full" alt="">` : '';
@@ -186,7 +191,12 @@
         if (t === 'faq') {
             let items = [];
             try { items = block.faq_json ? JSON.parse(block.faq_json) : (block.faq_items || []); } catch (e) { items = []; }
-            const faqHtml = items.map((it) => `<details class="rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-3 p-4"><summary class="font-semibold cursor-pointer">${escapeHtml(it.q || '')}</summary><div class="mt-2 text-gray-600 dark:text-gray-300">${escapeHtml(it.a || '')}</div></details>`).join('');
+            const enMode = isEnglish();
+            const faqHtml = items.map((it) => {
+                const q = escapeHtml(enMode ? (it.q_en || it.q || '') : (it.q || it.q_en || ''));
+                const a = escapeHtml(enMode ? (it.a_en || it.a || '') : (it.a || it.a_en || ''));
+                return `<details class="rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-3 p-4"><summary class="font-semibold cursor-pointer">${q}</summary><div class="mt-2 text-gray-600 dark:text-gray-300">${a}</div></details>`;
+            }).join('');
             return `<section class="py-10 bg-gray-50 dark:bg-[#1a1a1a]"><div class="container mx-auto px-4 max-w-3xl">${title ? `<h2 class="text-2xl font-extrabold text-center mb-8 text-gray-900 dark:text-white">${title}</h2>` : ''}${faqHtml}</div></section>`;
         }
         if (t === 'spacer') {
@@ -206,7 +216,8 @@
         if (!root) return;
         const blocks = payload.blocks || [];
         if (blocks.length === 0) {
-            root.innerHTML = `<section class="relative bg-gradient-to-br from-emerald-600 to-emerald-700 text-white py-24"><div class="container mx-auto px-4 text-center"><h1 class="text-4xl font-extrabold">${escapeHtml(payload.page_title || 'Nouvelle page')}</h1></div>${heroWaveSvg}</section><section class="py-12 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-4xl text-center text-gray-500">Ajoutez des blocs pour composer la page.</div></section>`;
+            const pageTitle = escapeHtml(pickLocale(payload.page_title, payload.page_title_en) || 'Nouvelle page');
+            root.innerHTML = `<section class="relative bg-gradient-to-br from-emerald-600 to-emerald-700 text-white py-24"><div class="container mx-auto px-4 text-center"><h1 class="text-4xl font-extrabold">${pageTitle}</h1></div>${heroWaveSvg}</section><section class="py-12 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-4xl text-center text-gray-500">Ajoutez des blocs pour composer la page.</div></section>`;
             return;
         }
         root.innerHTML = blocks.map((block, idx) => renderPreviewBlock(block, idx)).join('');

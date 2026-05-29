@@ -382,6 +382,10 @@
         };
 
         const buildPayload = () => {
+            if (window.DashboardBlockEditor && typeof window.DashboardBlockEditor.syncBeforePreview === 'function') {
+                window.DashboardBlockEditor.syncBeforePreview(form);
+            }
+
             const payload = {};
             form.querySelectorAll('input, textarea, select').forEach((el) => {
                 if (!el.name || el.type === 'file') return;
@@ -403,14 +407,33 @@
                     return el.value || '';
                 };
 
-                form.querySelectorAll('[data-block-form]').forEach((card, idx) => {
+                const getImageUrl = (container) => {
+                    if (!container) return '';
+                    const preview = container.querySelector('[data-preview-image]');
+                    const existing = container.querySelector('[data-existing-image]');
+                    const imgInput = container.querySelector('input[type="file"][name$="-image"]');
+                    if (preview && !preview.classList.contains('hidden') && preview.src) {
+                        return preview.src;
+                    }
+                    if (imgInput && imgInput.files && imgInput.files[0]) {
+                        return URL.createObjectURL(imgInput.files[0]);
+                    }
+                    if (existing && !existing.classList.contains('hidden') && existing.src) {
+                        return existing.src;
+                    }
+                    return '';
+                };
+
+                let blockIdx = 0;
+                form.querySelectorAll('[data-block-form]').forEach((card) => {
                     if (card.classList.contains('hidden')) return;
+                    if (card.closest('[data-block-empty-template]')) return;
                     const del = card.querySelector('input[name$="-DELETE"]');
                     if (del && del.checked) return;
 
                     const block = {
                         id: card.getAttribute('data-block-pk') || '',
-                        index: idx,
+                        index: blockIdx,
                         block_type: getFieldVal(card, 'block_type'),
                         title: getFieldVal(card, 'title'),
                         title_en: getFieldVal(card, 'title_en'),
@@ -428,28 +451,22 @@
                         faq_json: getFieldVal(card, 'faq_json'),
                         gallery_urls: [],
                     };
+                    blockIdx += 1;
 
-                    const imgInput = card.querySelector('input[type="file"][name$="-image"]');
-                    if (imgInput && imgInput.files && imgInput.files[0]) {
-                        block.image_url = URL.createObjectURL(imgInput.files[0]);
-                    } else {
-                        const ex = card.querySelector('[data-existing-image]');
-                        if (ex) block.image_url = ex.src;
-                    }
+                    const mediaContainer = card.querySelector('[data-media-container]');
+                    block.image_url = getImageUrl(mediaContainer);
 
                     const blockId = card.getAttribute('data-block-pk');
-                    if (blockId) {
-                        form.querySelectorAll(`[data-block-image-form][data-block-id="${blockId}"]:not(.hidden)`).forEach((row) => {
-                            if (row.querySelector('input[name$="-DELETE"]')?.checked) return;
-                            const fileIn = row.querySelector('input[type="file"]');
-                            if (fileIn && fileIn.files && fileIn.files[0]) {
-                                block.gallery_urls.push(URL.createObjectURL(fileIn.files[0]));
-                            } else {
-                                const exImg = row.querySelector('[data-existing-image]');
-                                if (exImg) block.gallery_urls.push(exImg.src);
-                            }
-                        });
-                    }
+                    const cardIndex = card.getAttribute('data-block-index');
+                    const imageSelector = blockId
+                        ? `[data-block-image-form][data-block-id="${blockId}"]`
+                        : `[data-block-image-form][data-block-card-index="${cardIndex}"]`;
+                    form.querySelectorAll(`${imageSelector}:not(.hidden)`).forEach((row) => {
+                        if (row.closest('[data-block-image-empty-template]')) return;
+                        if (row.querySelector('input[name$="-DELETE"]')?.checked) return;
+                        const url = getImageUrl(row);
+                        if (url) block.gallery_urls.push(url);
+                    });
 
                     payload.blocks.push(block);
                 });
