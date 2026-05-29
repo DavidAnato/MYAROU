@@ -9,6 +9,9 @@ from homepage.models_site import (
     GalleryPageSettings,
     GalleryPageImage,
     ContactPageSettings,
+    SitePage,
+    CustomPage,
+    RESERVED_CUSTOM_PAGE_SLUGS,
 )
 
 WIDGET_CLASS = (
@@ -314,3 +317,73 @@ def build_form_sections(form, sections_spec):
         if fields:
             result.append((title, fields))
     return result
+
+
+class SitePageForm(forms.ModelForm):
+    class Meta:
+        model = SitePage
+        fields = ['label', 'label_en', 'order', 'is_visible', 'show_in_nav']
+        widgets = {
+            'label': forms.TextInput(attrs={'placeholder': 'Libellé menu (FR)'}),
+            'label_en': forms.TextInput(attrs={'placeholder': 'Menu label (EN)'}),
+            'order': forms.NumberInput(attrs={'min': 0, 'class': 'w-24'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _style_form(self)
+        if self.instance and self.instance.route_name == 'blog:home':
+            self.fields['is_visible'].disabled = True
+            self.fields['is_visible'].help_text = "L’accueil reste toujours accessible."
+
+    def clean(self):
+        cleaned = super().clean()
+        if self.instance and self.instance.route_name == 'blog:home':
+            cleaned['is_visible'] = True
+        return cleaned
+
+
+SitePageFormSet = modelformset_factory(
+    SitePage,
+    form=SitePageForm,
+    extra=0,
+    can_delete=False,
+)
+
+
+class CustomPageForm(forms.ModelForm):
+    class Meta:
+        model = CustomPage
+        fields = [
+            'title', 'title_en', 'slug', 'content', 'content_en',
+            'is_published', 'show_in_nav', 'order',
+            'meta_description', 'meta_description_en',
+        ]
+        widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'Titre de la page'}),
+            'title_en': forms.TextInput(attrs={'placeholder': 'Page title (EN)'}),
+            'slug': forms.TextInput(attrs={'placeholder': 'mentions-legales'}),
+            'meta_description': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Description SEO (max 160 car.)'}),
+            'meta_description_en': forms.Textarea(attrs={'rows': 2}),
+            'order': forms.NumberInput(attrs={'min': 0}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _style_form(self)
+        self.fields['slug'].required = False
+
+    def clean_slug(self):
+        slug = self.cleaned_data.get('slug', '').strip()
+        title = self.cleaned_data.get('title', '')
+        if not slug and title:
+            from django.utils.text import slugify
+            slug = slugify(title)
+        if slug in RESERVED_CUSTOM_PAGE_SLUGS:
+            raise forms.ValidationError('Ce slug est réservé par le site.')
+        qs = CustomPage.objects.filter(slug=slug)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError('Une page avec ce slug existe déjà.')
+        return slug

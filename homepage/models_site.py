@@ -1,7 +1,34 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
+from django.urls import NoReverseMatch, reverse
+from django.utils.text import slugify
+from ckeditor_uploader.fields import RichTextUploadingField
 
 from .i18n_defaults import apply_i18n_defaults, merge_fr_en_defaults
+
+
+BUILTIN_PAGE_ROUTES = [
+    ('blog:home', 'Accueil'),
+    ('blog:about', 'À propos'),
+    ('blog:article_list', 'Blog'),
+    ('blog:gallery', 'Galerie'),
+    ('blog:contact', 'Contact'),
+]
+
+BUILTIN_PAGE_LABELS_EN = {
+    'blog:home': 'Home',
+    'blog:about': 'About',
+    'blog:article_list': 'Blog',
+    'blog:gallery': 'Gallery',
+    'blog:contact': 'Contact',
+}
+
+RESERVED_CUSTOM_PAGE_SLUGS = {
+    'about', 'galerie', 'gallery', 'contact', 'blog', 'article', 'categorie',
+    'category', 'pages', 'admin', 'dashboard', 'login', 'logout', 'ckeditor',
+    'static', 'media', 'api', 'home', 'accueil', 'i18n',
+}
 
 
 class SiteSettings(models.Model):
@@ -483,3 +510,129 @@ class ContactMessage(models.Model):
 
     def get_request_type_label(self):
         return dict(self.REQUEST_TYPE_CHOICES).get(self.request_type, self.request_type or '—')
+
+
+class SitePage(models.Model):
+    """Pages intégrées du site — visibilité et ordre du menu."""
+
+    route_name = models.CharField(max_length=80, unique=True, choices=BUILTIN_PAGE_ROUTES)
+    label = models.CharField(max_length=120, blank=True)
+    label_en = models.CharField(max_length=120, blank=True)
+    order = models.PositiveIntegerField(default=0)
+    is_visible = models.BooleanField(
+        default=True,
+        help_text="Page accessible publiquement (404 si désactivée). L’accueil reste toujours accessible.",
+    )
+    show_in_nav = models.BooleanField(
+        default=True,
+        help_text="Afficher dans le menu principal.",
+    )
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = "Page du site"
+        verbose_name_plural = "Pages du site"
+
+    def __str__(self):
+        return self.label or self.get_route_name_display()
+
+    def save(self, *args, **kwargs):
+        if self.route_name == 'blog:home':
+            self.is_visible = True
+        if not self.label:
+            self.label = self.get_route_name_display()
+        if not self.label_en:
+            self.label_en = BUILTIN_PAGE_LABELS_EN.get(self.route_name, self.label)
+        super().save(*args, **kwargs)
+
+    def get_label(self, language_code='fr'):
+        if language_code == 'en' and self.label_en:
+            return self.label_en
+        return self.label or self.get_route_name_display()
+
+    def get_href(self):
+        try:
+            return reverse(self.route_name)
+        except NoReverseMatch:
+            return '#'
+
+    def get_active_views(self):
+        mapping = {
+            'blog:home': ['blog:home'],
+            'blog:about': ['blog:about'],
+            'blog:article_list': ['blog:article_list', 'blog:article_detail', 'blog:category_detail'],
+            'blog:gallery': ['blog:gallery'],
+            'blog:contact': ['blog:contact'],
+        }
+        return mapping.get(self.route_name, [self.route_name])
+
+    def get_nav_icon(self):
+        icons = {
+            'blog:home': 'fa-house',
+            'blog:about': 'fa-circle-info',
+            'blog:article_list': 'fa-blog',
+            'blog:gallery': 'fa-images',
+            'blog:contact': 'fa-envelope',
+        }
+        return icons.get(self.route_name, 'fa-file')
+
+
+class CustomPage(models.Model):
+    """Page libre créée depuis le dashboard."""
+
+    slug = models.SlugField(max_length=120, unique=True)
+    title = models.CharField(max_length=255)
+    title_en = models.CharField(max_length=255, blank=True)
+    content = RichTextUploadingField(
+        blank=True,
+        config_name='awesome_ckeditor',
+        verbose_name="Contenu",
+    )
+    content_en = RichTextUploadingField(
+        blank=True,
+        config_name='awesome_ckeditor',
+        verbose_name="Contenu (EN)",
+    )
+    is_published = models.BooleanField(default=False)
+    show_in_nav = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=100)
+    meta_description = models.CharField(max_length=160, blank=True)
+    meta_description_en = models.CharField(max_length=160, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = "Page personnalisée"
+        verbose_name_plural = "Pages personnalisées"
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        if self.slug in RESERVED_CUSTOM_PAGE_SLUGS:
+            raise ValidationError({'slug': 'Ce slug est réservé par le site.'})
+
+    def get_title(self, language_code='fr'):
+        if language_code == 'en' and self.title_en:
+            return self.title_en
+        return self.title
+
+    def get_content(self, language_code='fr'):
+        if language_code == 'en' and self.content_en:
+            return self.content_en
+        return self.content
+
+    def get_meta_description(self, language_code='fr'):
+        if language_code == 'en' and self.meta_description_en:
+            return self.meta_description_en
+        return self.meta_description
+
+    def get_href(self):
+        return reverse('blog:custom_page', kwargs={'slug': self.slug})

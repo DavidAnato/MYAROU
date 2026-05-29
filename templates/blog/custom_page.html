@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static json_i18n %}
+
+{% block title %}{{ page_title }} - MYAROU{% endblock %}
+
+{% block hero %}
+<section class="relative bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-950 dark:via-emerald-950 dark:to-emerald-950 text-white overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden opacity-20">
+        <div class="absolute w-[600px] h-[600px] bg-gradient-to-br from-white to-transparent rounded-full -top-80 left-1/4 animate-float"></div>
+        <div class="absolute w-96 h-96 bg-teal-300 rounded-full top-0 right-0 transform translate-x-32 -translate-y-32 animate-pulse-slow"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-32 relative z-20">
+        <div class="max-w-4xl mx-auto text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold">
+                {{ page_title }}
+            </h1>
+        </div>
+    </div>
+    <div class="absolute bottom-0 left-0 w-full leading-none">
+        <svg class="block w-full h-16 md:h-24 text-white dark:text-[#121212]" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="currentColor" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-white dark:bg-[#121212]">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <nav class="flex items-center space-x-2 text-sm mb-8 text-gray-500 dark:text-gray-400">
+                <a href="{% url 'blog:home' %}" class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-medium">
+                    {% t "site.menu.home" %}
+                </a>
+                <span>/</span>
+                <span class="truncate">{{ page_title }}</span>
+            </nav>
+
+            <div class="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-a:text-emerald-600 dark:prose-a:text-emerald-400">
+                {{ page_content|safe }}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

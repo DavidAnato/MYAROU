@@ -1,0 +1,11 @@
+{% load blog_extras %}
+{% for item in main_nav_items %}
+    {% nav_item_active item as item_active %}
+    <a href="{{ item.href }}"
+       class="block px-4 py-3 rounded-lg transition-all font-semibold flex items-center gap-2"
+       :class="{{ item_active|yesno:'true,false' }} ? 'text-primary dark:text-secondary bg-green-50 dark:bg-gray-800' : 'text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-800'"
+       @click="mobileMenuOpen = false">
+        <i class="fa-solid {{ item.icon }} w-5 h-5"></i>
+        {{ item.label }}
+    </a>
+{% endfor %}

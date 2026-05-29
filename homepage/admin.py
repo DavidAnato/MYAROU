@@ -9,6 +9,8 @@ from .models_site import (
     GalleryPageImage,
     ContactPageSettings,
     ContactMessage,
+    SitePage,
+    CustomPage,
 )
 
 
@@ -84,3 +86,18 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+
+@admin.register(SitePage)
+class SitePageAdmin(admin.ModelAdmin):
+    list_display = ('label', 'route_name', 'is_visible', 'show_in_nav', 'order')
+    list_editable = ('is_visible', 'show_in_nav', 'order')
+    ordering = ('order', 'id')
+
+
+@admin.register(CustomPage)
+class CustomPageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug', 'is_published', 'show_in_nav', 'order', 'updated_at')
+    list_filter = ('is_published', 'show_in_nav')
+    search_fields = ('title', 'slug')
+    prepopulated_fields = {'slug': ('title',)}

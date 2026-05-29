@@ -18,6 +18,8 @@ from .site_forms import (
     ContactPageSettingsForm,
     ABOUT_SECTIONS,
     CONTACT_SECTIONS,
+    SitePageFormSet,
+    CustomPageForm,
 )
 from .form_layout import build_section_layout, SITE_FORM_SECTIONS
 from homepage.models import HomeSettings, HomeGalleryImage
@@ -34,6 +36,8 @@ from homepage.models_site import (
     ContactMessage,
     GalleryPageSettings,
     GalleryPageImage,
+    SitePage,
+    CustomPage,
 )
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -524,6 +528,82 @@ def contact_message_mark_all_read(request):
     updated = ContactMessage.objects.filter(is_read=False).update(is_read=True)
     messages.success(request, f'{updated} message(s) marqué(s) comme lu(s).')
     return _contact_messages_list_redirect(request)
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def site_page_list(request):
+    from homepage.page_defaults import ensure_default_site_pages
+
+    ensure_default_site_pages()
+    queryset = SitePage.objects.all()
+
+    if request.method == 'POST':
+        formset = SitePageFormSet(request.POST, queryset=queryset)
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, 'Visibilité et ordre des pages mis à jour.')
+            return redirect('dashboard:site_page_list')
+    else:
+        formset = SitePageFormSet(queryset=queryset)
+
+    custom_pages = CustomPage.objects.all()
+    return render(request, 'dashboard/site_page_list.html', {
+        'formset': formset,
+        'custom_pages': custom_pages,
+        'page_title': 'Pages du site',
+    })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def custom_page_create(request):
+    if request.method == 'POST':
+        form = CustomPageForm(request.POST)
+        if form.is_valid():
+            page = form.save()
+            messages.success(request, f'Page « {page.title} » créée.')
+            return redirect('dashboard:site_page_list')
+    else:
+        form = CustomPageForm()
+    return render(request, 'dashboard/custom_page_form.html', {
+        'form': form,
+        'action': 'Créer',
+        'page_title': 'Nouvelle page',
+    })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+def custom_page_edit(request, pk):
+    page = get_object_or_404(CustomPage, pk=pk)
+    preview_url = f"{page.get_href()}?dashboard_preview=1"
+    if request.method == 'POST':
+        form = CustomPageForm(request.POST, instance=page)
+        if form.is_valid():
+            page = form.save()
+            messages.success(request, f'Page « {page.title} » mise à jour.')
+            return redirect('dashboard:site_page_list')
+    else:
+        form = CustomPageForm(instance=page)
+    return render(request, 'dashboard/custom_page_form.html', {
+        'form': form,
+        'action': 'Modifier',
+        'page': page,
+        'page_title': f'Modifier — {page.title}',
+        'preview_url': preview_url,
+    })
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def custom_page_delete(request, pk):
+    page = get_object_or_404(CustomPage, pk=pk)
+    title = page.title
+    page.delete()
+    messages.success(request, f'Page « {title} » supprimée.')
+    return redirect('dashboard:site_page_list')
 
 
 @login_required(login_url='dashboard:login')

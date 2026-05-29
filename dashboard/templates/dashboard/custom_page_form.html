@@ -1,0 +1,122 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .django-ckeditor-widget { width: 100% !important; }
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    .dark .form-label { color: #d1d5db; }
+    .form-field { margin-bottom: 1.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <a href="{% url 'dashboard:site_page_list' %}" class="text-emerald-600 dark:text-emerald-400 hover:underline text-sm font-medium">← Retour aux pages</a>
+    {% if preview_url %}
+    <a href="{{ preview_url }}" target="_blank"
+       class="inline-flex items-center px-4 py-2 border border-emerald-600 text-emerald-600 dark:text-emerald-400 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-sm font-medium">
+        Prévisualiser
+    </a>
+    {% endif %}
+</div>
+
+<form method="post" class="max-w-4xl">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-transparent dark:border-gray-700 p-6 mb-6">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Informations</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+                <label class="form-label" for="{{ form.title.id_for_label }}">Titre (FR)</label>
+                {{ form.title }}
+                {% if form.title.errors %}<p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>{% endif %}
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="{{ form.title_en.id_for_label }}">Titre (EN)</label>
+                {{ form.title_en }}
+            </div>
+            <div class="form-field md:col-span-2">
+                <label class="form-label" for="{{ form.slug.id_for_label }}">Slug (URL)</label>
+                {{ form.slug }}
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Généré automatiquement depuis le titre si vide. Ex. : mentions-legales → /pages/mentions-legales/</p>
+                {% if form.slug.errors %}<p class="text-red-500 text-sm mt-1">{{ form.slug.errors.0 }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-transparent dark:border-gray-700 p-6 mb-6">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Contenu</h2>
+        <div class="form-field">
+            <label class="form-label" for="{{ form.content.id_for_label }}">Contenu (FR)</label>
+            {{ form.content }}
+            {% if form.content.errors %}<p class="text-red-500 text-sm mt-1">{{ form.content.errors.0 }}</p>{% endif %}
+        </div>
+        <div class="form-field">
+            <label class="form-label" for="{{ form.content_en.id_for_label }}">Contenu (EN)</label>
+            {{ form.content_en }}
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-transparent dark:border-gray-700 p-6 mb-6">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6">Publication & menu</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="form-field flex items-center gap-3">
+                {{ form.is_published }}
+                <label class="form-label mb-0" for="{{ form.is_published.id_for_label }}">Publiée</label>
+            </div>
+            <div class="form-field flex items-center gap-3">
+                {{ form.show_in_nav }}
+                <label class="form-label mb-0" for="{{ form.show_in_nav.id_for_label }}">Afficher dans le menu</label>
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="{{ form.order.id_for_label }}">Ordre menu</label>
+                {{ form.order }}
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-transparent dark:border-gray-700 p-6 mb-8">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-6">SEO</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-field">
+                <label class="form-label" for="{{ form.meta_description.id_for_label }}">Meta description (FR)</label>
+                {{ form.meta_description }}
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="{{ form.meta_description_en.id_for_label }}">Meta description (EN)</label>
+                {{ form.meta_description_en }}
+            </div>
+        </div>
+    </div>
+
+    <div class="flex gap-4">
+        <button type="submit"
+                class="px-8 py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-xl font-semibold shadow-lg">
+            {{ action }}
+        </button>
+        <a href="{% url 'dashboard:site_page_list' %}"
+           class="px-8 py-3 border border-gray-300 dark:border-gray-600 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700">
+            Annuler
+        </a>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+{{ form.media }}
+{% endblock %}

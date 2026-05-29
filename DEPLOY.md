@@ -10,7 +10,7 @@ Le site tourne sur un **VPS** (Django + Gunicorn + Nginx). Le code est sur GitHu
 
 ```powershell
 cd "C:\Users\David Anato\Documents\Work offline\blog_project"
-.\venv\Scripts\activate   # si vous utilisez un venv
+.\.venv\Scripts\activate   # si vous utilisez un venv
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py check

@@ -4,14 +4,23 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.contrib import messages
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.http import Http404
 
 from django.views.generic import ListView, DetailView
 from .models import Article, Category
 from homepage.models import HomeSettings
-from homepage.models_site import AboutPageSettings, ContactPageSettings, ContactMessage, GalleryPageSettings
+from homepage.models_site import (
+    AboutPageSettings,
+    ContactPageSettings,
+    ContactMessage,
+    GalleryPageSettings,
+    CustomPage,
+)
+from homepage.page_visibility import VisiblePageMixin, is_staff_preview, require_visible_page
 
 
-class ArticleListView(ListView):
+class ArticleListView(VisiblePageMixin, ListView):
+    visible_route_name = 'blog:article_list'
     model = Article
     template_name = 'blog/blog_list.html'
     context_object_name = 'articles'
@@ -49,7 +58,8 @@ class ArticleListView(ListView):
         return context
 
 
-class ArticleDetailView(DetailView):
+class ArticleDetailView(VisiblePageMixin, DetailView):
+    visible_route_name = 'blog:article_list'
     model = Article
     template_name = 'blog/article_detail.html'
     context_object_name = 'article'
@@ -97,6 +107,7 @@ def home_dashboard_preview(request):
 
 
 @xframe_options_sameorigin
+@require_visible_page('blog:about')
 def about(request):
     """Page à propos"""
     about_page = AboutPageSettings.get_solo()
@@ -104,6 +115,7 @@ def about(request):
 
 
 @xframe_options_sameorigin
+@require_visible_page('blog:gallery')
 def gallery(request):
     """Page galerie dédiée (toutes les photos)."""
     gallery_page = GalleryPageSettings.get_solo()
@@ -111,6 +123,7 @@ def gallery(request):
 
 
 @xframe_options_sameorigin
+@require_visible_page('blog:contact')
 def contact(request):
     """Page de contact — messages enregistrés dans le dashboard admin."""
     contact_page = ContactPageSettings.get_solo()
@@ -157,7 +170,23 @@ def contact(request):
     return render(request, 'blog/contact.html', {'contact_page': contact_page})
 
 
-class CategoryDetailView(DetailView):
+@xframe_options_sameorigin
+def custom_page(request, slug):
+    """Page libre créée depuis le dashboard."""
+    page = get_object_or_404(CustomPage, slug=slug)
+    if not page.is_published and not is_staff_preview(request):
+        raise Http404
+    language_code = getattr(request, 'LANGUAGE_CODE', 'fr')
+    return render(request, 'blog/custom_page.html', {
+        'page': page,
+        'page_title': page.get_title(language_code),
+        'page_content': page.get_content(language_code),
+        'page_meta_description': page.get_meta_description(language_code),
+    })
+
+
+class CategoryDetailView(VisiblePageMixin, DetailView):
+    visible_route_name = 'blog:article_list'
     model = Category
     template_name = 'blog/category_detail.html'
     context_object_name = 'category'

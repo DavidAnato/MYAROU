@@ -198,4 +198,6 @@ from .models_site import (  # noqa: E402
     GalleryPageImage,
     ContactPageSettings,
     ContactMessage,
+    SitePage,
+    CustomPage,
 )

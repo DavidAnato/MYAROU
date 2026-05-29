@@ -1,0 +1,201 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Pages du site{% endblock %}
+{% block page_title %}Pages du site{% endblock %}
+
+{% block content %}
+<p class="text-gray-600 dark:text-gray-300 mb-8">
+    Masquez ou affichez les pages intégrées, réordonnez le menu, et gérez les pages libres (ex. mentions légales).
+    L’accueil reste toujours accessible même s’il est retiré du menu.
+</p>
+
+<section class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-transparent dark:border-gray-700 mb-10 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Pages intégrées</h2>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Visibilité · Menu · Ordre</span>
+    </div>
+
+    <form method="post" class="p-6">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        {% if formset.non_form_errors %}
+        <div class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg text-sm">
+            {{ formset.non_form_errors }}
+        </div>
+        {% endif %}
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700">
+                        <th class="pb-3 pr-4 font-semibold">Page</th>
+                        <th class="pb-3 pr-4 font-semibold">Libellé FR</th>
+                        <th class="pb-3 pr-4 font-semibold">Libellé EN</th>
+                        <th class="pb-3 pr-4 font-semibold text-center">Visible</th>
+                        <th class="pb-3 pr-4 font-semibold text-center">Menu</th>
+                        <th class="pb-3 pr-4 font-semibold">Ordre</th>
+                        <th class="pb-3 font-semibold">Contenu</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    {% for form in formset %}
+                    <tr class="align-top">
+                        <td class="py-4 pr-4">
+                            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ form.instance.get_route_name_display }}</span>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ form.instance.route_name }}</p>
+                        </td>
+                        <td class="py-4 pr-4 min-w-[140px]">{{ form.label }}</td>
+                        <td class="py-4 pr-4 min-w-[140px]">{{ form.label_en }}</td>
+                        <td class="py-4 pr-4 text-center">
+                            <label class="inline-flex items-center justify-center">
+                                {{ form.is_visible }}
+                            </label>
+                        </td>
+                        <td class="py-4 pr-4 text-center">
+                            <label class="inline-flex items-center justify-center">
+                                {{ form.show_in_nav }}
+                            </label>
+                        </td>
+                        <td class="py-4 pr-4">{{ form.order }}</td>
+                        <td class="py-4">
+                            {% if form.instance.route_name == 'blog:home' %}
+                            <a href="{% url 'dashboard:home_settings' %}" class="text-emerald-600 dark:text-emerald-400 hover:underline">Éditer →</a>
+                            {% elif form.instance.route_name == 'blog:about' %}
+                            <a href="{% url 'dashboard:about_settings' %}" class="text-emerald-600 dark:text-emerald-400 hover:underline">Éditer →</a>
+                            {% elif form.instance.route_name == 'blog:gallery' %}
+                            <a href="{% url 'dashboard:gallery_settings' %}" class="text-emerald-600 dark:text-emerald-400 hover:underline">Éditer →</a>
+                            {% elif form.instance.route_name == 'blog:contact' %}
+                            <a href="{% url 'dashboard:contact_settings' %}" class="text-emerald-600 dark:text-emerald-400 hover:underline">Éditer →</a>
+                            {% elif form.instance.route_name == 'blog:article_list' %}
+                            <a href="{% url 'dashboard:article_list' %}" class="text-emerald-600 dark:text-emerald-400 hover:underline">Articles →</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if form.errors %}
+                    <tr>
+                        <td colspan="7" class="pb-4 text-red-600 dark:text-red-400 text-xs">{{ form.errors }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button type="submit"
+                    class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-xl font-semibold shadow-lg transition-all">
+                Enregistrer la visibilité
+            </button>
+        </div>
+    </form>
+</section>
+
+<section class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-transparent dark:border-gray-700 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Pages libres</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">URL : /pages/votre-slug/</p>
+        </div>
+        <a href="{% url 'dashboard:custom_page_create' %}"
+           class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nouvelle page
+        </a>
+    </div>
+
+    {% if custom_pages %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700">
+                    <th class="px-6 py-3 font-semibold">Titre</th>
+                    <th class="px-6 py-3 font-semibold">Slug / URL</th>
+                    <th class="px-6 py-3 font-semibold text-center">Publiée</th>
+                    <th class="px-6 py-3 font-semibold text-center">Menu</th>
+                    <th class="px-6 py-3 font-semibold">Ordre</th>
+                    <th class="px-6 py-3 font-semibold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                {% for page in custom_pages %}
+                <tr>
+                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ page.title }}</td>
+                    <td class="px-6 py-4">
+                        <code class="text-xs bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded">/pages/{{ page.slug }}/</code>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        {% if page.is_published %}
+                        <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">Oui</span>
+                        {% else %}
+                        <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">Non</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        {% if page.show_in_nav %}
+                        <span class="text-emerald-600 dark:text-emerald-400">✓</span>
+                        {% else %}
+                        <span class="text-gray-400">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">{{ page.order }}</td>
+                    <td class="px-6 py-4 text-right space-x-3 whitespace-nowrap">
+                        {% if page.is_published %}
+                        <a href="{{ page.get_href }}" target="_blank" class="text-gray-500 hover:text-emerald-600 dark:hover:text-emerald-400">Voir</a>
+                        {% endif %}
+                        <a href="{% url 'dashboard:custom_page_edit' page.pk %}" class="text-emerald-600 dark:text-emerald-400 hover:underline">Modifier</a>
+                        <button type="button"
+                                onclick="confirmDelete('{{ page.title|escapejs }}', '{% url 'dashboard:custom_page_delete' page.pk %}')"
+                                class="text-red-600 dark:text-red-400 hover:underline">Supprimer</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-12 text-center text-gray-500 dark:text-gray-400">
+        <p class="mb-4">Aucune page libre pour l’instant.</p>
+        <a href="{% url 'dashboard:custom_page_create' %}" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">Créer la première page →</a>
+    </div>
+    {% endif %}
+</section>
+
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Supprimer la page</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-6">
+            Supprimer définitivement « <span id="pageName" class="font-semibold"></span> » ?
+        </p>
+        <div class="flex gap-3">
+            <button type="button" onclick="closeDeleteModal()"
+                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                Annuler
+            </button>
+            <form id="deleteForm" method="post" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">Supprimer</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete(name, url) {
+    document.getElementById('pageName').textContent = name;
+    document.getElementById('deleteForm').action = url;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+});
+</script>
+{% endblock %}

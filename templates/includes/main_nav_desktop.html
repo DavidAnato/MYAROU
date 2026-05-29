@@ -1,0 +1,12 @@
+{% load blog_extras %}
+{% for item in main_nav_items %}
+    {% nav_item_active item as item_active %}
+    <a href="{{ item.href }}"
+       class="px-4 py-2 transition-colors font-semibold rounded-lg"
+       :class="[
+           scrolled ? 'text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-green-50 dark:hover:bg-gray-800' : 'text-white hover:bg-white hover:bg-opacity-20',
+           {{ item_active|yesno:'true,false' }} ? (scrolled ? 'text-primary dark:text-secondary bg-green-50 dark:bg-gray-800' : 'bg-white bg-opacity-20') : ''
+       ]">
+        {{ item.label }}
+    </a>
+{% endfor %}
