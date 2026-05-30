@@ -76,7 +76,7 @@
 
             card.setAttribute('data-block-pk', String(item.id));
             card.setAttribute('data-form-prefix', String(item.form_prefix));
-            const idInput = card.querySelector('input[name$="-id"]');
+            const idInput = card.querySelector('input[name^="blocks-"][name$="-id"]');
             if (idInput) idInput.value = item.id;
 
             if (item.image_url) {
@@ -96,9 +96,9 @@
             if (!row) return;
             row.setAttribute('data-image-pk', String(item.id));
             row.setAttribute('data-block-id', String(item.block_id));
-            const idInput = row.querySelector('input[name$="-id"]');
+            const idInput = row.querySelector('input[name^="images-"][name$="-id"]');
             if (idInput) idInput.value = item.id;
-            const blockInput = row.querySelector('input[name$="-block"]');
+            const blockInput = row.querySelector('input[name^="images-"][name$="-block"]');
             if (blockInput) blockInput.value = item.block_id;
             const delBtn = row.querySelector('[data-delete-block-image]');
             if (delBtn) {

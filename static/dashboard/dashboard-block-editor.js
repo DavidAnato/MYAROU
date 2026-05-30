@@ -105,6 +105,19 @@
         window.DashboardCKEditorFix?.hideCkeNotifications?.();
     }
 
+    function sanitizeImageFormIds(form) {
+        if (!form) return;
+        form.querySelectorAll('[data-block-image-form]').forEach((row) => {
+            if (row.closest('[data-block-image-empty-template]') || row.classList.contains('hidden')) return;
+            const idInput = row.querySelector('input[name^="images-"][name$="-id"]');
+            const blockInput = row.querySelector('input[name^="images-"][name$="-block"]');
+            if (!idInput || !blockInput || !idInput.value) return;
+            if (idInput.value === blockInput.value) {
+                idInput.value = '';
+            }
+        });
+    }
+
     function renumberImageFormPrefixes(form) {
         const container = form;
         const rows = [...form.querySelectorAll('[data-block-image-form]')].filter(
@@ -439,7 +452,7 @@
         const card = btn.closest('[data-block-form]');
         if (!card) return;
         const del = card.querySelector('input[name$="-DELETE"]');
-        if (del && card.querySelector('input[name$="-id"]')?.value) {
+        if (del && card.querySelector('input[name^="blocks-"][name$="-id"]')?.value) {
             del.checked = true;
             card.classList.add('hidden');
         } else {
@@ -674,6 +687,7 @@
         prepareForSave(form) {
             syncCKEditors();
             if (form) syncAllFaqEditors(form);
+            sanitizeImageFormIds(form);
             const list = form.querySelector('[data-block-forms]');
             if (list) renumberBlockFormPrefixes(form, list, { reinitEditors: false });
             renumberImageFormPrefixes(form);
