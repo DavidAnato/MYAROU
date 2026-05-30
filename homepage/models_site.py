@@ -4,9 +4,26 @@ from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 from django.utils.text import slugify
 from ckeditor_uploader.fields import RichTextUploadingField
+import os
+import uuid
 
 from .i18n_defaults import apply_i18n_defaults, merge_fr_en_defaults
 from .page_blocks import BLOCK_TYPE_CHOICES, BLOCK_TYPE_LABELS
+
+
+def _short_image_upload_to(folder):
+    """Nom de fichier court (uuid) pour éviter la limite max_length du champ ImageField."""
+    folder = folder.rstrip('/') + '/'
+
+    def upload_to(instance, filename):
+        ext = os.path.splitext(filename)[1].lower()[:10]
+        return f'{folder}{uuid.uuid4().hex}{ext}'
+
+    return upload_to
+
+
+block_image_upload_to = _short_image_upload_to('pages/blocks')
+block_gallery_image_upload_to = _short_image_upload_to('pages/blocks/gallery')
 
 
 BUILTIN_PAGE_ROUTES = [
@@ -673,7 +690,12 @@ class CustomPageBlock(models.Model):
         config_name='awesome_ckeditor',
         verbose_name='Contenu (EN)',
     )
-    image = models.ImageField(upload_to='pages/blocks/', blank=True, null=True)
+    image = models.ImageField(
+        upload_to=block_image_upload_to,
+        max_length=255,
+        blank=True,
+        null=True,
+    )
     image_alt = models.CharField(max_length=255, blank=True)
     video_url = models.URLField(max_length=500, blank=True)
     button_text = models.CharField(max_length=120, blank=True)
@@ -740,7 +762,7 @@ class CustomPageBlockImage(models.Model):
         on_delete=models.CASCADE,
         related_name='images',
     )
-    image = models.ImageField(upload_to='pages/blocks/gallery/')
+    image = models.ImageField(upload_to=block_gallery_image_upload_to, max_length=255)
     caption = models.CharField(max_length=255, blank=True)
     caption_en = models.CharField(max_length=255, blank=True)
     order = models.PositiveIntegerField(default=0)

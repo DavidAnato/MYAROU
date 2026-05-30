@@ -1,7 +1,10 @@
 (function () {
     'use strict';
 
-    const DEBOUNCE_MS = 250;
+    /** Délai après la dernière modification utilisateur avant envoi au serveur */
+    const DEBOUNCE_MS = 1500;
+    /** Ignore les événements DOM déclenchés par la réponse serveur (CKEditor, mapping…) */
+    const POST_SAVE_QUIET_MS = 1200;
 
     function getCsrf() {
         return window.DASHBOARD_API?.csrf || '';
@@ -120,16 +123,24 @@
         let inflight = null;
         let dirty = false;
         let pendingImmediate = false;
+        let suppressUntil = 0;
+
+        const isAutosavePaused = () => Date.now() < suppressUntil;
+
+        const pauseAutosave = (ms) => {
+            suppressUntil = Math.max(suppressUntil, Date.now() + ms);
+        };
 
         const markDirty = () => {
             dirty = true;
-            triggerLivePreview(form);
             if (!inflight) {
                 setStatus(statusEl, 'idle', 'Synchronisation…');
             }
         };
 
-        const scheduleSave = (immediate) => {
+        const scheduleSave = (immediate, options) => {
+            if (isAutosavePaused() && !(options && options.force)) return Promise.resolve();
+
             markDirty();
             if (immediate) {
                 pendingImmediate = true;
@@ -142,6 +153,10 @@
             if (timer) clearTimeout(timer);
             timer = setTimeout(() => {
                 timer = null;
+                if (isAutosavePaused()) {
+                    scheduleSave(false);
+                    return;
+                }
                 syncNow(false);
             }, DEBOUNCE_MS);
             return Promise.resolve();
@@ -213,6 +228,7 @@
                     publishedInput.value = data.is_published ? 'on' : '';
                 }
                 updatePublishedBadge(data.is_published);
+                pauseAutosave(POST_SAVE_QUIET_MS);
                 applyBlockMapping(form, data.blocks);
                 applyImageMapping(form, data.images);
                 window.DashboardBlockEditor?.refreshGallerySections?.(form);
@@ -301,7 +317,6 @@
 
         setStatus(statusEl, 'saved', 'Prêt');
         triggerLivePreview(form);
-        setTimeout(() => syncNow(false), 200);
 
         return { notify, syncNow };
     }

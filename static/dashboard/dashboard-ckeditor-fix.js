@@ -30,16 +30,19 @@
         let keyTimer = null;
         const notify = () => {
             hideCkeNotifications();
-            form.dispatchEvent(new Event('input', { bubbles: true }));
-            form.dispatchEvent(new Event('change', { bubbles: true }));
+            if (window.DashboardForms && typeof window.DashboardForms.triggerPreviewUpdate === 'function') {
+                window.DashboardForms.triggerPreviewUpdate(form);
+            }
+            if (form._builderSync && typeof form._builderSync.notify === 'function') {
+                form._builderSync.notify({ immediate: false });
+            }
         };
 
         editor.on('change', notify);
         editor.on('afterPaste', notify);
-        editor.on('mode', notify);
         editor.on('key', () => {
             if (keyTimer) clearTimeout(keyTimer);
-            keyTimer = setTimeout(notify, 80);
+            keyTimer = setTimeout(notify, 400);
         });
     }
 
