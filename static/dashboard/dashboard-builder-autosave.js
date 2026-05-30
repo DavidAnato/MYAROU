@@ -216,6 +216,7 @@
                 applyBlockMapping(form, data.blocks);
                 applyImageMapping(form, data.images);
                 window.DashboardBlockEditor?.refreshGallerySections?.(form);
+                window.DashboardBlockEditor?.reinitAllEditors?.(form);
                 if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
                     window.DashboardForms.initMediaDropzones(form);
                 }
@@ -304,13 +305,6 @@
 
         return { notify, syncNow };
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('pageSettingsForm');
-        if (!form || form.getAttribute('data-preview-type') !== 'custom-page') return;
-        if (!form.getAttribute('data-autosave-url')) return;
-        initAutosave(form, { saveUrl: form.getAttribute('data-autosave-url') });
-    });
 
     window.DashboardBuilderAutosave = { initAutosave };
 })();

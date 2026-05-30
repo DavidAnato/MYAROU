@@ -72,7 +72,8 @@
         });
     }
 
-    function renumberBlockFormPrefixes(form, list) {
+    function renumberBlockFormPrefixes(form, list, options) {
+        const reinitEditors = !options || options.reinitEditors !== false;
         const rows = [...list.querySelectorAll('[data-block-form]')].filter(
             (row) => !row.closest('[data-block-empty-template]'),
         );
@@ -87,12 +88,21 @@
                 if (el.id) el.id = el.id.replace(/^id_blocks-\d+-/, `id_blocks-${newIdx}-`);
             });
             row.setAttribute('data-form-prefix', String(newIdx));
-            initCKEditorIn(row);
+            if (reinitEditors) initCKEditorIn(row);
         });
 
         const totalInput = getTotalInput(form, 'blocks');
         if (totalInput) totalInput.value = ordered.length;
         reindexBlockCards(list);
+    }
+
+    function reinitAllEditors(form) {
+        if (!form) return;
+        form.querySelectorAll('[data-block-form]').forEach((card) => {
+            if (card.closest('[data-block-empty-template]') || card.classList.contains('hidden')) return;
+            initCKEditorIn(card);
+        });
+        window.DashboardCKEditorFix?.hideCkeNotifications?.();
     }
 
     function renumberImageFormPrefixes(form) {
@@ -606,6 +616,8 @@
     }
 
     function initBlockEditor(form) {
+        if (!form || form.dataset.blockEditorReady === '1') return;
+        form.dataset.blockEditorReady = '1';
         const section = form.querySelector('[data-block-section]');
         if (!section) return;
 
@@ -653,25 +665,8 @@
         initAllBlockGallerySections(form);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('pageSettingsForm');
-        if (form && form.getAttribute('data-preview-type') === 'custom-page') {
-            try {
-                initBlockEditor(form);
-            } catch (err) {
-                console.error('[builder] initBlockEditor', err);
-            }
-            if (window.DashboardForms) {
-                try {
-                    window.DashboardForms.init(form);
-                } catch (err) {
-                    console.error('[builder] DashboardForms.init', err);
-                }
-            }
-        }
-    });
-
     window.DashboardBlockEditor = {
+        init: initBlockEditor,
         syncBeforePreview(form) {
             syncCKEditors();
             if (form) syncAllFaqEditors(form);
@@ -680,10 +675,11 @@
             syncCKEditors();
             if (form) syncAllFaqEditors(form);
             const list = form.querySelector('[data-block-forms]');
-            if (list) renumberBlockFormPrefixes(form, list);
+            if (list) renumberBlockFormPrefixes(form, list, { reinitEditors: false });
             renumberImageFormPrefixes(form);
             syncCKEditors();
         },
+        reinitAllEditors,
         enableGalleryBlock,
         updateMediaUrl,
         renumberBlockFormPrefixes,

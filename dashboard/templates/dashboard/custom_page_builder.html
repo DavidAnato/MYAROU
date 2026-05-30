@@ -137,27 +137,35 @@ window.BUILDER_CATALOG = {{ block_catalog_json|safe }};
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="{% static 'dashboard/dashboard-block-editor.js' %}"></script>
 <script src="{% static 'dashboard/dashboard-builder-autosave.js' %}"></script>
-<script src="{% static 'dashboard/dashboard-preview-resize.js' %}"></script>
 {{ form.media }}
 {% if block_formset %}{{ block_formset.media }}{% endif %}
 <script src="{% static 'dashboard/dashboard-ckeditor-fix.js' %}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+function bootCustomPageBuilder() {
     var form = document.getElementById('pageSettingsForm');
     if (!form || form.getAttribute('data-preview-type') !== 'custom-page') return;
+    form.dataset.builderBootHandled = '1';
 
-    if (window.DashboardForms) {
-        if (!form._previewSchedule) {
-            try { window.DashboardForms.init(form); } catch (e) { console.error('[builder] forms init', e); }
-        } else {
-            window.DashboardForms.initMediaDropzones(form);
-        }
+    if (window.DashboardForms && !form._previewSchedule) {
+        try { window.DashboardForms.init(form); } catch (e) { console.error('[builder] forms init', e); }
+    } else if (window.DashboardForms) {
+        window.DashboardForms.initMediaDropzones(form);
+    }
+
+    if (window.DashboardBlockEditor && typeof window.DashboardBlockEditor.init === 'function') {
+        try { window.DashboardBlockEditor.init(form); } catch (e) { console.error('[builder] initBlockEditor', e); }
     }
 
     var saveUrl = form.getAttribute('data-autosave-url');
     if (saveUrl && window.DashboardBuilderAutosave && !form._builderSync) {
         window.DashboardBuilderAutosave.initAutosave(form, { saveUrl: saveUrl });
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootCustomPageBuilder);
+} else {
+    bootCustomPageBuilder();
+}
 </script>
 {% endblock %}

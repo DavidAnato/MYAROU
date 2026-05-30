@@ -564,6 +564,8 @@
                     if (card.closest('[data-block-empty-template]')) return;
                     const del = card.querySelector('input[name$="-DELETE"]');
                     if (del && del.checked) return;
+                    const visInput = card.querySelector('input[name$="-is_visible"]');
+                    if (visInput && !visInput.checked) return;
 
                     const blockType = getFieldVal(card, 'block_type');
                     const block = {
@@ -629,8 +631,9 @@
         };
 
         let raf = null;
+        let iframePreviewReady = false;
         const send = () => {
-            if (!iframe.contentWindow) return;
+            if (!iframe.contentWindow || !iframePreviewReady) return;
             iframe.contentWindow.postMessage({ type: msgType, payload: buildPayload() }, '*');
         };
         const schedulePreview = () => {
@@ -644,9 +647,15 @@
         };
         form.addEventListener('input', schedulePreviewFromEvent);
         form.addEventListener('change', schedulePreviewFromEvent);
-        iframe.addEventListener('load', schedulePreview);
+        iframe.addEventListener('load', () => {
+            iframePreviewReady = false;
+            schedulePreview();
+        });
         window.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'page-preview-ready') schedulePreview();
+            if (event.data && event.data.type === 'page-preview-ready') {
+                iframePreviewReady = true;
+                schedulePreview();
+            }
         });
         schedulePreview();
     }
