@@ -135,7 +135,40 @@ class CustomPageBlockImageForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         _style_form(self)
+        self.fields['image'].required = False
         self.fields['order'].widget.attrs['class'] = 'builder-order-hidden'
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get('DELETE'):
+            return cleaned
+        image = cleaned.get('image')
+        if self.instance.pk and self.instance.image and not image:
+            cleaned['image'] = self.instance.image
+            return cleaned
+        if not image and not (self.instance.pk and self.instance.image):
+            cleaned['_empty'] = True
+        return cleaned
+
+
+class BaseCustomPageBlockImageFormSet(forms.BaseModelFormSet):
+    """Ignore les lignes galerie ajoutées sans fichier (builder)."""
+
+    def save(self, commit=True):
+        if not self.is_valid():
+            raise ValueError('The formset is not valid')
+        saved = []
+        for form in self.forms:
+            if not form.cleaned_data:
+                continue
+            if form.cleaned_data.get('DELETE'):
+                if form.instance.pk and commit:
+                    form.instance.delete()
+                continue
+            if form.cleaned_data.get('_empty'):
+                continue
+            saved.append(form.save(commit=commit))
+        return saved
 
 
 CustomPageBlockFormSet = inlineformset_factory(
@@ -149,6 +182,7 @@ CustomPageBlockFormSet = inlineformset_factory(
 CustomPageBlockImageFormSet = modelformset_factory(
     CustomPageBlockImage,
     form=CustomPageBlockImageForm,
+    formset=BaseCustomPageBlockImageFormSet,
     extra=0,
     can_delete=True,
 )

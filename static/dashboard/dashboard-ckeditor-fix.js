@@ -29,6 +29,7 @@
 
         let keyTimer = null;
         const notify = () => {
+            if (editor._builderReadyAt && Date.now() - editor._builderReadyAt < 500) return;
             hideCkeNotifications();
             if (window.DashboardForms && typeof window.DashboardForms.triggerPreviewUpdate === 'function') {
                 window.DashboardForms.triggerPreviewUpdate(form);
@@ -38,6 +39,9 @@
             }
         };
 
+        editor.on('instanceReady', () => {
+            editor._builderReadyAt = Date.now();
+        });
         editor.on('change', notify);
         editor.on('afterPaste', notify);
         editor.on('key', () => {

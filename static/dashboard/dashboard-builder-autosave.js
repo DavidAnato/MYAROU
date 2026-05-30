@@ -85,7 +85,9 @@
                 window.DashboardBlockEditor?.updateMediaUrl?.(mediaSection || card, item.image_url);
             }
 
-            window.DashboardBlockEditor?.enableGalleryBlock?.(form, card, item.id);
+            if (card.querySelector('[data-block-gallery-section]')) {
+                window.DashboardBlockEditor?.enableGalleryBlock?.(form, card, item.id);
+            }
         });
     }
 
@@ -209,7 +211,8 @@
                         else if (data.errors.images) errMsg = 'Erreur dans une image';
                     }
                     setStatus(statusEl, 'error', errMsg);
-                    dirty = true;
+                    dirty = false;
+                    pendingImmediate = false;
                     throw new Error(errMsg);
                 }
 
@@ -232,7 +235,6 @@
                 applyBlockMapping(form, data.blocks);
                 applyImageMapping(form, data.images);
                 window.DashboardBlockEditor?.refreshGallerySections?.(form);
-                window.DashboardBlockEditor?.reinitAllEditors?.(form);
                 if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
                     window.DashboardForms.initMediaDropzones(form);
                 }
@@ -264,13 +266,10 @@
                 if (statusEl?.dataset.state !== 'error') {
                     setStatus(statusEl, 'error', 'Erreur réseau');
                 }
+                dirty = false;
+                pendingImmediate = false;
             }).finally(() => {
                 inflight = null;
-                if (dirty && pendingImmediate && !timer) {
-                    syncNow(false);
-                } else if (dirty && !timer) {
-                    scheduleSave(false);
-                }
             });
 
             return inflight;
@@ -282,7 +281,9 @@
         };
 
         const scheduleSaveFromEvent = (e) => {
-            if (e && e.target && e.target.type === 'file') return;
+            if (isAutosavePaused()) return;
+            if (!e || !e.isTrusted) return;
+            if (e.target && e.target.type === 'file') return;
             scheduleSave(false);
         };
         form.addEventListener('input', scheduleSaveFromEvent);

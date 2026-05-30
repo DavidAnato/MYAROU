@@ -72,6 +72,20 @@
         });
     }
 
+    function getRowFormIndex(row, prefix) {
+        const attr = row.getAttribute('data-form-prefix');
+        if (attr !== null && attr !== '') {
+            const n = parseInt(attr, 10);
+            if (!Number.isNaN(n)) return n;
+        }
+        const el = row.querySelector(`[name^="${prefix}-"]`);
+        if (el && el.name) {
+            const m = el.name.match(new RegExp(`^${prefix}-(\\d+)-`));
+            if (m) return parseInt(m[1], 10);
+        }
+        return null;
+    }
+
     function renumberBlockFormPrefixes(form, list, options) {
         const reinitEditors = !options || options.reinitEditors !== false;
         const rows = [...list.querySelectorAll('[data-block-form]')].filter(
@@ -80,8 +94,12 @@
         const visible = rows.filter((r) => !r.classList.contains('hidden'));
         const hidden = rows.filter((r) => r.classList.contains('hidden'));
         const ordered = [...visible, ...hidden];
+        let changed = false;
 
         ordered.forEach((row, newIdx) => {
+            const currentIdx = getRowFormIndex(row, 'blocks');
+            if (currentIdx === newIdx) return;
+            changed = true;
             destroyCKEditorIn(row);
             row.querySelectorAll('[name^="blocks-"]').forEach((el) => {
                 el.name = el.name.replace(/^blocks-\d+-/, `blocks-${newIdx}-`);
@@ -94,6 +112,7 @@
         const totalInput = getTotalInput(form, 'blocks');
         if (totalInput) totalInput.value = ordered.length;
         reindexBlockCards(list);
+        return changed;
     }
 
     function reinitAllEditors(form) {
@@ -119,7 +138,6 @@
     }
 
     function renumberImageFormPrefixes(form) {
-        const container = form;
         const rows = [...form.querySelectorAll('[data-block-image-form]')].filter(
             (r) => !r.closest('[data-block-image-empty-template]'),
         );
@@ -128,6 +146,8 @@
         const ordered = [...visible, ...hidden];
 
         ordered.forEach((row, newIdx) => {
+            const currentIdx = getRowFormIndex(row, 'images');
+            if (currentIdx === newIdx) return;
             row.querySelectorAll('[name^="images-"]').forEach((el) => {
                 el.name = el.name.replace(/^images-\d+-/, `images-${newIdx}-`);
                 if (el.id) el.id = el.id.replace(/^id_images-\d+-/, `id_images-${newIdx}-`);
@@ -142,7 +162,7 @@
     function updateMediaUrl(container, url) {
         if (!container || !url) return;
         if (window.DashboardForms && typeof window.DashboardForms.setMediaPreviewSrc === 'function') {
-            window.DashboardForms.setMediaPreviewSrc(container, url);
+            window.DashboardForms.setMediaPreviewSrc(container, url, { fromServer: true });
         }
         const media = container.querySelector('[data-media-container]') || container;
         const fileInput = media.querySelector('input[type="file"]');
@@ -153,6 +173,110 @@
                 fileInput.value = '';
             }
         }
+    }
+
+    function imageRowHasContent(row) {
+        if (!row) return false;
+        const idInput = row.querySelector('input[name^="images-"][name$="-id"]');
+        if (idInput && idInput.value) return true;
+        const fileInput = row.querySelector('input[type="file"][name^="images-"]');
+        if (fileInput && fileInput.files && fileInput.files.length) return true;
+        if (window.DashboardForms && typeof window.DashboardForms.getMediaPreviewUrl === 'function') {
+            const url = window.DashboardForms.getMediaPreviewUrl(row);
+            if (url) return true;
+        }
+        const existing = row.querySelector('[data-existing-image]');
+        if (existing && existing.src && !existing.classList.contains('hidden')) return true;
+        return false;
+    }
+
+    function pruneEmptyImageRows(form) {
+        if (!form) return;
+        let removed = false;
+        form.querySelectorAll('[data-block-image-form]').forEach((row) => {
+            if (row.closest('[data-block-image-empty-template]') || row.classList.contains('hidden')) return;
+            if (!imageRowHasContent(row)) {
+                row.remove();
+                removed = true;
+            }
+        });
+        if (removed) renumberImageFormPrefixes(form);
+    }
+
+    function getBlockGallerySection(el) {
+        return el && el.closest('[data-block-gallery-section]');
+    }
+
+    function bindGalleryControls(form) {
+        if (!form || form.dataset.galleryControlsBound === '1') return;
+        form.dataset.galleryControlsBound = '1';
+
+        form.addEventListener('click', (e) => {
+            const multiBtn = e.target.closest('[data-block-gallery-multi-button]');
+            if (multiBtn) {
+                e.preventDefault();
+                const section = getBlockGallerySection(multiBtn);
+                const input = section && section.querySelector('[data-block-gallery-multi-input]');
+                if (input) input.click();
+                return;
+            }
+            const addBtn = e.target.closest('[data-block-gallery-add-one]');
+            if (addBtn) {
+                e.preventDefault();
+                const section = getBlockGallerySection(addBtn);
+                if (!section) return;
+                const row = addBlockImageRow(form, section);
+                if (row) {
+                    const inp = row.querySelector('input[type="file"][name^="images-"]');
+                    if (inp) inp.click();
+                }
+            }
+        });
+
+        form.addEventListener('change', (e) => {
+            const input = e.target;
+            if (!input.matches('[data-block-gallery-multi-input]')) return;
+            const section = getBlockGallerySection(input);
+            if (!section) return;
+            let added = false;
+            Array.from(input.files || []).forEach((f) => {
+                if (!f.type || !f.type.startsWith('image/')) return;
+                if (addBlockImageRow(form, section, f)) added = true;
+            });
+            input.value = '';
+            if (added) builderNotify(form, false);
+        });
+
+        form.addEventListener('dragover', (e) => {
+            const dropzone = e.target.closest('[data-block-gallery-dropzone]');
+            if (!dropzone) return;
+            e.preventDefault();
+            dropzone.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-900/20');
+            dropzone.classList.remove('border-gray-300', 'dark:border-gray-600');
+        });
+
+        form.addEventListener('dragleave', (e) => {
+            const dropzone = e.target.closest('[data-block-gallery-dropzone]');
+            if (!dropzone || dropzone.contains(e.relatedTarget)) return;
+            dropzone.classList.remove('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-900/20');
+            dropzone.classList.add('border-gray-300', 'dark:border-gray-600');
+        });
+
+        form.addEventListener('drop', (e) => {
+            const dropzone = e.target.closest('[data-block-gallery-dropzone]');
+            if (!dropzone) return;
+            e.preventDefault();
+            dropzone.classList.remove('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-900/20');
+            dropzone.classList.add('border-gray-300', 'dark:border-gray-600');
+            const section = getBlockGallerySection(dropzone);
+            if (!section) return;
+            let added = false;
+            Array.from(e.dataTransfer.files || []).forEach((f) => {
+                if (!f.type || !f.type.startsWith('image/')) return;
+                if (addBlockImageRow(form, section, f)) added = true;
+            });
+            if (added) builderNotify(form, false);
+        });
     }
 
     function updateBlockGalleryIndices(section) {
@@ -204,11 +328,11 @@
         totalInput.value = index + 1;
 
         if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
-            window.DashboardForms.initMediaDropzones(form);
+            window.DashboardForms.initMediaDropzones(row);
         }
 
         if (file && window.DashboardForms && typeof window.DashboardForms.setSingleFile === 'function') {
-            const inp = row.querySelector('input[type="file"][name$="-image"]');
+            const inp = row.querySelector('input[type="file"][name^="images-"]');
             window.DashboardForms.setSingleFile(inp, file);
         }
 
@@ -216,74 +340,28 @@
         return row;
     }
 
+    function initBlockGallerySortable(section, form) {
+        const list = section.querySelector('[data-gallery-images-list]');
+        if (!list || !window.Sortable || list.dataset.sortableBound === '1') return;
+        list.dataset.sortableBound = '1';
+        Sortable.create(list, {
+            handle: '.builder-image-row-handle',
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            onEnd: () => {
+                updateBlockGalleryIndices(section);
+                builderNotify(form, false);
+            },
+        });
+    }
+
     function initBlockGallerySection(section, form) {
-        if (!section || section.dataset.blockGalleryBound === '1') return;
+        if (!section) return;
         const blockId = section.getAttribute('data-block-id');
         if (!blockId) return;
-        section.dataset.blockGalleryBound = '1';
 
         updateBlockGalleryIndices(section);
-
-        const multiInput = section.querySelector('[data-block-gallery-multi-input]');
-        const multiBtn = section.querySelector('[data-block-gallery-multi-button]');
-        const addBtn = section.querySelector('[data-block-gallery-add-one]');
-        const dropzone = section.querySelector('[data-block-gallery-dropzone]');
-
-        const addFiles = (files) => {
-            let added = false;
-            Array.from(files || []).forEach((f) => {
-                if (!f.type || !f.type.startsWith('image/')) return;
-                const row = addBlockImageRow(form, section, f);
-                if (row) added = true;
-            });
-            if (added) builderNotify(form, true);
-        };
-
-        if (multiBtn && multiInput) {
-            multiBtn.addEventListener('click', () => multiInput.click());
-            multiInput.addEventListener('change', () => {
-                addFiles(multiInput.files);
-                multiInput.value = '';
-            });
-        }
-        if (addBtn) {
-            addBtn.addEventListener('click', () => {
-                if (addBlockImageRow(form, section)) builderNotify(form, true);
-            });
-        }
-        if (dropzone) {
-            const setGalleryDropzoneActive = (active) => {
-                dropzone.classList.toggle('border-emerald-500', active);
-                dropzone.classList.toggle('bg-emerald-50', active);
-                dropzone.classList.toggle('dark:bg-emerald-900/20', active);
-                dropzone.classList.toggle('border-gray-300', !active);
-                dropzone.classList.toggle('dark:border-gray-600', !active);
-            };
-            dropzone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                setGalleryDropzoneActive(true);
-            });
-            dropzone.addEventListener('dragleave', () => setGalleryDropzoneActive(false));
-            dropzone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                setGalleryDropzoneActive(false);
-                addFiles(e.dataTransfer.files);
-            });
-        }
-
-        const list = section.querySelector('[data-gallery-images-list]');
-        if (list && window.Sortable && !list.dataset.sortableBound) {
-            list.dataset.sortableBound = '1';
-            Sortable.create(list, {
-                handle: '.builder-image-row-handle',
-                animation: 150,
-                ghostClass: 'sortable-ghost',
-                onEnd: () => {
-                    updateBlockGalleryIndices(section);
-                    builderNotify(form, true);
-                },
-            });
-        }
+        initBlockGallerySortable(section, form);
     }
 
     function initAllBlockGallerySections(form) {
@@ -310,12 +388,9 @@
             } else {
                 pending.remove();
             }
-            delete section.dataset.blockGalleryBound;
         }
 
         initBlockGallerySection(section, form);
-        const blockSection = form.querySelector('[data-block-section]');
-        bindBlockCard(card, form, blockSection);
     }
 
     function setAllBlocksCollapsed(form, collapsed) {
@@ -365,7 +440,7 @@
             onEnd: () => {
                 reindexBlockCards(list);
                 updateBlockCount(section);
-                builderNotify(form, true);
+                builderNotify(form, false);
             },
         });
     }
@@ -508,7 +583,7 @@
         });
     }
 
-    function syncFaqHidden(editor) {
+    function syncFaqHidden(editor, notifyChange) {
         const hidden = editor.querySelector('input[name$="-faq_json"]');
         const container = editor.querySelector('[data-faq-rows]');
         if (!hidden || !container) return;
@@ -522,11 +597,11 @@
             });
         });
         hidden.value = JSON.stringify(items);
-        formChange(editor);
+        if (notifyChange !== false) formChange(editor);
     }
 
     function syncAllFaqEditors(form) {
-        form.querySelectorAll('[data-faq-editor]').forEach(syncFaqHidden);
+        form.querySelectorAll('[data-faq-editor]').forEach((editor) => syncFaqHidden(editor, false));
     }
 
     function syncCKEditors() {
@@ -586,7 +661,7 @@
         }
 
         if (section) updateBlockGalleryIndices(section);
-        builderNotify(form, true);
+        builderNotify(form, false);
     }
 
     function bindBlockCard(card, form, section) {
@@ -667,6 +742,8 @@
             }
         });
 
+        bindGalleryControls(form);
+
         form.addEventListener('submit', () => {
             syncCKEditors();
             syncAllFaqEditors(form);
@@ -688,8 +765,14 @@
             syncCKEditors();
             if (form) syncAllFaqEditors(form);
             sanitizeImageFormIds(form);
+            pruneEmptyImageRows(form);
             const list = form.querySelector('[data-block-forms]');
-            if (list) renumberBlockFormPrefixes(form, list, { reinitEditors: false });
+            if (list) {
+                const renumbered = renumberBlockFormPrefixes(form, list, { reinitEditors: false });
+                if (renumbered) {
+                    getVisibleBlockCards(list).forEach((row) => initCKEditorIn(row));
+                }
+            }
             renumberImageFormPrefixes(form);
             syncCKEditors();
         },
@@ -698,9 +781,13 @@
         updateMediaUrl,
         renumberBlockFormPrefixes,
         refreshGallerySections(form) {
-            initAllBlockGallerySections(form);
             if (!form) return;
-            form.querySelectorAll('[data-block-gallery-section]').forEach(updateBlockGalleryIndices);
+            form.querySelectorAll('[data-block-gallery-section]').forEach((section) => {
+                if (section.getAttribute('data-block-id')) {
+                    initBlockGallerySection(section, form);
+                }
+                updateBlockGalleryIndices(section);
+            });
         },
         notify: builderNotify,
     };

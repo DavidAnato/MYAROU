@@ -103,20 +103,32 @@
         return root.querySelector('[data-media-container]') || root;
     }
 
-    function setMediaPreviewSrc(root, url) {
+    function setMediaPreviewSrc(root, url, options) {
+        const opts = options || {};
         const container = getMediaContainer(root);
         if (!container || !url) return;
         const absolute = toAbsoluteMediaUrl(url);
-        container.dataset.previewSrc = absolute;
         const preview = container.querySelector('[data-preview-image]');
         const existing = container.querySelector('[data-existing-image]');
+
+        if (opts.fromServer && existing) {
+            delete container.dataset.previewSrc;
+            existing.src = absolute;
+            existing.classList.remove('hidden');
+            if (preview) {
+                preview.removeAttribute('src');
+                preview.classList.add('hidden');
+            }
+            return;
+        }
+
+        container.dataset.previewSrc = absolute;
         if (preview) {
             preview.src = absolute;
             preview.classList.remove('hidden');
         }
         if (existing) {
-            existing.src = absolute;
-            existing.classList.remove('hidden');
+            existing.classList.add('hidden');
         }
     }
 
@@ -222,7 +234,7 @@
         if (!form) return;
         triggerPreviewUpdate(form);
         if (form._builderSync && typeof form._builderSync.notify === 'function') {
-            form._builderSync.notify({ immediate: true });
+            form._builderSync.notify({ immediate: false });
             return;
         }
         form.dispatchEvent(new Event('input', { bubbles: true }));
@@ -320,10 +332,12 @@
                     }
                 });
             }
-            if (container.dataset.previewSrc || container.querySelector('[data-existing-image]')?.src) {
+            if (container.querySelector('[data-existing-image]')?.src && !container.dataset.previewSrc) {
                 const existing = container.querySelector('[data-existing-image]');
-                if (existing && existing.src && !container.dataset.previewSrc) {
-                    setMediaPreviewSrc(container, existing.src);
+                if (existing && existing.src) {
+                    existing.classList.remove('hidden');
+                    const preview = container.querySelector('[data-preview-image]');
+                    if (preview) preview.classList.add('hidden');
                 }
             }
         });
