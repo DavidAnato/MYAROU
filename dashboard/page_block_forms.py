@@ -120,10 +120,12 @@ class CustomPageBlockForm(forms.ModelForm):
         if self.is_bound and self.data is not None:
             block_type = _effective_block_type(self)
             allowed = set(fields_for_block_type(block_type))
+            pk_name = self._meta.model._meta.pk.name
             mutable = self.data.copy()
             key_prefix = f'{self.prefix}-' if self.prefix else ''
+            skip_fields = {'block_type', 'order', 'is_visible', 'layout', 'faq_json', pk_name}
             for name, field in self.fields.items():
-                if name in ('block_type', 'order', 'is_visible', 'layout', 'faq_json'):
+                if name in skip_fields:
                     continue
                 if name in allowed:
                     continue
