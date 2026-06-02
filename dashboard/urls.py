@@ -45,4 +45,5 @@ urlpatterns = [
     path('api/links/<int:pk>/delete/', views.delete_site_link_api, name='delete_site_link'),
     path('api/gallery-image/<int:pk>/delete/', views.delete_gallery_image_api, name='delete_gallery_image'),
     path('api/block-image/<int:pk>/delete/', views.delete_block_image_api, name='delete_block_image'),
+    path('api/block/<int:pk>/delete/', views.delete_block_api, name='delete_block'),
 ]

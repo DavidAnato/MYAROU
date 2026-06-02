@@ -567,6 +567,17 @@ def site_page_list(request):
     })
 
 
+def _formset_form_index(form):
+    """Index numérique du préfixe Django (ex. blocks-3 → 3)."""
+    prefix = form.prefix or ''
+    if '-' in prefix:
+        try:
+            return int(prefix.rsplit('-', 1)[-1])
+        except ValueError:
+            pass
+    return None
+
+
 def _build_custom_page_save_mapping(block_formset, image_formset, request=None):
     """Retourne les PK créées/mises à jour indexées par préfixe de formulaire Django."""
 
@@ -585,8 +596,9 @@ def _build_custom_page_save_mapping(block_formset, image_formset, request=None):
         inst = bf.instance
         if not inst.pk:
             continue
+        form_index = _formset_form_index(bf)
         blocks.append({
-            'form_prefix': i,
+            'form_prefix': form_index if form_index is not None else i,
             'id': inst.pk,
             'block_type': inst.block_type,
             'image_url': media_url(inst.image),
@@ -599,8 +611,9 @@ def _build_custom_page_save_mapping(block_formset, image_formset, request=None):
         inst = imgf.instance
         if not inst.pk:
             continue
+        form_index = _formset_form_index(imgf)
         images.append({
-            'form_prefix': i,
+            'form_prefix': form_index if form_index is not None else i,
             'id': inst.pk,
             'block_id': inst.block_id,
             'image_url': media_url(inst.image),
@@ -797,6 +810,15 @@ def custom_page_delete(request, pk):
 def delete_block_image_api(request, pk):
     obj = get_object_or_404(CustomPageBlockImage, pk=pk)
     obj.delete()
+    return JsonResponse({'ok': True})
+
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(is_staff, login_url='dashboard:login')
+@require_POST
+def delete_block_api(request, pk):
+    block = get_object_or_404(CustomPageBlock, pk=pk)
+    block.delete()
     return JsonResponse({'ok': True})
 
 

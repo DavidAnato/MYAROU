@@ -13,6 +13,18 @@ from homepage.page_blocks import (
 from dashboard.site_forms import WIDGET_CLASS, _style_form
 
 
+def _effective_block_type(form):
+    if form.data and form.prefix:
+        value = form.data.get(f'{form.prefix}-block_type')
+        if value:
+            return value
+    return (
+        getattr(form.instance, 'block_type', None)
+        or form.initial.get('block_type', '')
+        or ''
+    )
+
+
 class CustomPageMetaForm(forms.ModelForm):
     """Métadonnées page (sans contenu — géré par blocs)."""
 
@@ -86,6 +98,10 @@ class CustomPageBlockForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         _style_form(self)
+        self.fields['image'].widget = forms.FileInput(attrs={
+            'class': WIDGET_CLASS,
+            'accept': 'image/*',
+        })
         self.fields['order'].widget.attrs['class'] = 'builder-order-hidden'
         self.fields['block_type'].widget.attrs['class'] = (
             WIDGET_CLASS + ' builder-type-select'
@@ -98,6 +114,27 @@ class CustomPageBlockForm(forms.ModelForm):
         if self.instance.pk and self.instance.block_type == 'faq':
             items = (self.instance.config or {}).get('items') or []
             self.fields['faq_json'].initial = json.dumps(items, ensure_ascii=False)
+
+    def full_clean(self):
+        """Ne valide pas les champs masqués après un changement de type dans le builder."""
+        if self.is_bound and self.data is not None:
+            block_type = _effective_block_type(self)
+            allowed = set(fields_for_block_type(block_type))
+            mutable = self.data.copy()
+            key_prefix = f'{self.prefix}-' if self.prefix else ''
+            for name, field in self.fields.items():
+                if name in ('block_type', 'order', 'is_visible', 'layout', 'faq_json'):
+                    continue
+                if name in allowed:
+                    continue
+                key = f'{key_prefix}{name}'
+                if isinstance(field, forms.FileField):
+                    mutable.pop(key, None)
+                    mutable.pop(f'{key}-clear', None)
+                else:
+                    mutable[key] = ''
+            self.data = mutable
+        super().full_clean()
 
     def clean(self):
         cleaned = super().clean()

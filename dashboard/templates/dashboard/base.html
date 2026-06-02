@@ -342,6 +342,7 @@
         deleteGalleryImage: '{% url "dashboard:delete_gallery_image" pk=0 %}'.replace('/0/', '/'),
         deleteSiteLink: '{% url "dashboard:delete_site_link" pk=0 %}'.replace('/0/', '/'),
         deleteBlockImage: '{% url "dashboard:delete_block_image" pk=0 %}'.replace('/0/', '/'),
+        deleteBlock: '{% url "dashboard:delete_block" pk=0 %}'.replace('/0/', '/'),
     }, window.DASHBOARD_API || {});
     </script>
     <script src="{% static 'dashboard/dashboard-forms.js' %}"></script>

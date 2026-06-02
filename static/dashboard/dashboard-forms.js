@@ -234,7 +234,7 @@
         if (!form) return;
         triggerPreviewUpdate(form);
         if (form._builderSync && typeof form._builderSync.notify === 'function') {
-            form._builderSync.notify({ immediate: false });
+            form._builderSync.notify({ immediate: true, force: true });
             return;
         }
         form.dispatchEvent(new Event('input', { bubbles: true }));

@@ -58,6 +58,103 @@
         }
     }
 
+    const BUILDER_FIELD_LABELS = {
+        image: 'Image',
+        image_alt: 'Texte alternatif',
+        video_url: 'URL vidéo',
+        content: 'Contenu',
+        content_en: 'Contenu (EN)',
+        title: 'Titre',
+        title_en: 'Titre (EN)',
+        subtitle: 'Sous-titre',
+        subtitle_en: 'Sous-titre (EN)',
+        badge: 'Badge',
+        badge_en: 'Badge (EN)',
+        button_text: 'Libellé bouton',
+        button_text_en: 'Libellé bouton (EN)',
+        button_url: 'Lien du bouton',
+        layout: 'Disposition',
+        block_type: 'Type de bloc',
+        faq_json: 'FAQ',
+    };
+
+    function flattenErrorMessages(value) {
+        if (!value) return [];
+        if (typeof value === 'string') return [value];
+        if (Array.isArray(value)) {
+            return value.flatMap((item) => flattenErrorMessages(item));
+        }
+        if (typeof value === 'object') {
+            if (value.message) return [String(value.message)];
+            return Object.values(value).flatMap((item) => flattenErrorMessages(item));
+        }
+        return [String(value)];
+    }
+
+    function formatFormsetErrors(errors, labelPrefix) {
+        if (!errors || typeof errors !== 'object') return '';
+        const parts = [];
+        flattenErrorMessages(errors.__all__).forEach((msg) => {
+            parts.push(`${labelPrefix} : ${msg}`);
+        });
+        Object.keys(errors).forEach((key) => {
+            if (key === '__all__') return;
+            const idx = parseInt(key, 10);
+            const rowLabel = Number.isNaN(idx) ? key : `${labelPrefix} ${idx + 1}`;
+            const fieldErrors = errors[key];
+            if (!fieldErrors || typeof fieldErrors !== 'object') return;
+            Object.keys(fieldErrors).forEach((field) => {
+                const label = BUILDER_FIELD_LABELS[field] || field;
+                flattenErrorMessages(fieldErrors[field]).forEach((msg) => {
+                    parts.push(`${rowLabel} · ${label} : ${msg}`);
+                });
+            });
+        });
+        return parts.slice(0, 2).join(' — ');
+    }
+
+    function applyFormsetErrorsToCards(form, errors) {
+        if (!form || !errors) return;
+        form.querySelectorAll('[data-block-form]').forEach((card) => {
+            card.classList.remove('builder-card--error');
+            const errBox = card.querySelector('[data-block-error-summary]');
+            if (errBox) {
+                errBox.textContent = '';
+                errBox.classList.add('hidden');
+            }
+        });
+        Object.keys(errors).forEach((key) => {
+            if (key === '__all__') return;
+            const card = form.querySelector(`[data-block-form][data-form-prefix="${key}"]`);
+            if (!card) return;
+            card.classList.add('builder-card--error');
+            const summary = formatFormsetErrors({ [key]: errors[key] }, 'Bloc');
+            let errBox = card.querySelector('[data-block-error-summary]');
+            if (!errBox) {
+                errBox = document.createElement('div');
+                errBox.setAttribute('data-block-error-summary', '');
+                errBox.className = 'text-red-600 dark:text-red-400 text-xs rounded-lg bg-red-50 dark:bg-red-900/20 p-3 mb-3';
+                const body = card.querySelector('.p-4, .p-5');
+                if (body) body.prepend(errBox);
+            }
+            errBox.textContent = summary;
+            errBox.classList.remove('hidden');
+        });
+    }
+
+    function deleteOrphanBlock(blockId) {
+        const base = window.DASHBOARD_API?.deleteBlock;
+        if (!base || !blockId) return Promise.resolve();
+        const url = `${base}${blockId}/delete/`;
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrf() },
+            credentials: 'same-origin',
+        }).catch((err) => {
+            console.warn('[builder] suppression bloc orphelin', blockId, err);
+        });
+    }
+
     function reloadPreviewIframe(previewUrl) {
         const iframe = document.getElementById('pagePreviewIframe');
         if (!iframe || !previewUrl) return;
@@ -65,19 +162,43 @@
         iframe.src = previewUrl + sep + '_=' + Date.now();
     }
 
-    function applyBlockMapping(form, blocks) {
-        if (!blocks || !blocks.length) return;
-        blocks.forEach((item) => {
-            let card = form.querySelector(`[data-block-form][data-form-prefix="${item.form_prefix}"]`);
-            if (!card && item.id) {
-                card = form.querySelector(`[data-block-form][data-block-pk="${item.id}"]`);
-            }
-            if (!card) return;
+    function findBlockCardForMapping(form, item) {
+        let card = form.querySelector(`[data-block-form][data-form-prefix="${item.form_prefix}"]`);
+        if (!card && item.id) {
+            card = form.querySelector(`[data-block-form][data-block-pk="${item.id}"]`);
+        }
+        if (!card) {
+            const list = form.querySelector('[data-block-forms]');
+            const rows = list
+                ? [...list.querySelectorAll('[data-block-form]:not(.hidden)')].filter(
+                    (r) => !r.closest('[data-block-empty-template]'),
+                )
+                : [];
+            const idx = parseInt(item.form_prefix, 10);
+            if (!Number.isNaN(idx) && rows[idx]) card = rows[idx];
+        }
+        return card;
+    }
 
-            card.setAttribute('data-block-pk', String(item.id));
-            card.setAttribute('data-form-prefix', String(item.form_prefix));
-            const idInput = card.querySelector('input[name^="blocks-"][name$="-id"]');
-            if (idInput) idInput.value = item.id;
+    function applyBlockMapping(form, blocks) {
+        const pending = [...form.querySelectorAll('[data-block-form][data-awaiting-id="1"]')];
+        if (!blocks || !blocks.length) {
+            window.DashboardBlockEditor?.syncBlockFormsetManagement?.(form);
+            return;
+        }
+        blocks.forEach((item) => {
+            let card = findBlockCardForMapping(form, item);
+            if (!card && pending.length) {
+                card = pending.shift();
+            }
+            if (!card) {
+                if (item.id && !form.querySelector(`[data-block-form][data-block-pk="${item.id}"]`)) {
+                    deleteOrphanBlock(item.id);
+                }
+                return;
+            }
+
+            window.DashboardBlockEditor?.applyBlockPkToCard?.(card, item);
 
             if (item.image_url) {
                 const blockType = card.querySelector('[name$="-block_type"]')?.value || '';
@@ -89,19 +210,28 @@
                 window.DashboardBlockEditor?.enableGalleryBlock?.(form, card, item.id);
             }
         });
+        window.DashboardBlockEditor?.syncBlockIdsToInputs?.(form);
+        window.DashboardBlockEditor?.syncBlockFormsetManagement?.(form);
     }
 
     function applyImageMapping(form, images) {
-        if (!images || !images.length) return;
+        if (!images || !images.length) {
+            window.DashboardBlockEditor?.syncImageFormsetManagement?.(form);
+            return;
+        }
         images.forEach((item) => {
-            const row = form.querySelector(`[data-block-image-form][data-form-prefix="${item.form_prefix}"]`);
+            let row = form.querySelector(`[data-block-image-form][data-form-prefix="${item.form_prefix}"]`);
+            if (!row && item.id) {
+                row = form.querySelector(`[data-block-image-form][data-image-pk="${item.id}"]`);
+            }
             if (!row) return;
             row.setAttribute('data-image-pk', String(item.id));
             row.setAttribute('data-block-id', String(item.block_id));
+            row.setAttribute('data-form-prefix', String(item.form_prefix));
             const idInput = row.querySelector('input[name^="images-"][name$="-id"]');
-            if (idInput) idInput.value = item.id;
+            if (idInput) idInput.value = String(item.id);
             const blockInput = row.querySelector('input[name^="images-"][name$="-block"]');
-            if (blockInput) blockInput.value = item.block_id;
+            if (blockInput) blockInput.value = String(item.block_id);
             const delBtn = row.querySelector('[data-delete-block-image]');
             if (delBtn) {
                 delBtn.setAttribute('data-image-pk', String(item.id));
@@ -111,6 +241,7 @@
                 window.DashboardBlockEditor?.updateMediaUrl?.(row, item.image_url);
             }
         });
+        window.DashboardBlockEditor?.syncImageFormsetManagement?.(form);
     }
 
     function initAutosave(form, config) {
@@ -125,6 +256,7 @@
         let inflight = null;
         let dirty = false;
         let pendingImmediate = false;
+        let pendingResave = false;
         let suppressUntil = 0;
 
         const isAutosavePaused = () => Date.now() < suppressUntil;
@@ -135,6 +267,7 @@
 
         const markDirty = () => {
             dirty = true;
+            if (inflight) pendingResave = true;
             if (!inflight) {
                 setStatus(statusEl, 'idle', 'Synchronisation…');
             }
@@ -169,6 +302,7 @@
             const draft = action === 'draft';
 
             if (inflight) {
+                pendingResave = true;
                 if (publish || draft) await inflight;
                 else return inflight;
             }
@@ -206,9 +340,14 @@
                 if (!res.ok || !data.ok) {
                     let errMsg = 'Échec de l’enregistrement';
                     if (data.errors) {
-                        if (data.errors.meta) errMsg = 'Paramètres invalides';
-                        else if (data.errors.blocks) errMsg = 'Erreur dans un bloc';
-                        else if (data.errors.images) errMsg = 'Erreur dans une image';
+                        if (data.errors.meta) {
+                            errMsg = formatFormsetErrors(data.errors.meta, 'Paramètres') || 'Paramètres invalides';
+                        } else if (data.errors.blocks) {
+                            applyFormsetErrorsToCards(form, data.errors.blocks);
+                            errMsg = formatFormsetErrors(data.errors.blocks, 'Bloc') || 'Erreur dans un bloc';
+                        } else if (data.errors.images) {
+                            errMsg = formatFormsetErrors(data.errors.images, 'Image') || 'Erreur dans une image';
+                        }
                     }
                     setStatus(statusEl, 'error', errMsg);
                     dirty = false;
@@ -218,6 +357,14 @@
 
                 dirty = false;
                 pendingImmediate = false;
+                form.querySelectorAll('[data-block-form].builder-card--error').forEach((card) => {
+                    card.classList.remove('builder-card--error');
+                    const errBox = card.querySelector('[data-block-error-summary]');
+                    if (errBox) {
+                        errBox.textContent = '';
+                        errBox.classList.add('hidden');
+                    }
+                });
                 const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 setStatus(
                     statusEl,
@@ -270,6 +417,13 @@
                 pendingImmediate = false;
             }).finally(() => {
                 inflight = null;
+                if (pendingResave) {
+                    pendingResave = false;
+                    queueMicrotask(() => {
+                        if (!isAutosavePaused()) syncNow(false);
+                        else scheduleSave(false);
+                    });
+                }
             });
 
             return inflight;
@@ -277,7 +431,7 @@
 
         const notify = (options) => {
             const immediate = !!(options && options.immediate);
-            return scheduleSave(immediate);
+            return scheduleSave(immediate, options);
         };
 
         const scheduleSaveFromEvent = (e) => {

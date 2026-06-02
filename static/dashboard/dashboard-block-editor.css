@@ -123,6 +123,11 @@
     box-shadow: 0 12px 40px rgba(16, 185, 129, 0.18);
 }
 
+.block-card.builder-card--error {
+    border-color: rgb(239 68 68);
+    box-shadow: 0 0 0 1px rgb(239 68 68 / 0.35);
+}
+
 .block-card.builder-card--highlight {
     animation: builder-pulse 1.8s ease-out;
     border-color: #10b981 !important;
