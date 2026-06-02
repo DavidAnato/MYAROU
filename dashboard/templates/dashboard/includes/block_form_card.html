@@ -46,11 +46,20 @@
          showImageAlt() { return this.blockType === 'image'; },
          showVideoUrl() { return this.blockType === 'video'; },
          showCtaFields() { return this.blockType === 'cta'; },
-         showLayout() { return ['image_text','cta','spacer'].includes(this.blockType); },
+         showLayout() {
+             return !!(window.BUILDER_LAYOUTS && window.BUILDER_LAYOUTS[this.blockType]);
+         },
          layoutLabel() {
              if (this.blockType === 'spacer') return 'Hauteur de l\'espace';
-             if (this.blockType === 'cta') return 'Style';
+             if (this.blockType === 'cta') return 'Style du bandeau';
+             if (this.blockType === 'image_text') return 'Position de l\'image';
              return 'Disposition';
+         },
+         layoutHint() {
+             if (this.blockType === 'spacer') return 'Espacement vertical entre deux sections.';
+             if (this.blockType === 'cta') return 'Fond vert plein ou encadré contour.';
+             if (this.blockType === 'image_text') return 'Image à gauche ou à droite du texte.';
+             return '';
          },
          showGallery() { return this.blockType === 'gallery'; },
          showFaq() { return this.blockType === 'faq'; }
@@ -136,8 +145,10 @@
             <div class="builder-field" x-show="showCtaFields() && locale === 'en'" x-cloak><label>Libellé bouton</label>{{ bf.button_text_en }}</div>
             <div class="builder-field md:col-span-2" x-show="showCtaFields()" x-cloak><label>Lien du bouton</label>{{ bf.button_url }}</div>
 
-            <div class="builder-field md:col-span-2" x-show="showLayout()" x-cloak>
-                <label x-text="layoutLabel()">Disposition</label>{{ bf.layout }}
+            <div class="builder-field md:col-span-2" x-show="showLayout()" x-cloak data-block-layout-field>
+                <label x-text="layoutLabel()">Disposition</label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2" x-show="layoutHint()" x-text="layoutHint()"></p>
+                {{ bf.layout }}
             </div>
         </div>
 

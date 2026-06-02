@@ -7,9 +7,8 @@ from homepage.models_site import CustomPage, CustomPageBlock, CustomPageBlockIma
 from homepage.page_blocks import (
     BLOCK_FIELDS,
     BLOCK_TYPE_CHOICES,
-    LAYOUT_CTA,
-    LAYOUT_IMAGE_TEXT,
-    LAYOUT_SPACER,
+    get_layout_choices,
+    normalize_layout,
 )
 from dashboard.site_forms import WIDGET_CLASS, _style_form
 
@@ -91,9 +90,11 @@ class CustomPageBlockForm(forms.ModelForm):
         self.fields['block_type'].widget.attrs['class'] = (
             WIDGET_CLASS + ' builder-type-select'
         )
-        self.fields['layout'].widget.choices = [('', '—')] + list(
-            LAYOUT_IMAGE_TEXT + LAYOUT_CTA + LAYOUT_SPACER
-        )
+        block_type = getattr(self.instance, 'block_type', None) or self.initial.get('block_type', '')
+        if not block_type and self.data and self.prefix:
+            block_type = self.data.get(f'{self.prefix}-block_type', '')
+        layout_choices = get_layout_choices(block_type or '')
+        self.fields['layout'].widget.choices = layout_choices or [('', '—')]
         if self.instance.pk and self.instance.block_type == 'faq':
             items = (self.instance.config or {}).get('items') or []
             self.fields['faq_json'].initial = json.dumps(items, ensure_ascii=False)
@@ -101,6 +102,7 @@ class CustomPageBlockForm(forms.ModelForm):
     def clean(self):
         cleaned = super().clean()
         block_type = cleaned.get('block_type') or getattr(self.instance, 'block_type', '')
+        cleaned['layout'] = normalize_layout(block_type, cleaned.get('layout', ''))
         if block_type == 'faq':
             raw = cleaned.get('faq_json') or '[]'
             try:

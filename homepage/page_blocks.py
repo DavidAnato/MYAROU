@@ -32,6 +32,39 @@ LAYOUT_SPACER = [
     ('lg', 'Grand'),
 ]
 
+BLOCK_LAYOUT_CHOICES = {
+    'image_text': LAYOUT_IMAGE_TEXT,
+    'cta': LAYOUT_CTA,
+    'spacer': LAYOUT_SPACER,
+}
+
+BLOCK_LAYOUT_DEFAULTS = {
+    'image_text': 'image_left',
+    'cta': 'primary',
+    'spacer': 'md',
+}
+
+
+def get_layout_choices(block_type):
+    """Options de disposition valides pour un type de bloc."""
+    return list(BLOCK_LAYOUT_CHOICES.get(block_type, []))
+
+
+def get_layout_default(block_type):
+    """Valeur par défaut de disposition pour un type de bloc."""
+    return BLOCK_LAYOUT_DEFAULTS.get(block_type, '')
+
+
+def normalize_layout(block_type, layout):
+    """Retourne une disposition valide pour le type, ou la valeur par défaut."""
+    choices = dict(get_layout_choices(block_type))
+    if not choices:
+        return ''
+    if layout in choices:
+        return layout
+    return get_layout_default(block_type)
+
+
 BLOCK_FIELDS = {
     'hero': ['badge', 'badge_en', 'title', 'title_en', 'subtitle', 'subtitle_en', 'image'],
     'richtext': ['content', 'content_en'],

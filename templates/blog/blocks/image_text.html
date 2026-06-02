@@ -1,6 +1,6 @@
 <section class="py-10 md:py-14 bg-gray-50 dark:bg-[#1a1a1a]" data-preview-block="{{ block.pk }}" data-block-type="image_text">
     <div class="container mx-auto px-4 max-w-6xl">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center {% if block.layout == 'image_right' %}md:flex-row-reverse{% endif %}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             {% if block.image %}
             <div class="{% if block.layout == 'image_right' %}md:order-2{% endif %}">
                 <img src="{{ block.image.url }}" alt="{{ block.image_alt }}" class="rounded-2xl shadow-xl w-full" data-preview-src="block-{{ block.pk }}-image">

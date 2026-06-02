@@ -72,6 +72,29 @@
         });
     }
 
+    function updateLayoutSelect(card, blockType) {
+        if (!card) return;
+        const wrap = card.querySelector('[data-block-layout-field]');
+        const select = card.querySelector('select[name^="blocks-"][name$="-layout"]');
+        if (!wrap || !select) return;
+
+        const layouts = window.BUILDER_LAYOUTS && window.BUILDER_LAYOUTS[blockType];
+        if (!layouts || !layouts.length) {
+            wrap.classList.add('hidden');
+            select.value = '';
+            return;
+        }
+
+        wrap.classList.remove('hidden');
+        const current = select.value;
+        const defaultVal = (window.BUILDER_LAYOUT_DEFAULTS && window.BUILDER_LAYOUT_DEFAULTS[blockType])
+            || layouts[0][0];
+        select.innerHTML = layouts.map(([value, label]) => (
+            `<option value="${String(value).replace(/"/g, '&quot;')}">${String(label).replace(/</g, '&lt;')}</option>`
+        )).join('');
+        select.value = layouts.some(([v]) => v === current) ? current : defaultVal;
+    }
+
     function getRowFormIndex(row, prefix) {
         const attr = row.getAttribute('data-form-prefix');
         if (attr !== null && attr !== '') {
@@ -218,18 +241,6 @@
                 const section = getBlockGallerySection(multiBtn);
                 const input = section && section.querySelector('[data-block-gallery-multi-input]');
                 if (input) input.click();
-                return;
-            }
-            const addBtn = e.target.closest('[data-block-gallery-add-one]');
-            if (addBtn) {
-                e.preventDefault();
-                const section = getBlockGallerySection(addBtn);
-                if (!section) return;
-                const row = addBlockImageRow(form, section);
-                if (row) {
-                    const inp = row.querySelector('input[type="file"][name^="images-"]');
-                    if (inp) inp.click();
-                }
             }
         });
 
@@ -461,6 +472,7 @@
         }
         const typeSelect = card.querySelector('[name$="-block_type"]');
         if (typeSelect) typeSelect.value = blockType;
+        updateLayoutSelect(card, blockType);
     }
 
     function enableFormFields(root) {
@@ -665,17 +677,22 @@
     }
 
     function bindBlockCard(card, form, section) {
+        if (!card || card.dataset.blockCardBound === '1') return;
+        card.dataset.blockCardBound = '1';
         const typeSelect = card.querySelector('[name$="-block_type"]');
         if (typeSelect) {
             typeSelect.addEventListener('change', () => {
+                const nextType = typeSelect.value;
                 if (window.Alpine && typeof Alpine.$data === 'function') {
                     try {
                         const data = Alpine.$data(card);
-                        if (data) data.blockType = typeSelect.value;
+                        if (data) data.blockType = nextType;
                     } catch (e) { /* ignore */ }
                 }
+                updateLayoutSelect(card, nextType);
                 formChange(card, true);
             });
+            updateLayoutSelect(card, typeSelect.value);
         }
 
         const visibility = card.querySelector('input[name$="-is_visible"]');
@@ -684,21 +701,29 @@
             visibility.addEventListener('change', () => builderNotify(form, true));
         }
 
-        card.querySelector('[data-delete-block-row]')?.addEventListener('click', (e) => {
-            removeBlockRow(e.currentTarget, form, section);
-        });
+        const deleteBtn = card.querySelector('[data-delete-block-row]');
+        if (deleteBtn && !deleteBtn.dataset.builderBound) {
+            deleteBtn.dataset.builderBound = '1';
+            deleteBtn.addEventListener('click', (e) => {
+                removeBlockRow(e.currentTarget, form, section);
+            });
+        }
 
         const faqEditor = card.querySelector('[data-faq-editor]');
         if (faqEditor) {
             renderFaqRows(faqEditor);
-            faqEditor.querySelector('[data-add-faq-row]')?.addEventListener('click', () => {
-                const hidden = faqEditor.querySelector('input[name$="-faq_json"]');
-                const items = parseFaqJson(hidden?.value);
-                items.push({ q: '', q_en: '', a: '', a_en: '' });
-                if (hidden) hidden.value = JSON.stringify(items);
-                renderFaqRows(faqEditor);
-                formChange(faqEditor, true);
-            });
+            const addFaqBtn = faqEditor.querySelector('[data-add-faq-row]');
+            if (addFaqBtn && !addFaqBtn.dataset.builderBound) {
+                addFaqBtn.dataset.builderBound = '1';
+                addFaqBtn.addEventListener('click', () => {
+                    const hidden = faqEditor.querySelector('input[name$="-faq_json"]');
+                    const items = parseFaqJson(hidden?.value);
+                    items.push({ q: '', q_en: '', a: '', a_en: '' });
+                    if (hidden) hidden.value = JSON.stringify(items);
+                    renderFaqRows(faqEditor);
+                    formChange(faqEditor, true);
+                });
+            }
         }
 
     }
@@ -715,23 +740,35 @@
         updateBlockCount(section);
 
         section.querySelectorAll('[data-add-block-type]').forEach((btn) => {
+            if (btn.dataset.builderBound) return;
+            btn.dataset.builderBound = '1';
             btn.addEventListener('click', () => {
                 const blockType = btn.getAttribute('data-add-block-type');
                 addBlockFromTemplate(section, form, blockType);
             });
         });
 
-        section.querySelector('[data-collapse-all-blocks]')?.addEventListener('click', () => {
-            setAllBlocksCollapsed(form, true);
-        });
-        section.querySelector('[data-expand-all-blocks]')?.addEventListener('click', () => {
-            setAllBlocksCollapsed(form, false);
-        });
+        const collapseBtn = section.querySelector('[data-collapse-all-blocks]');
+        if (collapseBtn && !collapseBtn.dataset.builderBound) {
+            collapseBtn.dataset.builderBound = '1';
+            collapseBtn.addEventListener('click', () => {
+                setAllBlocksCollapsed(form, true);
+            });
+        }
+        const expandBtn = section.querySelector('[data-expand-all-blocks]');
+        if (expandBtn && !expandBtn.dataset.builderBound) {
+            expandBtn.dataset.builderBound = '1';
+            expandBtn.addEventListener('click', () => {
+                setAllBlocksCollapsed(form, false);
+            });
+        }
 
         form.querySelectorAll('[data-block-form]').forEach((card) => {
             if (card.closest('[data-block-empty-template]')) return;
             bindBlockCard(card, form, section);
             initCKEditorIn(card);
+            const typeSelect = card.querySelector('[name$="-block_type"]');
+            if (typeSelect) updateLayoutSelect(card, typeSelect.value);
         });
 
         form.addEventListener('click', (e) => {
@@ -779,6 +816,7 @@
         reinitAllEditors,
         enableGalleryBlock,
         updateMediaUrl,
+        updateLayoutSelect,
         renumberBlockFormPrefixes,
         refreshGallerySections(form) {
             if (!form) return;

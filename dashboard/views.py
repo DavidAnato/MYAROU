@@ -25,7 +25,12 @@ from dashboard.page_block_forms import (
     CustomPageBlockFormSet,
     CustomPageBlockImageFormSet,
 )
-from homepage.page_blocks import BLOCK_CATALOG, BLOCK_TYPE_CHOICES
+from homepage.page_blocks import (
+    BLOCK_CATALOG,
+    BLOCK_LAYOUT_CHOICES,
+    BLOCK_LAYOUT_DEFAULTS,
+    BLOCK_TYPE_CHOICES,
+)
 from .form_layout import build_section_layout, SITE_FORM_SECTIONS
 from homepage.models import HomeSettings, HomeGalleryImage
 import json
@@ -736,6 +741,11 @@ def custom_page_edit(request, pk):
         'block_type_choices': BLOCK_TYPE_CHOICES,
         'block_catalog': BLOCK_CATALOG,
         'block_catalog_json': json.dumps({item['type']: item for item in BLOCK_CATALOG}, ensure_ascii=False),
+        'block_layouts_json': json.dumps(
+            {k: list(v) for k, v in BLOCK_LAYOUT_CHOICES.items()},
+            ensure_ascii=False,
+        ),
+        'block_layout_defaults_json': json.dumps(BLOCK_LAYOUT_DEFAULTS, ensure_ascii=False),
         'save_api_url': reverse('dashboard:custom_page_save_api', kwargs={'pk': page.pk}),
         'page': page,
         'page_title': f'Page builder — {page.title}',

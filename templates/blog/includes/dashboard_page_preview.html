@@ -178,7 +178,14 @@
             return `<section class="py-10 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-4xl text-center">${imgBlock}${title ? `<p class="mt-4 text-gray-600 dark:text-gray-400">${title}</p>` : ''}</div></section>`;
         }
         if (t === 'image_text') {
-            return `<section class="py-10 bg-gray-50 dark:bg-[#1a1a1a]"><div class="container mx-auto px-4 max-w-6xl grid md:grid-cols-2 gap-10 items-center">${imgBlock}<div>${title ? `<h2 class="text-2xl font-extrabold mb-4 text-gray-900 dark:text-white">${title}</h2>` : ''}<div class="prose dark:prose-invert">${content}</div></div></div></section>`;
+            const imageRight = block.layout === 'image_right';
+            const imageCol = imageRight
+                ? `<div class="md:order-2">${imgBlock}</div>`
+                : `<div>${imgBlock}</div>`;
+            const textCol = imageRight
+                ? `<div class="md:order-1">${title ? `<h2 class="text-2xl font-extrabold mb-4 text-gray-900 dark:text-white">${title}</h2>` : ''}<div class="prose dark:prose-invert">${content}</div></div>`
+                : `<div>${title ? `<h2 class="text-2xl font-extrabold mb-4 text-gray-900 dark:text-white">${title}</h2>` : ''}<div class="prose dark:prose-invert">${content}</div></div>`;
+            return `<section class="py-10 bg-gray-50 dark:bg-[#1a1a1a]"><div class="container mx-auto px-4 max-w-6xl"><div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">${imageCol}${textCol}</div></div></section>`;
         }
         if (t === 'video') {
             const vurl = block.video_url || '';
@@ -186,7 +193,15 @@
         }
         if (t === 'cta') {
             const outline = block.layout === 'outline';
-            return `<section class="py-12 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-3xl"><div class="rounded-3xl p-10 text-center ${outline ? 'border-2 border-emerald-500' : 'bg-gradient-to-br from-emerald-600 to-emerald-700 text-white shadow-xl'}">${title ? `<h2 class="text-2xl font-extrabold mb-3">${title}</h2>` : ''}${subtitle ? `<p class="mb-6 opacity-90">${subtitle}</p>` : ''}${btn ? `<a href="${btnUrl}" class="inline-flex px-8 py-3 rounded-full font-bold ${outline ? 'border-2 border-emerald-500 text-emerald-600' : 'bg-white text-emerald-700'}">${btn}</a>` : ''}</div></div></section>`;
+            const titleCls = outline ? 'text-gray-900 dark:text-white' : 'text-white';
+            const subCls = outline ? 'text-gray-600 dark:text-gray-300' : 'text-white/90';
+            const boxCls = outline
+                ? 'border-2 border-emerald-500 bg-transparent'
+                : 'bg-gradient-to-br from-emerald-600 to-emerald-700 text-white shadow-xl';
+            const btnCls = outline
+                ? 'border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400'
+                : 'bg-white text-emerald-700';
+            return `<section class="py-12 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-3xl"><div class="rounded-3xl p-10 text-center ${boxCls}">${title ? `<h2 class="text-2xl font-extrabold mb-3 ${titleCls}">${title}</h2>` : ''}${subtitle ? `<p class="mb-6 ${subCls}">${subtitle}</p>` : ''}${btn ? `<a href="${btnUrl}" class="inline-flex px-8 py-3 rounded-full font-bold ${btnCls}">${btn}</a>` : ''}</div></div></section>`;
         }
         if (t === 'faq') {
             let items = [];

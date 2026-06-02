@@ -132,6 +132,8 @@
 {% if block_catalog_json %}
 <script>
 window.BUILDER_CATALOG = {{ block_catalog_json|safe }};
+window.BUILDER_LAYOUTS = {{ block_layouts_json|safe }};
+window.BUILDER_LAYOUT_DEFAULTS = {{ block_layout_defaults_json|safe }};
 </script>
 {% endif %}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
