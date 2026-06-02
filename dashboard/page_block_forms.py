@@ -7,6 +7,7 @@ from homepage.models_site import CustomPage, CustomPageBlock, CustomPageBlockIma
 from homepage.page_blocks import (
     BLOCK_FIELDS,
     BLOCK_TYPE_CHOICES,
+    SECTION_BACKGROUND_CHOICES,
     get_layout_choices,
     normalize_layout,
 )
@@ -72,6 +73,11 @@ class CustomPageBlockForm(forms.ModelForm):
         widget=forms.HiddenInput(),
         label='FAQ (JSON)',
     )
+    section_background = forms.ChoiceField(
+        required=False,
+        choices=[],
+        label='Couleur de fond',
+    )
 
     class Meta:
         model = CustomPageBlock
@@ -114,6 +120,14 @@ class CustomPageBlockForm(forms.ModelForm):
         if self.instance.pk and self.instance.block_type == 'faq':
             items = (self.instance.config or {}).get('items') or []
             self.fields['faq_json'].initial = json.dumps(items, ensure_ascii=False)
+        self.fields['section_background'].choices = SECTION_BACKGROUND_CHOICES
+        self.fields['section_background'].widget.attrs['class'] = WIDGET_CLASS
+        if self.instance.pk and self.instance.block_type == 'spacer':
+            self.fields['section_background'].initial = (
+                (self.instance.config or {}).get('background', 'inherit')
+            )
+        elif not self.instance.pk:
+            self.fields['section_background'].initial = 'inherit'
 
     def full_clean(self):
         """Ne valide pas les champs masqués après un changement de type dans le builder."""
@@ -123,7 +137,10 @@ class CustomPageBlockForm(forms.ModelForm):
             pk_name = self._meta.model._meta.pk.name
             mutable = self.data.copy()
             key_prefix = f'{self.prefix}-' if self.prefix else ''
-            skip_fields = {'block_type', 'order', 'is_visible', 'layout', 'faq_json', pk_name}
+            skip_fields = {
+                'block_type', 'order', 'is_visible', 'layout', 'faq_json',
+                'section_background', pk_name,
+            }
             for name, field in self.fields.items():
                 if name in skip_fields:
                     continue
@@ -157,6 +174,10 @@ class CustomPageBlockForm(forms.ModelForm):
         instance = super().save(commit=False)
         if instance.block_type == 'faq':
             instance.config = self.cleaned_data.get('config') or {'items': []}
+        elif instance.block_type == 'spacer':
+            config = dict(instance.config or {})
+            config['background'] = self.cleaned_data.get('section_background') or 'inherit'
+            instance.config = config
         if commit:
             instance.save()
         return instance

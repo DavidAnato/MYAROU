@@ -79,6 +79,69 @@ BLOCK_FIELDS = {
 
 SPACER_HEIGHTS = {'sm': 'h-8', 'md': 'h-16', 'lg': 'h-28'}
 
+SECTION_BG_MAIN = 'main'
+SECTION_BG_ALT = 'alt'
+
+SECTION_BG_CLASSES = {
+    SECTION_BG_MAIN: 'bg-white dark:bg-[#121212]',
+    SECTION_BG_ALT: 'bg-gray-50 dark:bg-[#1a1a1a]',
+}
+
+SECTION_BACKGROUND_CHOICES = [
+    ('inherit', 'Comme le bloc précédent'),
+    ('main', 'Fond principal (blanc / sombre)'),
+    ('alt', 'Fond alternatif (gris)'),
+]
+
+
+def section_bg_class(tone):
+    """Classes Tailwind pour le fond d'une section."""
+    if not tone:
+        return ''
+    return SECTION_BG_CLASSES.get(tone, SECTION_BG_CLASSES[SECTION_BG_MAIN])
+
+
+def compute_section_backgrounds(blocks):
+    """
+    Calcule le fond de chaque bloc visible selon sa position.
+    - Après un hero : alternance main → alt → main…
+    - Espacement : couleur du bloc précédent par défaut (config.background)
+    """
+    result = {}
+    tone_index = 0
+    last_effective = SECTION_BG_MAIN
+
+    for block in blocks:
+        pk = block.pk
+        if not pk:
+            continue
+
+        if block.block_type == 'hero':
+            result[pk] = None
+            tone_index = 0
+            last_effective = SECTION_BG_MAIN
+            continue
+
+        if block.block_type == 'spacer':
+            bg = (block.config or {}).get('background', 'inherit')
+            if bg == SECTION_BG_MAIN:
+                tone = SECTION_BG_MAIN
+            elif bg == SECTION_BG_ALT:
+                tone = SECTION_BG_ALT
+            else:
+                tone = last_effective
+            result[pk] = tone
+            last_effective = tone
+            continue
+
+        tone = SECTION_BG_MAIN if tone_index % 2 == 0 else SECTION_BG_ALT
+        tone_index += 1
+        result[pk] = tone
+        last_effective = tone
+
+    return result
+
+
 BLOCK_CATALOG = [
     {'type': 'hero', 'label': 'Hero', 'description': 'Grande bannière en tête de page', 'color': 'emerald', 'icon': 'hero'},
     {'type': 'richtext', 'label': 'Texte riche', 'description': 'Paragraphes, listes, liens', 'color': 'sky', 'icon': 'text'},

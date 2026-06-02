@@ -7,13 +7,14 @@
 
 {% block content %}
 {% if request.GET.dashboard_preview %}
+<script src="{% static 'dashboard/page-block-backgrounds.js' %}"></script>
 {% include 'blog/includes/dashboard_page_preview.html' %}
 {% endif %}
 
 <div data-custom-page-root>
     {% if blocks %}
         {% for ctx in blocks %}
-            {% include ctx.template with block=ctx.block title=ctx.title subtitle=ctx.subtitle content=ctx.content badge=ctx.badge button_text=ctx.button_text images=ctx.images faq_items=ctx.faq_items %}
+            {% include ctx.template with block=ctx.block title=ctx.title subtitle=ctx.subtitle content=ctx.content badge=ctx.badge button_text=ctx.button_text images=ctx.images faq_items=ctx.faq_items section_bg_class=ctx.section_bg_class %}
         {% endfor %}
     {% else %}
     <section class="relative bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-950 text-white py-24">

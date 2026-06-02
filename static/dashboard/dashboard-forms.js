@@ -599,6 +599,7 @@
                         button_text_en: getFieldVal(card, 'button_text_en'),
                         button_url: getFieldVal(card, 'button_url'),
                         layout: getFieldVal(card, 'layout'),
+                        section_background: getFieldVal(card, 'section_background'),
                         faq_json: getFieldVal(card, 'faq_json'),
                         gallery_urls: [],
                     };
@@ -630,6 +631,9 @@
 
                     payload.blocks.push(block);
                 });
+                if (window.PageBlockBackgrounds && typeof window.PageBlockBackgrounds.computeSectionBackgrounds === 'function') {
+                    window.PageBlockBackgrounds.computeSectionBackgrounds(payload.blocks);
+                }
             } else {
                 payload.site_links = getSiteLinksFromForm();
                 const profile = form.querySelector('input[type="file"][name="profile_image"]');

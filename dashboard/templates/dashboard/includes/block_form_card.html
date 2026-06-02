@@ -62,7 +62,8 @@
              return '';
          },
          showGallery() { return this.blockType === 'gallery'; },
-         showFaq() { return this.blockType === 'faq'; }
+         showFaq() { return this.blockType === 'faq'; },
+         showSpacer() { return this.blockType === 'spacer'; }
      }">
     <div class="builder-card-header flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 bg-gray-50/90 dark:bg-gray-900/60 border-b border-gray-200 dark:border-gray-700"
          @click="collapsed = !collapsed">
@@ -149,6 +150,12 @@
                 <label x-text="layoutLabel()">Disposition</label>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mb-2" x-show="layoutHint()" x-text="layoutHint()"></p>
                 {{ bf.layout }}
+            </div>
+
+            <div class="builder-field md:col-span-2" x-show="showSpacer()" x-cloak>
+                <label>Couleur de fond</label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Par défaut, reprend la couleur du bloc précédent pour une transition fluide.</p>
+                {{ bf.section_background }}
             </div>
         </div>
 

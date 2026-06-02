@@ -159,6 +159,7 @@
 
     const renderPreviewBlock = (block, idx) => {
         const t = block.block_type || 'richtext';
+        const bg = block.section_bg_class || '';
         const title = escapeHtml(pickLocale(block.title, block.title_en));
         const subtitle = escapeHtml(pickLocale(block.subtitle, block.subtitle_en));
         const badge = escapeHtml(pickLocale(block.badge, block.badge_en));
@@ -172,10 +173,10 @@
             return `<section class="relative bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-950 dark:to-emerald-950 text-white overflow-hidden">${img}<div class="container mx-auto px-4 py-32 md:py-40 relative z-10 text-center max-w-4xl">${badge ? `<span class="inline-block px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-sm font-bold mb-4">${badge}</span>` : ''}${title ? `<h1 class="text-4xl md:text-6xl font-extrabold mb-4">${title}</h1>` : ''}${subtitle ? `<p class="text-xl text-white/90">${subtitle}</p>` : ''}</div>${heroWaveSvg}</section>`;
         }
         if (t === 'richtext') {
-            return `<section class="py-10 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-4xl"><div class="prose prose-lg dark:prose-invert max-w-none">${content}</div></div></section>`;
+            return `<section class="py-10 ${bg}"><div class="container mx-auto px-4 max-w-4xl"><div class="prose prose-lg dark:prose-invert max-w-none">${content}</div></div></section>`;
         }
         if (t === 'image') {
-            return `<section class="py-10 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-4xl text-center">${imgBlock}${title ? `<p class="mt-4 text-gray-600 dark:text-gray-400">${title}</p>` : ''}</div></section>`;
+            return `<section class="py-10 ${bg}"><div class="container mx-auto px-4 max-w-4xl text-center">${imgBlock}${title ? `<p class="mt-4 text-gray-600 dark:text-gray-400">${title}</p>` : ''}</div></section>`;
         }
         if (t === 'image_text') {
             const imageRight = block.layout === 'image_right';
@@ -185,11 +186,11 @@
             const textCol = imageRight
                 ? `<div class="md:order-1">${title ? `<h2 class="text-2xl font-extrabold mb-4 text-gray-900 dark:text-white">${title}</h2>` : ''}<div class="prose dark:prose-invert">${content}</div></div>`
                 : `<div>${title ? `<h2 class="text-2xl font-extrabold mb-4 text-gray-900 dark:text-white">${title}</h2>` : ''}<div class="prose dark:prose-invert">${content}</div></div>`;
-            return `<section class="py-10 bg-gray-50 dark:bg-[#1a1a1a]"><div class="container mx-auto px-4 max-w-6xl"><div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">${imageCol}${textCol}</div></div></section>`;
+            return `<section class="py-10 ${bg}"><div class="container mx-auto px-4 max-w-6xl"><div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">${imageCol}${textCol}</div></div></section>`;
         }
         if (t === 'video') {
             const vurl = block.video_url || '';
-            return `<section class="py-10 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-4xl text-center">${title ? `<h2 class="text-2xl font-extrabold mb-2">${title}</h2>` : ''}${subtitle ? `<p class="text-gray-600 dark:text-gray-400 mb-6">${subtitle}</p>` : ''}${vurl ? `<div class="aspect-video rounded-2xl overflow-hidden shadow-xl"><iframe src="${escapeHtml(vurl)}" class="w-full h-full" allowfullscreen></iframe></div>` : ''}</div></section>`;
+            return `<section class="py-10 ${bg}"><div class="container mx-auto px-4 max-w-4xl text-center">${title ? `<h2 class="text-2xl font-extrabold mb-2">${title}</h2>` : ''}${subtitle ? `<p class="text-gray-600 dark:text-gray-400 mb-6">${subtitle}</p>` : ''}${vurl ? `<div class="aspect-video rounded-2xl overflow-hidden shadow-xl"><iframe src="${escapeHtml(vurl)}" class="w-full h-full" allowfullscreen></iframe></div>` : ''}</div></section>`;
         }
         if (t === 'cta') {
             const outline = block.layout === 'outline';
@@ -201,7 +202,7 @@
             const btnCls = outline
                 ? 'border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400'
                 : 'bg-white text-emerald-700';
-            return `<section class="py-12 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-3xl"><div class="rounded-3xl p-10 text-center ${boxCls}">${title ? `<h2 class="text-2xl font-extrabold mb-3 ${titleCls}">${title}</h2>` : ''}${subtitle ? `<p class="mb-6 ${subCls}">${subtitle}</p>` : ''}${btn ? `<a href="${btnUrl}" class="inline-flex px-8 py-3 rounded-full font-bold ${btnCls}">${btn}</a>` : ''}</div></div></section>`;
+            return `<section class="py-12 ${bg}"><div class="container mx-auto px-4 max-w-3xl"><div class="rounded-3xl p-10 text-center ${boxCls}">${title ? `<h2 class="text-2xl font-extrabold mb-3 ${titleCls}">${title}</h2>` : ''}${subtitle ? `<p class="mb-6 ${subCls}">${subtitle}</p>` : ''}${btn ? `<a href="${btnUrl}" class="inline-flex px-8 py-3 rounded-full font-bold ${btnCls}">${btn}</a>` : ''}</div></div></section>`;
         }
         if (t === 'faq') {
             let items = [];
@@ -212,16 +213,16 @@
                 const a = escapeHtml(enMode ? (it.a_en || it.a || '') : (it.a || it.a_en || ''));
                 return `<details class="rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-3 p-4"><summary class="font-semibold cursor-pointer">${q}</summary><div class="mt-2 text-gray-600 dark:text-gray-300">${a}</div></details>`;
             }).join('');
-            return `<section class="py-10 bg-gray-50 dark:bg-[#1a1a1a]"><div class="container mx-auto px-4 max-w-3xl">${title ? `<h2 class="text-2xl font-extrabold text-center mb-8 text-gray-900 dark:text-white">${title}</h2>` : ''}${faqHtml}</div></section>`;
+            return `<section class="py-10 ${bg}"><div class="container mx-auto px-4 max-w-3xl">${title ? `<h2 class="text-2xl font-extrabold text-center mb-8 text-gray-900 dark:text-white">${title}</h2>` : ''}${faqHtml}</div></section>`;
         }
         if (t === 'spacer') {
             const h = block.layout === 'lg' ? 'h-28' : (block.layout === 'md' ? 'h-16' : 'h-8');
-            return `<div class="${h}" aria-hidden="true"></div>`;
+            return `<div class="${h} ${bg}" aria-hidden="true"></div>`;
         }
         if (t === 'gallery') {
             const urls = block.gallery_urls || [];
             const grid = urls.map((u) => `<figure class="rounded-2xl overflow-hidden shadow-lg"><img src="${escapeHtml(u)}" class="w-full h-48 object-cover" alt=""></figure>`).join('');
-            return `<section class="py-10 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-6xl">${title ? `<h2 class="text-2xl font-extrabold text-center mb-8">${title}</h2>` : ''}<div class="grid grid-cols-2 md:grid-cols-3 gap-4">${grid || '<p class="col-span-full text-center text-gray-500">Galerie vide</p>'}</div></div></section>`;
+            return `<section class="py-10 ${bg}"><div class="container mx-auto px-4 max-w-6xl">${title ? `<h2 class="text-2xl font-extrabold text-center mb-8">${title}</h2>` : ''}<div class="grid grid-cols-2 md:grid-cols-3 gap-4">${grid || '<p class="col-span-full text-center text-gray-500">Galerie vide</p>'}</div></div></section>`;
         }
         return '';
     };
@@ -230,6 +231,9 @@
         const root = document.querySelector('[data-custom-page-root]');
         if (!root) return;
         const blocks = payload.blocks || [];
+        if (window.PageBlockBackgrounds && typeof window.PageBlockBackgrounds.computeSectionBackgrounds === 'function') {
+            window.PageBlockBackgrounds.computeSectionBackgrounds(blocks);
+        }
         if (blocks.length === 0) {
             const pageTitle = escapeHtml(pickLocale(payload.page_title, payload.page_title_en) || 'Nouvelle page');
             root.innerHTML = `<section class="relative bg-gradient-to-br from-emerald-600 to-emerald-700 text-white py-24"><div class="container mx-auto px-4 text-center"><h1 class="text-4xl font-extrabold">${pageTitle}</h1></div>${heroWaveSvg}</section><section class="py-12 bg-white dark:bg-[#121212]"><div class="container mx-auto px-4 max-w-4xl text-center text-gray-500">Ajoutez des blocs pour composer la page.</div></section>`;

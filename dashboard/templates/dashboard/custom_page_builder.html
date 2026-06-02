@@ -136,6 +136,7 @@ window.BUILDER_LAYOUTS = {{ block_layouts_json|safe }};
 window.BUILDER_LAYOUT_DEFAULTS = {{ block_layout_defaults_json|safe }};
 </script>
 {% endif %}
+<script src="{% static 'dashboard/page-block-backgrounds.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="{% static 'dashboard/dashboard-block-editor.js' %}"></script>
 <script src="{% static 'dashboard/dashboard-builder-autosave.js' %}"></script>

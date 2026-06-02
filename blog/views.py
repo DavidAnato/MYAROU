@@ -177,17 +177,25 @@ def custom_page(request, slug):
     if not page.is_published and not is_staff_preview(request):
         raise Http404
     language_code = getattr(request, 'LANGUAGE_CODE', 'fr')
-    from homepage.page_blocks import get_block_context
+    from homepage.page_blocks import compute_section_backgrounds, get_block_context, section_bg_class
 
     blocks_qs = page.get_visible_blocks()
     if is_staff_preview(request):
         blocks_qs = page.blocks.prefetch_related('images').all()
 
-    block_contexts = [
-        get_block_context(block, language_code)
-        for block in blocks_qs
+    blocks_list = [
+        block for block in blocks_qs
         if block.is_visible or is_staff_preview(request)
     ]
+    section_backgrounds = compute_section_backgrounds(blocks_list)
+
+    block_contexts = []
+    for block in blocks_list:
+        ctx = get_block_context(block, language_code)
+        tone = section_backgrounds.get(block.pk)
+        ctx['section_bg'] = tone
+        ctx['section_bg_class'] = section_bg_class(tone)
+        block_contexts.append(ctx)
 
     return render(request, 'blog/custom_page.html', {
         'page': page,
