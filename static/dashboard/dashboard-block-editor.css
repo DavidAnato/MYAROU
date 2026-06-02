@@ -324,23 +324,38 @@
     gap: 0.4rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #6b7280;
+    color: #9ca3af;
     cursor: pointer;
+    transition: color 0.2s;
 }
 
-.builder-visibility input {
+.builder-visibility:has(input:checked) {
+    color: #059669;
+}
+
+.dark .builder-visibility:has(input:checked) {
+    color: #34d399;
+}
+
+.builder-visibility input,
+.builder-visibility-input {
     appearance: none;
+    -webkit-appearance: none;
     width: 2.25rem;
     height: 1.25rem;
+    min-width: 2.25rem;
     background: #d1d5db;
+    border: none;
     border-radius: 9999px;
     position: relative;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, box-shadow 0.2s;
     flex-shrink: 0;
+    box-shadow: none;
 }
 
-.builder-visibility input::after {
+.builder-visibility input::after,
+.builder-visibility-input::after {
     content: '';
     position: absolute;
     top: 2px;
@@ -353,16 +368,26 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-.builder-visibility input:checked {
+.builder-visibility input:checked,
+.builder-visibility-input:checked {
     background: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
 }
 
-.builder-visibility input:checked::after {
+.builder-visibility input:checked::after,
+.builder-visibility-input:checked::after {
     transform: translateX(1rem);
 }
 
-.dark .builder-visibility input {
+.dark .builder-visibility input,
+.dark .builder-visibility-input {
     background: #4b5563;
+}
+
+.dark .builder-visibility input:checked,
+.dark .builder-visibility-input:checked {
+    background: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.35);
 }
 
 /* Onglets FR / EN */

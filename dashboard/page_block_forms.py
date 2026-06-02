@@ -110,6 +110,7 @@ class CustomPageBlockForm(forms.ModelForm):
             'accept': 'image/*',
         })
         self.fields['order'].widget.attrs['class'] = 'builder-order-hidden'
+        self.fields['is_visible'].widget.attrs['class'] = 'builder-visibility-input'
         self.fields['block_type'].widget.attrs['class'] = (
             WIDGET_CLASS + ' builder-type-select'
         )
