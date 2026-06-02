@@ -579,7 +579,7 @@
                     const del = card.querySelector('input[name$="-DELETE"]');
                     if (del && del.checked) return;
                     const visInput = card.querySelector('input[name$="-is_visible"]');
-                    if (visInput && !visInput.checked) return;
+                    if (visInput && visInput.type === 'checkbox' && !visInput.checked) return;
 
                     const blockType = getFieldVal(card, 'block_type');
                     const block = {
@@ -649,14 +649,23 @@
         };
 
         let raf = null;
-        let iframePreviewReady = false;
         const send = () => {
-            if (!iframe.contentWindow || !iframePreviewReady) return;
-            iframe.contentWindow.postMessage({ type: msgType, payload: buildPayload() }, '*');
+            if (!iframe.contentWindow) return;
+            try {
+                iframe.contentWindow.postMessage({ type: msgType, payload: buildPayload() }, '*');
+            } catch (err) {
+                console.error('[preview] envoi', err);
+            }
         };
         const schedulePreview = () => {
             if (raf) cancelAnimationFrame(raf);
             raf = requestAnimationFrame(send);
+        };
+        const requestIframeReady = () => {
+            if (!iframe.contentWindow) return;
+            try {
+                iframe.contentWindow.postMessage({ type: 'page-preview-request' }, '*');
+            } catch (e) { /* ignore */ }
         };
         form._previewSchedule = schedulePreview;
         const schedulePreviewFromEvent = (e) => {
@@ -666,14 +675,22 @@
         form.addEventListener('input', schedulePreviewFromEvent);
         form.addEventListener('change', schedulePreviewFromEvent);
         iframe.addEventListener('load', () => {
-            iframePreviewReady = false;
-            schedulePreview();
+            setTimeout(() => {
+                requestIframeReady();
+                schedulePreview();
+            }, 50);
         });
         window.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'page-preview-ready') {
-                iframePreviewReady = true;
+            if (!event.data || event.source !== iframe.contentWindow) return;
+            if (event.data.type === 'page-preview-ready') {
                 schedulePreview();
             }
+        });
+        [0, 100, 400, 1200].forEach((delay) => {
+            setTimeout(() => {
+                requestIframeReady();
+                schedulePreview();
+            }, delay);
         });
         schedulePreview();
     }

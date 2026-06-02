@@ -613,7 +613,10 @@
         wrapper.innerHTML = html.trim();
         const card = wrapper.firstElementChild;
         card.setAttribute('data-form-prefix', String(index));
+        card.setAttribute('data-awaiting-id', '1');
         enableFormFields(card);
+        const visInput = card.querySelector('input[name$="-is_visible"]');
+        if (visInput && visInput.type === 'checkbox') visInput.checked = true;
         list.appendChild(card);
 
         totalInput.value = index + 1;
@@ -642,7 +645,7 @@
         if (window.DashboardForms && window.DashboardForms.confirm) {
             const ok = await window.DashboardForms.confirm({
                 title: 'Supprimer ce bloc ?',
-                message: 'Le bloc sera retiré de la page après enregistrement.',
+                message: 'Le bloc sera retiré de la page.',
             });
             if (!ok) return;
         }
@@ -812,6 +815,16 @@
         syncActive();
     }
 
+    function bindBlockCardInputs(card, form) {
+        if (!card || card.dataset.blockInputsBound === '1') return;
+        card.dataset.blockInputsBound = '1';
+        card.addEventListener('input', () => formChange(card, false));
+        card.addEventListener('change', (e) => {
+            if (e.target && e.target.type === 'file') return;
+            formChange(card, false);
+        });
+    }
+
     function bindBlockCard(card, form, section) {
         if (!card || card.dataset.blockCardBound === '1') return;
         card.dataset.blockCardBound = '1';
@@ -864,6 +877,7 @@
         }
 
         bindSectionBgPicker(card, form);
+        bindBlockCardInputs(card, form);
     }
 
     function initBlockEditor(form) {
