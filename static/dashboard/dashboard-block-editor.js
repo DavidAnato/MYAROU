@@ -9,12 +9,37 @@
         return form.querySelector(`input[name="${prefix}-INITIAL_FORMS"]`);
     }
 
+    function rowHasFormPk(row, prefix) {
+        if (!row) return false;
+        const idInput = row.querySelector(`input[name^="${prefix}-"][name$="-id"]`);
+        if (idInput && String(idInput.value || '').trim() !== '') return true;
+        const pkAttr = prefix === 'blocks' ? 'data-block-pk' : 'data-image-pk';
+        const pk = row.getAttribute(pkAttr);
+        return !!(pk && String(pk).trim() !== '');
+    }
+
+    function orderFormsetRowsByPk(rows, prefix) {
+        const withPk = rows.filter((row) => rowHasFormPk(row, prefix));
+        const withoutPk = rows.filter((row) => !rowHasFormPk(row, prefix));
+        return [...withPk, ...withoutPk];
+    }
+
     function syncBlockIdsToInputs(form) {
         if (!form) return;
         form.querySelectorAll('[data-block-form]').forEach((card) => {
-            if (card.closest('[data-block-empty-template]') || card.classList.contains('hidden')) return;
+            if (card.closest('[data-block-empty-template]')) return;
             const pk = card.getAttribute('data-block-pk');
             const idInput = card.querySelector('input[name^="blocks-"][name$="-id"]');
+            if (pk && idInput) idInput.value = String(pk);
+        });
+    }
+
+    function syncImageIdsToInputs(form) {
+        if (!form) return;
+        form.querySelectorAll('[data-block-image-form]').forEach((row) => {
+            if (row.closest('[data-block-image-empty-template]')) return;
+            const pk = row.getAttribute('data-image-pk');
+            const idInput = row.querySelector('input[name^="images-"][name$="-id"]');
             if (pk && idInput) idInput.value = String(pk);
         });
     }
@@ -28,10 +53,7 @@
         const rows = [...list.querySelectorAll('[data-block-form]')].filter(
             (row) => !row.closest('[data-block-empty-template]'),
         );
-        const withPk = rows.filter((row) => {
-            const v = row.querySelector('input[name^="blocks-"][name$="-id"]')?.value;
-            return v && String(v).trim() !== '';
-        });
+        const withPk = rows.filter((row) => rowHasFormPk(row, 'blocks'));
         totalInput.value = String(rows.length);
         if (initialInput) initialInput.value = String(withPk.length);
     }
@@ -44,10 +66,7 @@
         const rows = [...form.querySelectorAll('[data-block-image-form]')].filter(
             (row) => !row.closest('[data-block-image-empty-template]'),
         );
-        const withPk = rows.filter((row) => {
-            const v = row.querySelector('input[name^="images-"][name$="-id"]')?.value;
-            return v && String(v).trim() !== '';
-        });
+        const withPk = rows.filter((row) => rowHasFormPk(row, 'images'));
         totalInput.value = String(rows.length);
         if (initialInput) initialInput.value = String(withPk.length);
     }
@@ -208,9 +227,8 @@
         const rows = [...list.querySelectorAll('[data-block-form]')].filter(
             (row) => !row.closest('[data-block-empty-template]'),
         );
-        const visible = rows.filter((r) => !r.classList.contains('hidden'));
-        const hidden = rows.filter((r) => r.classList.contains('hidden'));
-        const ordered = [...visible, ...hidden];
+        // Django exige un id sur les INITIAL_FORMS premiers formulaires : blocs avec PK d'abord.
+        const ordered = orderFormsetRowsByPk(rows, 'blocks');
         let changed = false;
 
         ordered.forEach((row, newIdx) => {
@@ -258,9 +276,7 @@
         const rows = [...form.querySelectorAll('[data-block-image-form]')].filter(
             (r) => !r.closest('[data-block-image-empty-template]'),
         );
-        const visible = rows.filter((r) => !r.classList.contains('hidden'));
-        const hidden = rows.filter((r) => r.classList.contains('hidden'));
-        const ordered = [...visible, ...hidden];
+        const ordered = orderFormsetRowsByPk(rows, 'images');
 
         ordered.forEach((row, newIdx) => {
             const currentIdx = getRowFormIndex(row, 'images');
@@ -898,6 +914,7 @@
             syncCKEditors();
             if (form) syncAllFaqEditors(form);
             syncBlockIdsToInputs(form);
+            syncImageIdsToInputs(form);
             sanitizeImageFormIds(form);
             pruneEmptyImageRows(form);
             const list = form.querySelector('[data-block-forms]');
@@ -909,11 +926,13 @@
             }
             renumberImageFormPrefixes(form);
             syncBlockIdsToInputs(form);
+            syncImageIdsToInputs(form);
             syncBlockFormsetManagement(form);
             syncImageFormsetManagement(form);
             syncCKEditors();
         },
         syncBlockIdsToInputs,
+        syncImageIdsToInputs,
         syncBlockFormsetManagement,
         syncImageFormsetManagement,
         applyBlockPkToCard,
