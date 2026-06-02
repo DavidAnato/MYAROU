@@ -1,0 +1,33 @@
+<div class="builder-field md:col-span-2" x-show="blockType !== 'hero'" x-cloak data-section-bg-picker>
+    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Couleur de fond</label>
+    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Alternance automatique après le hero, ou choix manuel avec aperçu clair / sombre.</p>
+    <div class="hidden">{{ bf.section_background }}</div>
+    <div class="builder-bg-options" role="group" aria-label="Couleur de fond de la section">
+        <button type="button" class="builder-bg-option" data-section-bg-option="auto" title="Alternance automatique">
+            <span class="builder-bg-swatch builder-bg-swatch--auto" aria-hidden="true">
+                <span class="builder-bg-swatch__cell" style="background:#ffffff"></span>
+                <span class="builder-bg-swatch__cell" style="background:#f9fafb"></span>
+                <span class="builder-bg-swatch__cell" style="background:#121212"></span>
+                <span class="builder-bg-swatch__cell" style="background:#1a1a1a"></span>
+            </span>
+            <span class="builder-bg-option__label">Automatique</span>
+            <span class="builder-bg-option__hint">Selon la position</span>
+        </button>
+        <button type="button" class="builder-bg-option" data-section-bg-option="main" title="Fond principal">
+            <span class="builder-bg-swatch" aria-hidden="true">
+                <span class="builder-bg-swatch__half builder-bg-swatch__half--light" style="background:#ffffff"></span>
+                <span class="builder-bg-swatch__half builder-bg-swatch__half--dark" style="background:#121212"></span>
+            </span>
+            <span class="builder-bg-option__label">Principal</span>
+            <span class="builder-bg-option__hint">Clair · Sombre</span>
+        </button>
+        <button type="button" class="builder-bg-option" data-section-bg-option="alt" title="Fond alternatif">
+            <span class="builder-bg-swatch" aria-hidden="true">
+                <span class="builder-bg-swatch__half builder-bg-swatch__half--light" style="background:#f9fafb"></span>
+                <span class="builder-bg-swatch__half builder-bg-swatch__half--dark" style="background:#1a1a1a"></span>
+            </span>
+            <span class="builder-bg-option__label">Alternatif</span>
+            <span class="builder-bg-option__hint">Clair · Sombre</span>
+        </button>
+    </div>
+</div>

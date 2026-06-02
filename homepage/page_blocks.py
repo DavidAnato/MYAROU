@@ -88,10 +88,23 @@ SECTION_BG_CLASSES = {
 }
 
 SECTION_BACKGROUND_CHOICES = [
-    ('inherit', 'Comme le bloc précédent'),
-    ('main', 'Fond principal (blanc / sombre)'),
-    ('alt', 'Fond alternatif (gris)'),
+    ('auto', 'Automatique'),
+    ('main', 'Fond principal'),
+    ('alt', 'Fond alternatif'),
 ]
+
+SECTION_BG_SWATCHES = {
+    'main': {'label': 'Principal', 'light': '#ffffff', 'dark': '#121212'},
+    'alt': {'label': 'Alternatif', 'light': '#f9fafb', 'dark': '#1a1a1a'},
+}
+
+
+def normalize_section_background(value):
+    if not value or value == 'inherit':
+        return 'auto'
+    if value in (SECTION_BG_MAIN, SECTION_BG_ALT, 'auto'):
+        return value
+    return 'auto'
 
 
 def section_bg_class(tone):
@@ -103,13 +116,12 @@ def section_bg_class(tone):
 
 def compute_section_backgrounds(blocks):
     """
-    Calcule le fond de chaque bloc visible selon sa position.
-    - Après un hero : alternance main → alt → main…
-    - Espacement : couleur du bloc précédent par défaut (config.background)
+    Calcule le fond de chaque bloc selon sa position.
+    - Après un hero : alternance main → alt → main… (tous types de blocs)
+    - config.background = main|alt force la couleur ; auto = alternance
     """
     result = {}
     tone_index = 0
-    last_effective = SECTION_BG_MAIN
 
     for block in blocks:
         pk = block.pk
@@ -119,25 +131,15 @@ def compute_section_backgrounds(blocks):
         if block.block_type == 'hero':
             result[pk] = None
             tone_index = 0
-            last_effective = SECTION_BG_MAIN
             continue
 
-        if block.block_type == 'spacer':
-            bg = (block.config or {}).get('background', 'inherit')
-            if bg == SECTION_BG_MAIN:
-                tone = SECTION_BG_MAIN
-            elif bg == SECTION_BG_ALT:
-                tone = SECTION_BG_ALT
-            else:
-                tone = last_effective
-            result[pk] = tone
-            last_effective = tone
-            continue
-
-        tone = SECTION_BG_MAIN if tone_index % 2 == 0 else SECTION_BG_ALT
+        override = normalize_section_background((block.config or {}).get('background', 'auto'))
+        if override in (SECTION_BG_MAIN, SECTION_BG_ALT):
+            tone = override
+        else:
+            tone = SECTION_BG_MAIN if tone_index % 2 == 0 else SECTION_BG_ALT
         tone_index += 1
         result[pk] = tone
-        last_effective = tone
 
     return result
 

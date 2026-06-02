@@ -152,11 +152,7 @@
                 {{ bf.layout }}
             </div>
 
-            <div class="builder-field md:col-span-2" x-show="showSpacer()" x-cloak>
-                <label>Couleur de fond</label>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Par défaut, reprend la couleur du bloc précédent pour une transition fluide.</p>
-                {{ bf.section_background }}
-            </div>
+            {% include 'dashboard/includes/block_section_background_picker.html' with bf=bf %}
         </div>
 
         <div x-show="showGallery()" x-cloak class="space-y-3">

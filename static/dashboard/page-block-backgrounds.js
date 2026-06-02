@@ -3,11 +3,18 @@
 
     const SECTION_BG_MAIN = 'main';
     const SECTION_BG_ALT = 'alt';
+    const SECTION_BG_AUTO = 'auto';
 
     const SECTION_BG_CLASSES = {
         main: 'bg-white dark:bg-[#121212]',
         alt: 'bg-gray-50 dark:bg-[#1a1a1a]',
     };
+
+    function normalizeSectionBackground(value) {
+        if (!value || value === 'inherit') return SECTION_BG_AUTO;
+        if (value === SECTION_BG_MAIN || value === SECTION_BG_ALT || value === SECTION_BG_AUTO) return value;
+        return SECTION_BG_AUTO;
+    }
 
     function sectionBgClass(tone) {
         if (!tone) return '';
@@ -17,7 +24,6 @@
     function computeSectionBackgrounds(blocks) {
         const result = new Map();
         let toneIndex = 0;
-        let lastEffective = SECTION_BG_MAIN;
 
         (blocks || []).forEach((block, idx) => {
             const key = block.id || block.pk || `idx-${idx}`;
@@ -26,27 +32,22 @@
             if (type === 'hero') {
                 result.set(key, null);
                 toneIndex = 0;
-                lastEffective = SECTION_BG_MAIN;
+                block.section_bg = null;
+                block.section_bg_class = '';
                 return;
             }
 
-            if (type === 'spacer') {
-                const bg = block.section_background || block.background || 'inherit';
-                let tone;
-                if (bg === SECTION_BG_MAIN) tone = SECTION_BG_MAIN;
-                else if (bg === SECTION_BG_ALT) tone = SECTION_BG_ALT;
-                else tone = lastEffective;
-                result.set(key, tone);
-                lastEffective = tone;
-                block.section_bg = tone;
-                block.section_bg_class = sectionBgClass(tone);
-                return;
+            const override = normalizeSectionBackground(
+                block.section_background || block.background,
+            );
+            let tone;
+            if (override === SECTION_BG_MAIN || override === SECTION_BG_ALT) {
+                tone = override;
+            } else {
+                tone = toneIndex % 2 === 0 ? SECTION_BG_MAIN : SECTION_BG_ALT;
             }
-
-            const tone = toneIndex % 2 === 0 ? SECTION_BG_MAIN : SECTION_BG_ALT;
             toneIndex += 1;
             result.set(key, tone);
-            lastEffective = tone;
             block.section_bg = tone;
             block.section_bg_class = sectionBgClass(tone);
         });
@@ -57,7 +58,9 @@
     window.PageBlockBackgrounds = {
         SECTION_BG_MAIN,
         SECTION_BG_ALT,
+        SECTION_BG_AUTO,
         SECTION_BG_CLASSES,
+        normalizeSectionBackground,
         sectionBgClass,
         computeSectionBackgrounds,
     };

@@ -787,6 +787,31 @@
         builderNotify(form, false);
     }
 
+    function bindSectionBgPicker(card, form) {
+        const picker = card.querySelector('[data-section-bg-picker]');
+        if (!picker || picker.dataset.sectionBgBound === '1') return;
+        const select = picker.querySelector('[name$="-section_background"]');
+        const options = picker.querySelectorAll('[data-section-bg-option]');
+        if (!select || !options.length) return;
+        picker.dataset.sectionBgBound = '1';
+
+        const syncActive = () => {
+            const value = select.value || 'auto';
+            options.forEach((btn) => {
+                btn.classList.toggle('is-active', btn.getAttribute('data-section-bg-option') === value);
+            });
+        };
+
+        options.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                select.value = btn.getAttribute('data-section-bg-option') || 'auto';
+                syncActive();
+                formChange(card, false);
+            });
+        });
+        syncActive();
+    }
+
     function bindBlockCard(card, form, section) {
         if (!card || card.dataset.blockCardBound === '1') return;
         card.dataset.blockCardBound = '1';
@@ -838,6 +863,7 @@
             }
         }
 
+        bindSectionBgPicker(card, form);
     }
 
     function initBlockEditor(form) {
