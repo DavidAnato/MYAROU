@@ -620,11 +620,14 @@
         }
 
         if (device === 'tablet') {
-            deviceFrame.style.width = '100%';
-            deviceFrame.style.height = '100%';
+            const w = 768;
+            const h = 1024;
+            deviceFrame.style.width = w + 'px';
+            deviceFrame.style.height = h + 'px';
             deviceFrame.style.transformOrigin = 'center center';
-            deviceFrame.style.transform = '';
-            applyIframeZoom(tabletPreviewZoom);
+            const scale = Math.min(previewArea.clientWidth / w, previewArea.clientHeight / h, 1);
+            deviceFrame.style.transform = 'scale(' + (scale || 1) + ')';
+            applyIframeZoom(1);
             return;
         }
 

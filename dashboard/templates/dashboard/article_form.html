@@ -213,7 +213,7 @@
 <div class="mx-auto" x-data="{ previewLocale: 'fr' }">
     <div id="dashboardPreviewSplit" class="flex flex-col xl:flex-row gap-6 xl:gap-0 items-stretch xl:min-h-[calc(100vh-7rem)]">
     <div data-split-form class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl p-8 transition-colors w-full xl:w-[var(--split-form-width,420px)] xl:shrink-0 max-h-[calc(100vh-7rem)] xl:max-h-none overflow-y-auto">
-        <form method="post" enctype="multipart/form-data" id="articleForm" data-preview-type="article">
+        <form method="post" enctype="multipart/form-data" id="articleForm" data-preview-type="article" data-preview-locale="fr">
             {% csrf_token %}
             
             {% if form.non_field_errors %}
@@ -226,10 +226,10 @@
                 <span class="text-sm font-semibold text-gray-600 dark:text-gray-300">Langue :</span>
                 <button type="button" class="px-3 py-1.5 rounded-lg text-sm font-bold transition-colors"
                         :class="previewLocale === 'fr' ? 'bg-emerald-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'"
-                        @click="previewLocale = 'fr'">FR</button>
+                        @click="previewLocale = 'fr'; document.getElementById('articleForm').dataset.previewLocale = 'fr'; triggerArticlePreview()">FR</button>
                 <button type="button" class="px-3 py-1.5 rounded-lg text-sm font-bold transition-colors"
                         :class="previewLocale === 'en' ? 'bg-emerald-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'"
-                        @click="previewLocale = 'en'">EN</button>
+                        @click="previewLocale = 'en'; document.getElementById('articleForm').dataset.previewLocale = 'en'; triggerArticlePreview()">EN</button>
             </div>
 
             <!-- Informations principales -->

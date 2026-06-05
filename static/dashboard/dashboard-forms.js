@@ -483,24 +483,37 @@
             iframe.style.height = `calc((100% - 2.5rem) / ${s})`;
         };
 
+        const previewRoot = deviceFrame.closest('.shadow-xl.overflow-hidden') || document;
+        const desktopPreviewZoom = 0.5;
+        const tabletPreviewZoom = 1;
+        const deviceSizes = {
+            mobile: { w: 390, h: 844 },
+            tablet: { w: 768, h: 1024 },
+        };
+
         const applyDeviceLayout = () => {
-            if (currentDevice === 'mobile') {
-                const w = 390, h = 844;
+            deviceFrame.style.transformOrigin = 'center center';
+
+            if (currentDevice === 'mobile' || currentDevice === 'tablet') {
+                const { w, h } = deviceSizes[currentDevice];
                 deviceFrame.style.width = w + 'px';
                 deviceFrame.style.height = h + 'px';
                 const scale = Math.min(previewArea.clientWidth / w, previewArea.clientHeight / h, 1);
                 deviceFrame.style.transform = `scale(${scale || 1})`;
-                applyIframeZoom(1);
+                applyIframeZoom(tabletPreviewZoom);
                 return;
             }
-            deviceFrame.style.width = deviceFrame.style.height = deviceFrame.style.transform = '';
-            applyIframeZoom(currentDevice === 'tablet' ? 0.85 : 0.5);
+
+            deviceFrame.style.width = '100%';
+            deviceFrame.style.height = '100%';
+            deviceFrame.style.transform = '';
+            applyIframeZoom(desktopPreviewZoom);
         };
 
-        document.querySelectorAll('.device-btn').forEach((btn) => {
+        previewRoot.querySelectorAll('.device-btn').forEach((btn) => {
             btn.addEventListener('click', () => {
                 currentDevice = btn.getAttribute('data-device') || 'desktop';
-                document.querySelectorAll('.device-btn').forEach((b) => {
+                previewRoot.querySelectorAll('.device-btn').forEach((b) => {
                     const active = b === btn;
                     b.classList.toggle('bg-emerald-600', active);
                     b.classList.toggle('text-white', active);
@@ -597,6 +610,7 @@
                 payload.category_name = categoryName;
                 payload.category_name_en = categoryNameEn;
                 payload.image_url = getArticleImageUrl();
+                payload.preview_locale = form.dataset.previewLocale || 'fr';
             } else if (previewType === 'custom-page') {
                 payload.page_title = form.querySelector('[name="title"]')?.value || '';
                 payload.page_title_en = form.querySelector('[name="title_en"]')?.value || '';
@@ -790,7 +804,8 @@
     }
 
     function initForm(form) {
-        if (!form) return;
+        if (!form || form.dataset.dashboardPreviewInit === '1') return;
+        form.dataset.dashboardPreviewInit = '1';
         const previewType = form.getAttribute('data-preview-type') || 'page';
         const iframe = document.getElementById('pagePreviewIframe')
             || document.getElementById('homePreviewIframe')
@@ -821,7 +836,9 @@
     document.addEventListener('DOMContentLoaded', () => {
         const pageForm = document.getElementById('pageSettingsForm');
         const homeForm = document.getElementById('homeSettingsForm');
+        const articleForm = document.getElementById('articleForm');
         if (pageForm && pageForm.getAttribute('data-preview-type') !== 'custom-page') initForm(pageForm);
+        if (articleForm) initForm(articleForm);
         if (homeForm) bindDeleteButtons(homeForm, 'home');
     });
 })(window);

@@ -280,10 +280,12 @@
     };
 
     const applyArticlePreview = (payload) => {
-        const title = pickLocale(payload.title, payload.title_en);
-        const excerpt = pickLocale(payload.excerpt, payload.excerpt_en);
-        const content = pickLocale(payload.content, payload.content_en);
-        const category = pickLocale(payload.category_name, payload.category_name_en);
+        const enMode = (payload.preview_locale || '').toLowerCase().startsWith('en');
+        const pickArticle = (fr, en) => (enMode ? (en || fr || '') : (fr || en || ''));
+        const title = pickArticle(payload.title, payload.title_en);
+        const excerpt = pickArticle(payload.excerpt, payload.excerpt_en);
+        const content = pickArticle(payload.content, payload.content_en);
+        const category = pickArticle(payload.category_name, payload.category_name_en);
         applyText('article_title', title);
         applyText('article_excerpt', excerpt);
         applyHtml('article_content', content);
