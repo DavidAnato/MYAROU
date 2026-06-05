@@ -7,14 +7,23 @@ from homepage.models import HomeSettings, HomeGalleryImage
 class CategorySelectWithEn(forms.Select):
     """Select catégorie avec data-name-en pour l'aperçu live."""
 
+    @staticmethod
+    def _choice_pk(value):
+        if value in (None, ''):
+            return None
+        if hasattr(value, 'value'):
+            return value.value
+        return value
+
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
-        if value:
+        pk = self._choice_pk(value)
+        if pk is not None:
             try:
-                cat = Category.objects.get(pk=value)
+                cat = Category.objects.get(pk=pk)
                 option.setdefault('attrs', {})
                 option['attrs']['data-name-en'] = cat.get_name('en')
-            except Category.DoesNotExist:
+            except (Category.DoesNotExist, TypeError, ValueError):
                 pass
         return option
 
@@ -24,10 +33,8 @@ class ArticleForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['category'].widget = CategorySelectWithEn(
-            attrs=self.fields['category'].widget.attrs,
-            choices=self.fields['category'].choices,
-        )
+        category_field = self.fields['category']
+        category_field.widget = CategorySelectWithEn(attrs=category_field.widget.attrs)
     
     class Meta:
         model = Article
