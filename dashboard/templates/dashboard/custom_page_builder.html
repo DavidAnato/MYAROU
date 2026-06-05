@@ -142,7 +142,6 @@ window.BUILDER_LAYOUT_DEFAULTS = {{ block_layout_defaults_json|safe }};
 <script src="{% static 'dashboard/dashboard-builder-autosave.js' %}"></script>
 {{ form.media }}
 {% if block_formset %}{{ block_formset.media }}{% endif %}
-<script src="{% static 'dashboard/dashboard-ckeditor-fix.js' %}"></script>
 <script>
 function bootCustomPageBuilder() {
     var form = document.getElementById('pageSettingsForm');

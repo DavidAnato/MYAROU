@@ -87,8 +87,27 @@
         .fade-in {
             animation: fadeIn 0.5s ease-out;
         }
-        #cke_notifications_area_id_content {
+        /* Masquer toutes les alertes CKEditor (version non sécurisée, etc.) */
+        .cke_notifications_area,
+        .cke_notification,
+        .cke_notification_warning,
+        .cke_notification_info,
+        .cke_notification_success,
+        .cke_notification_error,
+        [id^="cke_notifications_area_"] {
             display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            left: -9999px !important;
+            width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
         }
                 
 </style>
@@ -347,6 +366,7 @@
     </script>
     <script src="{% static 'dashboard/dashboard-forms.js' %}"></script>
     <script src="{% static 'dashboard/dashboard-preview-resize.js' %}"></script>
+    <script src="{% static 'dashboard/dashboard-ckeditor-fix.js' %}"></script>
     {% endif %}
     {% block extra_js %}{% endblock %}
 </body>

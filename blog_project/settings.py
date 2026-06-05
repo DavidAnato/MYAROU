@@ -171,6 +171,7 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'full',
         'height': 400,
         'width': '100%',
+        'versionCheck': False,
         'extraPlugins': ','.join([
             'uploadimage',
             'image2',
@@ -178,6 +179,7 @@ CKEDITOR_CONFIGS = {
         ]),
     },
     'awesome_ckeditor': {
+        'versionCheck': False,
         'toolbar': 'Custom',
         'toolbar_Custom': [
             ['Bold', 'Italic', 'Underline'],
