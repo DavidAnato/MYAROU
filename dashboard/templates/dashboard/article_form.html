@@ -211,9 +211,9 @@
 
 {% block content %}
 <div class="mx-auto" x-data="{ previewLocale: 'fr' }">
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-    <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl p-8 transition-colors">
-        <form method="post" enctype="multipart/form-data" id="articleForm">
+    <div id="dashboardPreviewSplit" class="flex flex-col xl:flex-row gap-6 xl:gap-0 items-stretch xl:min-h-[calc(100vh-7rem)]">
+    <div data-split-form class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl p-8 transition-colors w-full xl:w-[var(--split-form-width,420px)] xl:shrink-0 max-h-[calc(100vh-7rem)] xl:max-h-none overflow-y-auto">
+        <form method="post" enctype="multipart/form-data" id="articleForm" data-preview-type="article">
             {% csrf_token %}
             
             {% if form.non_field_errors %}
@@ -497,19 +497,17 @@
         </form>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-2xl shadow-xl p-6 xl:sticky xl:top-24">
-        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Aperçu article</h3>
-        <div class="rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white p-8 text-center">
-                <h4 class="text-2xl font-extrabold" id="articlePreviewTitle"></h4>
-                <p class="text-white/90 mt-3 text-sm" id="articlePreviewExcerpt"></p>
-            </div>
-            <div class="p-6 bg-white dark:bg-gray-900">
-                <div class="prose prose-sm dark:prose-invert max-w-none" id="articlePreviewContent"></div>
-            </div>
-        </div>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">L’aperçu suit l’onglet FR/EN. Si l’anglais est vide, le français est affiché.</p>
+    {% if preview_url %}
+    <div data-split-handle
+         class="hidden xl:flex w-3 shrink-0 cursor-col-resize items-center justify-center self-stretch mx-1 hover:bg-emerald-500/10 rounded-lg transition-colors"
+         title="Glisser pour redimensionner · double-clic = taille par défaut"
+         aria-label="Redimensionner l'aperçu">
+        <div class="w-1 h-16 rounded-full bg-gray-300 dark:bg-gray-600 hover:bg-emerald-500 transition-colors"></div>
     </div>
+    <div data-split-preview class="w-full xl:flex-1 xl:min-w-[300px] min-h-[420px] xl:min-h-0 xl:h-[calc(100vh-7rem)] xl:sticky xl:top-24">
+        {% include 'dashboard/includes/preview_panel.html' with iframe_id='articlePreviewIframe' device_frame_id='articleDeviceFrame' %}
+    </div>
+    {% endif %}
     </div>
 </div>
 
@@ -628,6 +626,7 @@ function handleFiles(files) {
                 imagePreview.classList.remove('hidden');
                 document.getElementById('currentImagePreview')?.classList.add('hidden');
                 dropZone.classList.add('hidden');
+                triggerArticlePreview();
             }
             reader.readAsDataURL(file);
         }
@@ -639,6 +638,7 @@ function removeImage() {
     imagePreview.classList.add('hidden');
     dropZone.classList.remove('hidden');
     document.getElementById('currentImagePreview')?.classList.remove('hidden');
+    triggerArticlePreview();
 }
 
 // Gestion des tags
@@ -774,8 +774,12 @@ categoryForm.addEventListener('submit', async (e) => {
             // Ajouter la nouvelle catégorie au select
             const select = document.getElementById('id_category');
             const option = new Option(data.category.name, data.category.id);
+            if (data.category.name_en) {
+                option.dataset.nameEn = data.category.name_en;
+            }
             select.add(option);
             select.value = data.category.id;
+            triggerArticlePreview();
             
             closeCategoryModal();
             
@@ -859,63 +863,16 @@ function removeVideo() {
     document.getElementById('currentVideoPreview')?.classList.remove('hidden');
 }
 
-(function initArticlePreview() {
-    const titleFr = document.getElementById('id_title');
-    const titleEn = document.getElementById('id_title_en');
-    const excerptFr = document.getElementById('id_excerpt');
-    const excerptEn = document.getElementById('id_excerpt_en');
-    const contentFr = document.getElementById('id_content');
-    const contentEn = document.getElementById('id_content_en');
-    const previewTitle = document.getElementById('articlePreviewTitle');
-    const previewExcerpt = document.getElementById('articlePreviewExcerpt');
-    const previewContent = document.getElementById('articlePreviewContent');
-    if (!previewTitle || !previewContent) return;
-
-    const pick = (fr, en, locale) => {
-        const frVal = (fr || '').trim();
-        const enVal = (en || '').trim();
-        if (locale === 'en') return enVal || frVal;
-        return frVal || enVal;
-    };
-
-    const getEditorHtml = (textarea) => {
-        if (!textarea) return '';
-        if (window.CKEDITOR && textarea.id && CKEDITOR.instances[textarea.id]) {
-            return CKEDITOR.instances[textarea.id].getData();
-        }
-        return textarea.value || '';
-    };
-
-    const updatePreview = () => {
-        const root = document.querySelector('[x-data]');
-        let locale = 'fr';
-        if (root && window.Alpine && typeof Alpine.$data === 'function') {
-            try { locale = Alpine.$data(root).previewLocale || 'fr'; } catch (e) { /* ignore */ }
-        }
-        const title = pick(titleFr?.value, titleEn?.value, locale);
-        const excerpt = pick(excerptFr?.value, excerptEn?.value, locale);
-        const content = pick(getEditorHtml(contentFr), getEditorHtml(contentEn), locale);
-        previewTitle.textContent = title || 'Titre de l\'article';
-        previewExcerpt.textContent = excerpt;
-        previewExcerpt.classList.toggle('hidden', !excerpt);
-        previewContent.innerHTML = content || '<p class="text-gray-400">Contenu de l\'article…</p>';
-    };
-
-    [titleFr, titleEn, excerptFr, excerptEn, contentFr, contentEn].forEach((el) => {
-        if (el) el.addEventListener('input', updatePreview);
-    });
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('[x-data] button')) {
-            setTimeout(updatePreview, 0);
-        }
-    });
-    if (window.CKEDITOR) {
-        CKEDITOR.on('instanceReady', (ev) => {
-            ev.editor.on('change', updatePreview);
-            ev.editor.on('keyup', updatePreview);
-        });
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('articleForm');
+    if (form && window.DashboardForms) {
+        window.DashboardForms.init(form);
     }
-    updatePreview();
-})();
+});
+
+function triggerArticlePreview() {
+    const form = document.getElementById('articleForm');
+    if (form) form.dispatchEvent(new Event('change', { bubbles: true }));
+}
 </script>
 {% endblock %}

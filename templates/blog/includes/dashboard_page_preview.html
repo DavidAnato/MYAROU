@@ -279,6 +279,20 @@
         }
     };
 
+    const applyArticlePreview = (payload) => {
+        const title = pickLocale(payload.title, payload.title_en);
+        const excerpt = pickLocale(payload.excerpt, payload.excerpt_en);
+        const content = pickLocale(payload.content, payload.content_en);
+        const category = pickLocale(payload.category_name, payload.category_name_en);
+        applyText('article_title', title);
+        applyText('article_excerpt', excerpt);
+        applyHtml('article_content', content);
+        applyText('article_category', category);
+        if (payload.image_url) {
+            applySrc('article_image', payload.image_url);
+        }
+    };
+
     window.addEventListener('message', (event) => {
         if (!event || !event.data) return;
         if (event.data.type === 'page-preview-request') {
@@ -287,6 +301,10 @@
         }
         if (event.data.type === 'custom-page-preview') {
             applyCustomPagePreview(event.data.payload || {});
+            return;
+        }
+        if (event.data.type === 'article-preview') {
+            applyArticlePreview(event.data.payload || {});
             return;
         }
         if (event.data.type !== 'page-preview') return;

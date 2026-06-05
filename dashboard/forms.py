@@ -4,8 +4,30 @@ from django.forms import inlineformset_factory
 from homepage.models import HomeSettings, HomeGalleryImage
 
 
+class CategorySelectWithEn(forms.Select):
+    """Select catégorie avec data-name-en pour l'aperçu live."""
+
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+        if value:
+            try:
+                cat = Category.objects.get(pk=value)
+                option.setdefault('attrs', {})
+                option['attrs']['data-name-en'] = cat.get_name('en')
+            except Category.DoesNotExist:
+                pass
+        return option
+
+
 class ArticleForm(forms.ModelForm):
     """Formulaire pour créer/modifier un article"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['category'].widget = CategorySelectWithEn(
+            attrs=self.fields['category'].widget.attrs,
+            choices=self.fields['category'].choices,
+        )
     
     class Meta:
         model = Article

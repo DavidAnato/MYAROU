@@ -162,6 +162,7 @@
                             </div>
                             <img src="{{ article.image.url }}" 
                                  alt="{{ article.title }}" 
+                                 data-preview-src="article_image"
                                  class="w-full h-full object-cover aspect-video group-hover:scale-105 transition-transform duration-700">
                         </div>
                     </div>
@@ -212,6 +213,7 @@
                         </div>
                         <img src="{{ article.image.url }}" 
                              alt="{{ article.title }}" 
+                             data-preview-src="article_image"
                              class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700">
                     </div>
                 </div>
@@ -612,6 +614,10 @@
 </style>
 
 <!-- Copy Link Script -->
+{% if request.GET.dashboard_preview %}
+<img src="" alt="" class="hidden" data-preview-src="article_image" aria-hidden="true">
+{% include 'blog/includes/dashboard_page_preview.html' %}
+{% endif %}
 <script>
 function copyToClipboard() {
     const url = window.location.href;

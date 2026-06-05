@@ -1,5 +1,6 @@
 """Liens footer / navigation par défaut (équivalent à l’ancien footer figé)."""
 
+from .link_i18n_defaults import guess_label_en
 from .models_site import SiteLink
 
 DEFAULT_NAV_LINKS = [
@@ -46,3 +47,20 @@ def ensure_default_site_links():
                 is_active=True,
                 open_in_new_tab=False,
             )
+
+    sync_site_links_en_labels()
+
+
+def sync_site_links_en_labels():
+    """Remplit label_en manquant sur tous les liens (toutes catégories)."""
+    for link in SiteLink.objects.select_related('custom_page').all():
+        if link.label_en:
+            continue
+        guessed = guess_label_en(
+            link.label,
+            route_name=link.route_name,
+            custom_page=link.custom_page if link.custom_page_id else None,
+        )
+        if guessed:
+            link.label_en = guessed
+            link.save(update_fields=['label_en'])

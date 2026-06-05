@@ -53,6 +53,11 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        if self.name and not self.name_en:
+            from homepage.link_i18n_defaults import FR_TO_EN_LABELS
+            guessed = FR_TO_EN_LABELS.get(self.name.strip(), '')
+            if guessed:
+                self.name_en = guessed
         super().save(*args, **kwargs)
     
     def __str__(self):

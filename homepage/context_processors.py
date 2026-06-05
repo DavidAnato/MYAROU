@@ -1,6 +1,9 @@
 from django.db.models import Q
 
+from blog.category_i18n_defaults import sync_categories_en_names
+
 from .custom_page_nav import sync_all_custom_pages_footer_nav
+from .site_links_defaults import sync_site_links_en_labels
 from .models_site import SiteLink, SiteSettings
 from .page_nav import build_main_nav_items
 from .page_visibility import is_route_publicly_visible
@@ -26,6 +29,8 @@ def _active_links(category):
 
 def site_globals(request):
     ensure_default_site_links()
+    sync_site_links_en_labels()
+    sync_categories_en_names()
     sync_all_custom_pages_footer_nav()
     site = SiteSettings.get_solo()
     language_code = getattr(request, 'LANGUAGE_CODE', 'fr')

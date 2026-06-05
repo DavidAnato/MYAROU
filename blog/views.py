@@ -91,6 +91,34 @@ def home(request):
 
 
 @xframe_options_sameorigin
+def article_dashboard_preview(request):
+    """Aperçu live article (dashboard) — brouillons et création."""
+    if not request.user.is_authenticated or not request.user.is_staff:
+        raise Http404
+    pk = request.GET.get('pk')
+    if pk:
+        article = get_object_or_404(Article, pk=pk)
+    else:
+        article = Article(
+            title="Titre de l'article",
+            title_en='Article title',
+            excerpt="Court extrait de l'article…",
+            excerpt_en='Short article excerpt…',
+            content='<p>Contenu de l\'article…</p>',
+            content_en='<p>Article content…</p>',
+            author='Auteur',
+            status='draft',
+        )
+    related_qs = Article.objects.filter(status='published')
+    if article.pk:
+        related_qs = related_qs.exclude(pk=article.pk)
+    return render(request, 'blog/article_detail.html', {
+        'article': article,
+        'related_articles': related_qs[:3],
+    })
+
+
+@xframe_options_sameorigin
 def home_dashboard_preview(request):
     recent_articles = Article.objects.filter(status='published').order_by('-published_at')[:3]
     categories = Category.objects.all()[:6]

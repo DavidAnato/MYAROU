@@ -160,6 +160,18 @@ class SiteLink(models.Model):
     def __str__(self):
         return self.label or self.get_platform_display() or self.url or self.route_name
 
+    def save(self, *args, **kwargs):
+        if not self.label_en:
+            from .link_i18n_defaults import guess_label_en
+            guessed = guess_label_en(
+                self.label,
+                route_name=self.route_name,
+                custom_page=self.custom_page if self.custom_page_id else None,
+            )
+            if guessed:
+                self.label_en = guessed
+        super().save(*args, **kwargs)
+
     def get_href(self):
         if self.custom_page_id:
             return self.custom_page.get_href()

@@ -175,6 +175,13 @@ def article_detail(request, pk):
     return render(request, 'dashboard/article_detail.html', context)
 
 
+def _article_preview_url(article=None):
+    url = reverse('blog:article_dashboard_preview') + '?dashboard_preview=1'
+    if article and article.pk:
+        url += f'&pk={article.pk}'
+    return url
+
+
 @login_required(login_url='dashboard:login')
 @user_passes_test(is_staff, login_url='dashboard:login')
 def article_create(request):
@@ -187,7 +194,12 @@ def article_create(request):
     else:
         form = ArticleForm()
     
-    return render(request, 'dashboard/article_form.html', {'form': form, 'action': 'Créer'})
+    preview_url = _article_preview_url()
+    return render(request, 'dashboard/article_form.html', {
+        'form': form,
+        'action': 'Créer',
+        'preview_url': preview_url,
+    })
 
 
 @login_required(login_url='dashboard:login')
@@ -204,7 +216,13 @@ def article_edit(request, pk):
     else:
         form = ArticleForm(instance=article)
     
-    return render(request, 'dashboard/article_form.html', {'form': form, 'action': 'Modifier', 'article': article})
+    preview_url = _article_preview_url(article)
+    return render(request, 'dashboard/article_form.html', {
+        'form': form,
+        'action': 'Modifier',
+        'article': article,
+        'preview_url': preview_url,
+    })
 
 
 @login_required(login_url='dashboard:login')
@@ -919,6 +937,7 @@ def category_create_ajax(request):
             'category': {
                 'id': category.id,
                 'name': category.name,
+                'name_en': category.get_name('en'),
                 'slug': category.slug
             }
         })

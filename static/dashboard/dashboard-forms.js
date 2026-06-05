@@ -465,7 +465,11 @@
         if (!form || !iframe || !deviceFrame) return;
         const previewArea = deviceFrame.parentElement;
         let currentDevice = 'desktop';
-        const msgType = previewType === 'home' ? 'home-preview' : (previewType === 'custom-page' ? 'custom-page-preview' : 'page-preview');
+        const msgType = previewType === 'home'
+            ? 'home-preview'
+            : (previewType === 'custom-page'
+                ? 'custom-page-preview'
+                : (previewType === 'article' ? 'article-preview' : 'page-preview'));
 
         const applyIframeZoom = (scale) => {
             const s = Math.max(0.2, Math.min(scale, 1));
@@ -559,7 +563,41 @@
                 if (el.type === 'checkbox') return;
                 payload[el.name] = el.value;
             });
-            if (previewType === 'custom-page') {
+            if (previewType === 'article') {
+                const getEditorHtml = (textarea) => {
+                    if (!textarea) return '';
+                    if (window.CKEDITOR && textarea.id && window.CKEDITOR.instances[textarea.id]) {
+                        return window.CKEDITOR.instances[textarea.id].getData();
+                    }
+                    return textarea.value || '';
+                };
+                const getArticleImageUrl = () => {
+                    const preview = document.getElementById('previewImg');
+                    if (preview && preview.src && !preview.classList.contains('hidden')) {
+                        return toAbsoluteMediaUrl(preview.src);
+                    }
+                    const current = document.querySelector('#currentImagePreview img');
+                    if (current && current.src) return toAbsoluteMediaUrl(current.src);
+                    return '';
+                };
+                const categorySelect = form.querySelector('#id_category');
+                let categoryName = '';
+                let categoryNameEn = '';
+                if (categorySelect && categorySelect.selectedOptions.length) {
+                    const opt = categorySelect.selectedOptions[0];
+                    categoryName = opt.text.trim();
+                    categoryNameEn = opt.dataset.nameEn || categoryName;
+                }
+                payload.title = form.querySelector('#id_title')?.value || '';
+                payload.title_en = form.querySelector('#id_title_en')?.value || '';
+                payload.excerpt = form.querySelector('#id_excerpt')?.value || '';
+                payload.excerpt_en = form.querySelector('#id_excerpt_en')?.value || '';
+                payload.content = getEditorHtml(form.querySelector('#id_content'));
+                payload.content_en = getEditorHtml(form.querySelector('#id_content_en'));
+                payload.category_name = categoryName;
+                payload.category_name_en = categoryNameEn;
+                payload.image_url = getArticleImageUrl();
+            } else if (previewType === 'custom-page') {
                 payload.page_title = form.querySelector('[name="title"]')?.value || '';
                 payload.page_title_en = form.querySelector('[name="title_en"]')?.value || '';
                 payload.blocks = [];
@@ -704,6 +742,15 @@
             }, delay);
         });
         schedulePreview();
+
+        if (previewType === 'article' && window.CKEDITOR) {
+            const hookEditor = (editor) => {
+                editor.on('change', schedulePreview);
+                editor.on('keyup', schedulePreview);
+            };
+            CKEDITOR.on('instanceReady', (ev) => hookEditor(ev.editor));
+            Object.values(CKEDITOR.instances).forEach(hookEditor);
+        }
     }
 
     function initSiteLinksForm(form) {
@@ -745,8 +792,12 @@
     function initForm(form) {
         if (!form) return;
         const previewType = form.getAttribute('data-preview-type') || 'page';
-        const iframe = document.getElementById('pagePreviewIframe') || document.getElementById('homePreviewIframe');
-        const deviceFrame = document.getElementById('pageDeviceFrame') || document.getElementById('deviceFrame');
+        const iframe = document.getElementById('pagePreviewIframe')
+            || document.getElementById('homePreviewIframe')
+            || document.getElementById('articlePreviewIframe');
+        const deviceFrame = document.getElementById('pageDeviceFrame')
+            || document.getElementById('deviceFrame')
+            || document.getElementById('articleDeviceFrame');
         initMediaDropzones(form);
         const gallery = initGallerySection(form);
         bindDeleteButtons(form, gallery && gallery.model);
