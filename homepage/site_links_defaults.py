@@ -3,17 +3,17 @@
 from .models_site import SiteLink
 
 DEFAULT_NAV_LINKS = [
-    {'route_name': 'blog:home', 'label': 'Accueil', 'order': 0},
-    {'route_name': 'blog:about', 'label': 'À propos', 'order': 10},
-    {'route_name': 'blog:article_list', 'label': 'Blog', 'order': 20},
-    {'route_name': 'blog:gallery', 'label': 'Galerie', 'order': 30},
-    {'route_name': 'blog:contact', 'label': 'Contact', 'order': 40},
+    {'route_name': 'blog:home', 'label': 'Accueil', 'label_en': 'Home', 'order': 0},
+    {'route_name': 'blog:about', 'label': 'À propos', 'label_en': 'About', 'order': 10},
+    {'route_name': 'blog:article_list', 'label': 'Blog', 'label_en': 'Blog', 'order': 20},
+    {'route_name': 'blog:gallery', 'label': 'Galerie', 'label_en': 'Gallery', 'order': 30},
+    {'route_name': 'blog:contact', 'label': 'Contact', 'label_en': 'Contact', 'order': 40},
 ]
 
 DEFAULT_BARIKA_LINKS = [
-    {'route_name': 'blog:contact', 'label': 'Nos programmes', 'order': 0},
-    {'route_name': 'blog:contact', 'label': 'Soutiens', 'order': 10},
-    {'route_name': 'blog:contact', 'label': 'Devenir bénévole', 'order': 20},
+    {'route_name': 'blog:contact', 'label': 'Nos programmes', 'label_en': 'Our programs', 'order': 0},
+    {'route_name': 'blog:contact', 'label': 'Soutiens', 'label_en': 'Support', 'order': 10},
+    {'route_name': 'blog:contact', 'label': 'Devenir bénévole', 'label_en': 'Become a volunteer', 'order': 20},
 ]
 
 
@@ -25,6 +25,7 @@ def ensure_default_site_links():
                 category=SiteLink.CATEGORY_NAV,
                 platform='website',
                 label=item['label'],
+                label_en=item.get('label_en', ''),
                 route_name=item['route_name'],
                 url='',
                 order=item['order'],
@@ -38,6 +39,7 @@ def ensure_default_site_links():
                 category=SiteLink.CATEGORY_FOOTER,
                 platform='website',
                 label=item['label'],
+                label_en=item.get('label_en', ''),
                 route_name=item['route_name'],
                 url='',
                 order=item['order'],

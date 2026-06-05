@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% load static json_i18n %}
+{% load static json_i18n content_i18n %}
 
-{% block title %}{{ article.title }} - MYAROU{% endblock %}
+{% block title %}{% article_field article "title" %} - MYAROU{% endblock %}
 
 {% block hero %}
 <section class="relative bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 dark:from-emerald-950 dark:via-emerald-950 dark:to-emerald-950 text-white overflow-hidden">
@@ -21,11 +21,12 @@
     <div class="container mx-auto px-4 py-32 relative z-20">
         <div class="max-w-4xl mx-auto text-center space-y-6">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold">
-                {{ article.title }}
+                {% article_field article "title" %}
             </h1>
-            {% if article.excerpt %}
+            {% article_field article "excerpt" as article_excerpt %}
+            {% if article_excerpt %}
             <p class="text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-                {{ article.excerpt }}
+                {{ article_excerpt }}
             </p>
             {% endif %}
         </div>
@@ -58,13 +59,13 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
             <a href="{% url 'blog:category_detail' article.category.slug %}" class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium">
-                {{ article.category.name }}
+                {% category_field article.category "name" %}
             </a>
             {% endif %}
             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <span class="text-gray-600 dark:text-gray-400 truncate max-w-xs">{{ article.title }}</span>
+            <span class="text-gray-600 dark:text-gray-400 truncate max-w-xs">{% article_field article "title" %}</span>
         </nav>
     </div>
 </section>
@@ -81,7 +82,7 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                     </svg>
-                    {{ article.category.name }}
+                    {% category_field article.category "name" %}
                 </a>
             </div>
             {% endif %}
@@ -258,7 +259,7 @@
     <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto">
             <div class="article-content prose prose-lg max-w-none dark:prose-invert">
-                {{ article.content|safe }}
+                {% article_field article "content" %}
             </div>
         </div>
     </div>
@@ -363,7 +364,7 @@
                     <div class="p-6 space-y-3">
                         {% if related.category %}
                         <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-emerald-100 to-emerald-100 dark:from-emerald-900 dark:to-emerald-900 text-emerald-700 dark:text-emerald-200 rounded-full text-sm font-bold">
-                            {{ related.category.name }}
+                            {% category_field related.category "name" %}
                         </span>
                         {% endif %}
                         

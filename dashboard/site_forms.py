@@ -60,7 +60,7 @@ class SiteLinkForm(forms.ModelForm):
     class Meta:
         model = SiteLink
         fields = [
-            'category', 'platform', 'label', 'route_name', 'url',
+            'category', 'platform', 'label', 'label_en', 'route_name', 'url',
             'order', 'is_active', 'open_in_new_tab',
         ]
 

@@ -3,6 +3,8 @@ from django.utils.text import slugify
 from django.utils import timezone
 from ckeditor_uploader.fields import RichTextUploadingField
 
+from .i18n_content import pick_localized
+
 
 class Category(models.Model):
     """Catégories pour organiser les articles"""
@@ -11,6 +13,12 @@ class Category(models.Model):
         unique=True,
         verbose_name="Nom",
         help_text="Nom de la catégorie."
+    )
+    name_en = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Nom (EN)",
+        help_text="Nom en anglais (repli sur le français si vide)."
     )
     slug = models.SlugField(
         max_length=120,
@@ -23,6 +31,12 @@ class Category(models.Model):
         config_name='awesome_ckeditor',
         verbose_name="Description",
         help_text="Description de la catégorie avec support HTML, images, etc."
+    )
+    description_en = RichTextUploadingField(
+        blank=True,
+        config_name='awesome_ckeditor',
+        verbose_name="Description (EN)",
+        help_text="Description en anglais (repli sur le français si vide)."
     )
     image = models.ImageField(
         upload_to='categories/',
@@ -43,6 +57,12 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
+
+    def get_name(self, language_code='fr'):
+        return pick_localized(language_code, self.name, self.name_en)
+
+    def get_description(self, language_code='fr'):
+        return pick_localized(language_code, self.description, self.description_en)
     
     def get_article_count(self):
         """Retourne le nombre d'articles publiés dans cette catégorie"""
@@ -64,6 +84,12 @@ class Article(models.Model):
         verbose_name="Titre",
         help_text="Titre de l'article."
     )
+    title_en = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Titre (EN)",
+        help_text="Titre en anglais (repli sur le français si vide)."
+    )
     slug = models.SlugField(
         max_length=255,
         unique=True,
@@ -75,11 +101,23 @@ class Article(models.Model):
         verbose_name="Contenu",
         help_text="Contenu principal de l'article avec éditeur HTML riche."
     )
+    content_en = RichTextUploadingField(
+        blank=True,
+        config_name='awesome_ckeditor',
+        verbose_name="Contenu (EN)",
+        help_text="Contenu en anglais (repli sur le français si vide)."
+    )
     excerpt = models.TextField(
         blank=True,
         max_length=500,
         verbose_name="Extrait",
         help_text="Court extrait de l'article pour les listes (optionnel)."
+    )
+    excerpt_en = models.TextField(
+        blank=True,
+        max_length=500,
+        verbose_name="Extrait (EN)",
+        help_text="Extrait en anglais (repli sur le français si vide)."
     )
     image = models.ImageField(
         upload_to='articles/',
@@ -162,6 +200,12 @@ class Article(models.Model):
         verbose_name="Meta description",
         help_text="Description SEO (max 160 caractères)."
     )
+    meta_description_en = models.CharField(
+        max_length=160,
+        blank=True,
+        verbose_name="Meta description (EN)",
+        help_text="Description SEO en anglais (repli sur le français si vide)."
+    )
     meta_keywords = models.CharField(
         max_length=255,
         blank=True,
@@ -187,6 +231,18 @@ class Article(models.Model):
     
     def __str__(self):
         return self.title
+
+    def get_title(self, language_code='fr'):
+        return pick_localized(language_code, self.title, self.title_en)
+
+    def get_content(self, language_code='fr'):
+        return pick_localized(language_code, self.content, self.content_en)
+
+    def get_excerpt(self, language_code='fr'):
+        return pick_localized(language_code, self.excerpt, self.excerpt_en)
+
+    def get_meta_description(self, language_code='fr'):
+        return pick_localized(language_code, self.meta_description, self.meta_description_en)
     
     def get_tags_list(self):
         """Retourne les tags sous forme de liste"""

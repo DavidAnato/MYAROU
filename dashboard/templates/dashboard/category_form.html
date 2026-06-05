@@ -79,14 +79,30 @@
                     📁 Informations de la catégorie
                 </h3>
                 
-                <div class="space-y-6">
-                    <div class="form-field">
+                <div class="space-y-6" x-data="{ locale: 'fr' }">
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <span class="text-sm font-semibold text-gray-600 dark:text-gray-300">Langue :</span>
+                        <button type="button" class="px-3 py-1.5 rounded-lg text-sm font-bold"
+                                :class="locale === 'fr' ? 'bg-emerald-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'"
+                                @click="locale = 'fr'">FR</button>
+                        <button type="button" class="px-3 py-1.5 rounded-lg text-sm font-bold"
+                                :class="locale === 'en' ? 'bg-emerald-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200'"
+                                @click="locale = 'en'">EN</button>
+                    </div>
+                    <div class="form-field" x-show="locale === 'fr'">
                         <label class="form-label">Nom *</label>
                         {{ form.name }}
                         {% if form.name.errors %}
                             <p class="text-red-500 text-sm mt-1">{{ form.name.errors.0 }}</p>
                         {% endif %}
                         <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Le nom est la façon dont la catégorie sera affichée sur le site.</p>
+                    </div>
+                    <div class="form-field" x-show="locale === 'en'" x-cloak>
+                        <label class="form-label">Nom (EN)</label>
+                        {{ form.name_en }}
+                        {% if form.name_en.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.name_en.errors.0 }}</p>
+                        {% endif %}
                     </div>
                     
                     <div class="form-field">
@@ -98,13 +114,20 @@
                         <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Le slug est la version URL du nom. Il est généralement tout en minuscules et ne contient que des lettres, des chiffres et des traits d'union.</p>
                     </div>
                     
-                    <div class="form-field">
+                    <div class="form-field" x-show="locale === 'fr'">
                         <label class="form-label">Description</label>
                         {{ form.description }}
                         {% if form.description.errors %}
                             <p class="text-red-500 text-sm mt-1">{{ form.description.errors.0 }}</p>
                         {% endif %}
                         <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Une brève description de ce que contient cette catégorie.</p>
+                    </div>
+                    <div class="form-field" x-show="locale === 'en'" x-cloak>
+                        <label class="form-label">Description (EN)</label>
+                        {{ form.description_en }}
+                        {% if form.description_en.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.description_en.errors.0 }}</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>

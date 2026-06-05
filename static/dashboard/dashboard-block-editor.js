@@ -840,6 +840,9 @@
                 }
                 updateLayoutSelect(card, nextType);
                 clearHiddenBlockFields(card, nextType);
+                if (window.DashboardForms && window.DashboardForms.initMediaDropzones) {
+                    window.DashboardForms.initMediaDropzones(card);
+                }
                 formChange(card, true);
             });
             updateLayoutSelect(card, typeSelect.value);

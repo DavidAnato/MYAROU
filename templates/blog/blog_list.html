@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static json_i18n %}
+{% load static json_i18n content_i18n %}
 
 {% block title %}Articles de blog - MYAROU{% endblock %}
 
@@ -175,7 +175,7 @@
                     <div class="flex items-center justify-between">
                         {% if article.category %}
                         <span class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-emerald-100 to-emerald-100 dark:from-emerald-900 dark:to-emerald-900 text-emerald-700 dark:text-emerald-200 rounded-full text-sm font-bold">
-                            {{ article.category.name }}
+                            {% category_field article.category "name" %}
                         </span>
                         {% endif %}
                         <span class="text-sm text-gray-500 dark:text-gray-400 font-medium">
@@ -186,13 +186,18 @@
                     <!-- Title -->
                     <h3 class="text-xl font-extrabold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
                         <a href="{% url 'blog:article_detail' article.slug %}">
-                            {{ article.title }}
+                            {% article_field article "title" %}
                         </a>
                     </h3>
                     
                     <!-- Excerpt -->
                     <p class="text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3">
-                        {{ article.excerpt|default:article.content|striptags|truncatewords:20 }}
+                        {% article_field article "excerpt" as list_excerpt %}
+                        {% if list_excerpt %}
+                        {{ list_excerpt|truncatewords:20 }}
+                        {% else %}
+                        {% article_field article "content" as list_content %}{{ list_content|striptags|truncatewords:20 }}
+                        {% endif %}
                     </p>
                     
                     <!-- Read More Link -->

@@ -2,6 +2,8 @@
 Liste de liens texte (footer, utiles, etc.).
 Variable : links (queryset SiteLink)
 {% endcomment %}
+{% load i18n site_i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 {% for link in links %}
 <li>
     <a href="{{ link.get_href }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
@@ -9,7 +11,7 @@ Variable : links (queryset SiteLink)
         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
-        {{ link.label|default:link.get_platform_display }}
+        {{ link|localized_link_label:LANGUAGE_CODE }}
     </a>
 </li>
 {% endfor %}

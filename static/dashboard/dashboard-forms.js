@@ -530,11 +530,14 @@
                 } else if (routeName && !href) {
                     href = '#';
                 }
+                const labelFr = card.querySelector('input[name$="-label"]')?.value || '';
+                const labelEn = card.querySelector('input[name$="-label_en"]')?.value || '';
                 links.push({
                     url: href,
                     route_name: routeName,
                     platform: card.querySelector('select[name$="-platform"]')?.value || 'other',
-                    label: card.querySelector('input[name$="-label"]')?.value || '',
+                    label: labelFr,
+                    label_en: labelEn,
                     category: card.querySelector('select[name$="-category"]')?.value || 'social',
                     open_in_new_tab: !newTab || newTab.checked,
                     order: parseInt(card.querySelector('input[name$="-order"]')?.value || '0', 10) || 0,
@@ -570,7 +573,18 @@
                     return el.value || '';
                 };
 
-                const getImageUrl = (root) => getMediaPreviewUrl(root);
+                const getBlockImageContainer = (card) => {
+                    const field = card.querySelector('[data-block-image-field]');
+                    if (field) {
+                        return field.querySelector('[data-media-container]') || field;
+                    }
+                    const blockType = card.querySelector('[name$="-block_type"]')?.value || '';
+                    const mediaSection = card.querySelector(`[data-block-media-for="${blockType}"]`);
+                    if (mediaSection) {
+                        return mediaSection.querySelector('[data-media-container]') || mediaSection;
+                    }
+                    return card.querySelector('[data-media-container]');
+                };
 
                 let blockIdx = 0;
                 form.querySelectorAll('[data-block-form]').forEach((card) => {
@@ -605,11 +619,8 @@
                     };
                     blockIdx += 1;
 
-                    const mediaSection = card.querySelector(`[data-block-media-for="${blockType}"]`);
-                    const mediaContainer = mediaSection
-                        ? mediaSection.querySelector('[data-media-container]')
-                        : card.querySelector('[data-media-container]');
-                    block.image_url = getImageUrl(mediaContainer);
+                    const mediaContainer = getBlockImageContainer(card);
+                    block.image_url = getMediaPreviewUrl(mediaContainer);
 
                     const blockId = card.getAttribute('data-block-pk');
                     const cardIndex = card.getAttribute('data-block-index');

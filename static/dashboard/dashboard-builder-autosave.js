@@ -201,9 +201,11 @@
             window.DashboardBlockEditor?.applyBlockPkToCard?.(card, item);
 
             if (item.image_url) {
-                const blockType = card.querySelector('[name$="-block_type"]')?.value || '';
-                const mediaSection = card.querySelector(`[data-block-media-for="${blockType}"]`);
-                window.DashboardBlockEditor?.updateMediaUrl?.(mediaSection || card, item.image_url);
+                const imageField = card.querySelector('[data-block-image-field]');
+                const target = imageField
+                    ? (imageField.querySelector('[data-media-container]') || imageField)
+                    : card;
+                window.DashboardBlockEditor?.updateMediaUrl?.(target, item.image_url);
             }
 
             if (card.querySelector('[data-block-gallery-section]')) {

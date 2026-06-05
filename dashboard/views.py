@@ -677,6 +677,8 @@ def _save_custom_page_builder(request, page, *, publish=False, unpublish=False):
         return False, page, errors, None
 
     page = form.save()
+    from homepage.custom_page_nav import sync_custom_page_footer_nav
+    sync_custom_page_footer_nav(page)
     if unpublish and page.is_published:
         page.is_published = False
         page.save(update_fields=['is_published', 'updated_at'])
@@ -700,6 +702,8 @@ def custom_page_create(request):
         form = CustomPageMetaForm(request.POST)
         if form.is_valid():
             page = form.save()
+            from homepage.custom_page_nav import sync_custom_page_footer_nav
+            sync_custom_page_footer_nav(page)
             messages.success(request, f'Page « {page.title} » créée. Ajoutez des blocs ci-dessous.')
             return redirect('dashboard:custom_page_edit', pk=page.pk)
     else:
@@ -799,6 +803,7 @@ def custom_page_save_api(request, pk):
 def custom_page_delete(request, pk):
     page = get_object_or_404(CustomPage, pk=pk)
     title = page.title
+    SiteLink.objects.filter(custom_page=page).delete()
     page.delete()
     messages.success(request, f'Page « {title} » supprimée.')
     return redirect('dashboard:site_page_list')

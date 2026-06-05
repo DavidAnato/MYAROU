@@ -10,14 +10,19 @@ class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
         fields = [
-            'title', 'slug', 'author', 'category',
-            'content', 'excerpt', 'image', 'video_file', 'video_url', 'tags', 'status',
-            'meta_description', 'meta_keywords'
+            'title', 'title_en', 'slug', 'author', 'category',
+            'content', 'content_en', 'excerpt', 'excerpt_en',
+            'image', 'video_file', 'video_url', 'tags', 'status',
+            'meta_description', 'meta_description_en', 'meta_keywords',
         ]
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
                 'placeholder': 'Titre de l\'article'
+            }),
+            'title_en': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
+                'placeholder': 'Article title (EN)'
             }),
             'slug': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
@@ -31,6 +36,11 @@ class ArticleForm(forms.ModelForm):
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
                 'rows': 3,
                 'placeholder': 'Court extrait...'
+            }),
+            'excerpt_en': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
+                'rows': 3,
+                'placeholder': 'Short excerpt (EN)...'
             }),
             'tags': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
@@ -59,6 +69,11 @@ class ArticleForm(forms.ModelForm):
                 'rows': 2,
                 'placeholder': 'Description SEO (max 160 caractères)'
             }),
+            'meta_description_en': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
+                'rows': 2,
+                'placeholder': 'SEO description (EN, max 160 chars)'
+            }),
             'meta_keywords': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
                 'placeholder': 'mot-clé1, mot-clé2'
@@ -75,11 +90,15 @@ class CategoryForm(forms.ModelForm):
     
     class Meta:
         model = Category
-        fields = ['name', 'slug', 'description', 'image']
+        fields = ['name', 'name_en', 'slug', 'description', 'description_en', 'image']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
                 'placeholder': 'Nom de la catégorie'
+            }),
+            'name_en': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',
+                'placeholder': 'Category name (EN)'
             }),
             'slug': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-colors',

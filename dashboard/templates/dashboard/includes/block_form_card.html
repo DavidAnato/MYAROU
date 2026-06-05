@@ -133,7 +133,7 @@
             <div class="builder-field md:col-span-2" x-show="showContent() && locale === 'fr'" x-cloak><label>Contenu</label>{{ bf.content }}</div>
             <div class="builder-field md:col-span-2" x-show="showContent() && locale === 'en'" x-cloak><label>Contenu</label>{{ bf.content_en }}</div>
 
-            <div class="builder-field md:col-span-2" x-show="showImage()" x-cloak :data-block-media-for="blockType">
+            <div class="builder-field md:col-span-2" x-show="showImage()" x-cloak data-block-image-field :data-block-media-for="blockType">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2" x-text="imageLabel()">Image</label>
                 {% include 'dashboard/includes/media_field.html' with field=bf.image label="" %}
             </div>

@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load json_i18n %}
-{% load home_i18n %}
+{% load home_i18n content_i18n %}
 
 {% block title %}{% t "site.home.title" %}{% endblock %}
 
@@ -431,10 +431,11 @@
                         {% endif %}
                     </div>
                     <div class="p-6">
-                        <div class="text-xs font-bold uppercase mb-2 text-emerald-600 dark:text-emerald-400">{{ article.category.name|default:"Article" }}</div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{{ article.title }}</h3>
-                        {% if article.excerpt %}
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">{{ article.excerpt|truncatechars:140 }}</p>
+                        <div class="text-xs font-bold uppercase mb-2 text-emerald-600 dark:text-emerald-400">{% if article.category %}{% category_field article.category "name" %}{% else %}Article{% endif %}</div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{% article_field article "title" %}</h3>
+                        {% article_field article "excerpt" as home_excerpt %}
+                        {% if home_excerpt %}
+                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">{{ home_excerpt|truncatechars:140 }}</p>
                         {% endif %}
                         <div class="text-xs text-gray-500 dark:text-gray-400 mb-4">
                             {{ article.author|default:"Anonyme" }} · {{ article.published_at|date:"d M Y" }}

@@ -34,7 +34,12 @@ def t(key, lang=None, **kwargs):
     if not lang or lang not in _TRANSLATIONS:
         lang = 'fr'
 
-    text = _TRANSLATIONS.get(lang, {}).get(key, key)
+    text = _TRANSLATIONS.get(lang, {}).get(key)
+    if text is None:
+        if lang != 'fr':
+            text = _TRANSLATIONS.get('fr', {}).get(key, key)
+        else:
+            text = key
     
     # Interpolation des variables {{variable}}
     if isinstance(text, str):

@@ -7,6 +7,8 @@ from ckeditor_uploader.fields import RichTextUploadingField
 import os
 import uuid
 
+from blog.i18n_content import pick_localized
+
 from .i18n_defaults import apply_i18n_defaults, merge_fr_en_defaults
 from .page_blocks import BLOCK_TYPE_CHOICES, BLOCK_TYPE_LABELS
 
@@ -88,6 +90,14 @@ class SiteSettings(models.Model):
     def notify_email(self):
         return self.contact_notify_email or self.contact_email
 
+    def get_footer_bio(self, language_code='fr'):
+        from blog_project.utils.i18n import t as translate_func
+        lang = (language_code or 'fr').split('-')[0].lower()
+        value = pick_localized(lang, self.footer_bio, self.footer_bio_en)
+        if value:
+            return value
+        return translate_func('site.footer.bio', lang=lang)
+
 
 class SiteLink(models.Model):
     CATEGORY_SOCIAL = 'social'
@@ -122,6 +132,15 @@ class SiteLink(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default=CATEGORY_SOCIAL)
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, default='other')
     label = models.CharField(max_length=120, blank=True)
+    label_en = models.CharField(max_length=120, blank=True)
+    custom_page = models.ForeignKey(
+        'CustomPage',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='nav_links',
+        help_text='Lien auto-généré pour une page libre du menu.',
+    )
     route_name = models.CharField(
         max_length=80,
         blank=True,
@@ -142,6 +161,8 @@ class SiteLink(models.Model):
         return self.label or self.get_platform_display() or self.url or self.route_name
 
     def get_href(self):
+        if self.custom_page_id:
+            return self.custom_page.get_href()
         if self.route_name:
             from django.urls import NoReverseMatch, reverse
             try:
@@ -149,6 +170,11 @@ class SiteLink(models.Model):
             except NoReverseMatch:
                 pass
         return self.url or '#'
+
+    def get_label(self, language_code='fr'):
+        if self.custom_page_id:
+            return self.custom_page.get_title(language_code)
+        return pick_localized(language_code, self.label, self.label_en) or self.get_platform_display() or self.url or self.route_name
 
 
 ABOUT_I18N_MAP = merge_fr_en_defaults({
@@ -564,9 +590,7 @@ class SitePage(models.Model):
         super().save(*args, **kwargs)
 
     def get_label(self, language_code='fr'):
-        if language_code == 'en' and self.label_en:
-            return self.label_en
-        return self.label or self.get_route_name_display()
+        return pick_localized(language_code, self.label, self.label_en) or self.get_route_name_display()
 
     def get_href(self):
         try:
@@ -638,19 +662,13 @@ class CustomPage(models.Model):
             raise ValidationError({'slug': 'Ce slug est réservé par le site.'})
 
     def get_title(self, language_code='fr'):
-        if language_code == 'en' and self.title_en:
-            return self.title_en
-        return self.title
+        return pick_localized(language_code, self.title, self.title_en)
 
     def get_content(self, language_code='fr'):
-        if language_code == 'en' and self.content_en:
-            return self.content_en
-        return self.content
+        return pick_localized(language_code, self.content, self.content_en)
 
     def get_meta_description(self, language_code='fr'):
-        if language_code == 'en' and self.meta_description_en:
-            return self.meta_description_en
-        return self.meta_description
+        return pick_localized(language_code, self.meta_description, self.meta_description_en)
 
     def get_href(self):
         return reverse('blog:custom_page', kwargs={'slug': self.slug})
@@ -719,29 +737,19 @@ class CustomPageBlock(models.Model):
         super().save(*args, **kwargs)
 
     def get_badge(self, language_code='fr'):
-        if language_code == 'en' and self.badge_en:
-            return self.badge_en
-        return self.badge
+        return pick_localized(language_code, self.badge, self.badge_en)
 
     def get_title(self, language_code='fr'):
-        if language_code == 'en' and self.title_en:
-            return self.title_en
-        return self.title
+        return pick_localized(language_code, self.title, self.title_en)
 
     def get_subtitle(self, language_code='fr'):
-        if language_code == 'en' and self.subtitle_en:
-            return self.subtitle_en
-        return self.subtitle
+        return pick_localized(language_code, self.subtitle, self.subtitle_en)
 
     def get_content(self, language_code='fr'):
-        if language_code == 'en' and self.content_en:
-            return self.content_en
-        return self.content
+        return pick_localized(language_code, self.content, self.content_en)
 
     def get_button_text(self, language_code='fr'):
-        if language_code == 'en' and self.button_text_en:
-            return self.button_text_en
-        return self.button_text
+        return pick_localized(language_code, self.button_text, self.button_text_en)
 
     def get_faq_items(self, language_code='fr'):
         items = (self.config or {}).get('items') or []
@@ -749,8 +757,8 @@ class CustomPageBlock(models.Model):
         for item in items:
             if not isinstance(item, dict):
                 continue
-            q = item.get('q_en') if language_code == 'en' and item.get('q_en') else item.get('q', '')
-            a = item.get('a_en') if language_code == 'en' and item.get('a_en') else item.get('a', '')
+            q = pick_localized(language_code, item.get('q', ''), item.get('q_en', ''))
+            a = pick_localized(language_code, item.get('a', ''), item.get('a_en', ''))
             if q or a:
                 result.append({'q': q, 'a': a})
         return result
@@ -776,7 +784,5 @@ class CustomPageBlockImage(models.Model):
         return self.caption or f'Image #{self.pk}'
 
     def get_caption(self, language_code='fr'):
-        if language_code == 'en' and self.caption_en:
-            return self.caption_en
-        return self.caption
+        return pick_localized(language_code, self.caption, self.caption_en)
 
